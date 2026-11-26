@@ -1,4 +1,12 @@
-## 26/11/2026 — Bắt đầu M02-01 theo ủy quyền điều phối của Henry\n\n- Henry giao ChatGPT toàn quyền điều phối dự án, chủ động quyết định kế hoạch, giao task, review và tiếp tục mà không hỏi duyệt từng bước.\n- M01 đã được tích hợp vào `main` qua PR #1, merge commit `7d1041f96183b7a330d6d539792768c3da5fe2a7`; source M01 branch `feature/M01-07-backlog-sprint` HEAD `f2419b1`.\n- M02-01 được mở trên branch `feature/M02-01-postgres-prisma-schema`, base `7d1041f96183b7a330d6d539792768c3da5fe2a7`; Task Brief `tasks/M02-01.md`; quyết định thực thi `M02_IMPLEMENTATION_DECISIONS.md`.\n- ChatGPT chốt PD-01 → PD-06 và các gap G-01 → G-04 trong phạm vi kỹ thuật cần cho schema. PD-07/08/09 và D-01 → D-09 vẫn Pending.\n- Trạng thái M02-01: IN_PROGRESS; chưa có schema/migration được triển khai hoặc nghiệm thu.\n\n# CHANGELOG — SEECARAUTO
+## 26/11/2026 — Bắt đầu M02-01 theo ủy quyền điều phối của Henry
+
+- Henry giao ChatGPT toàn quyền điều phối dự án, chủ động quyết định kế hoạch, giao task, review và tiếp tục mà không hỏi duyệt từng bước.
+- M01 đã được tích hợp vào `main` qua PR #1, merge commit `7d1041f96183b7a330d6d539792768c3da5fe2a7`; source M01 branch `feature/M01-07-backlog-sprint` HEAD `f2419b1`.
+- M02-01 được mở trên branch `feature/M02-01-postgres-prisma-schema`, base `7d1041f96183b7a330d6d539792768c3da5fe2a7`; Task Brief `tasks/M02-01.md`; quyết định thực thi `M02_IMPLEMENTATION_DECISIONS.md`.
+- ChatGPT chốt PD-01 → PD-06 và các gap G-01 → G-04 trong phạm vi kỹ thuật cần cho schema. PD-07/08/09 và D-01 → D-09 vẫn Pending.
+- Trạng thái M02-01: IN_PROGRESS; chưa có schema/migration được triển khai hoặc nghiệm thu.
+
+# CHANGELOG — SEECARAUTO
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
