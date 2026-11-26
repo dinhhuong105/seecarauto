@@ -2,6 +2,25 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-07 bản đầu (Backlog và chia Sprint)
+
+- Henry đã duyệt kế hoạch M01-07 ngày 26/11/2026 ~20:36 ("Duyệt M01-07,
+  làm luôn"). Branch feature/M01-07-backlog-sprint (từ 84ddddf).
+- Deliverables: PRODUCT_BACKLOG.md (89 mã task M00-01 → M09-10, mỗi
+  task có mục tiêu/phạm vi/priority/dependency/trạng thái) +
+  SPRINT_PLAN.md (10 Sprint × 2 tuần, tuần 1–20) + Task Brief
+  M01-07.md (11 AC) + Handbook.
+- Kiểm tra thật bằng script: 89 mã, không trùng/thiếu số thứ tự;
+  48 dependency đều tồn tại, 126 cạnh, không vòng lặp; 88 task trong
+  Sprint + M07-05 BLOCKED_BY_D-04 ngoài Sprint; trạng thái DONE 13,
+  IN_PROGRESS 1, BACKLOG 74, BLOCKED 1; không ngày cụ thể trong
+  Sprint plan.
+- ISSUE-01 (vấn đề mở): tổng kiểm đếm 89 ≠ 87 ghi trong tiêu đề
+  MASTER_ROADMAP và cuối TASK_BOARD — chờ ChatGPT quyết định sửa
+  tổng thành 89 hay gộp/bỏ 2 task; M01-07 không tự sửa.
+- M01-07 commit bản đầu này (SHA trong git log) đã báo cáo ChatGPT
+  trong chat mới "Review M01-07". Trạng thái IN_REVIEW, không tự DONE.
+
 ## 26/11/2026 — M01-06 DONE (ChatGPT ACCEPT Revision 08)
 
 - ChatGPT ACCEPT M01-06 ngày 26/11/2026 (verdict Revision 08, chat
