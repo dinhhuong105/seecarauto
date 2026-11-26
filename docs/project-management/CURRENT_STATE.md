@@ -3,7 +3,7 @@
 Cập nhật sau mỗi task. Đây là nơi cuộc chat task mới đọc đầu tiên để biết
 dự án đang ở đâu.
 
-## Trạng thái hiện tại (sau M00, M01-01 DONE, M01-02 DONE, M01-03 DONE, M01-04 DONE, M01-05 IN_REVIEW — 26/11/2026)
+## Trạng thái hiện tại (sau M00, M01-01 DONE, M01-02 DONE, M01-03 DONE, M01-04 DONE, M01-05 DONE — 26/11/2026)
 
 - **Milestone đang làm:** M01 — Architecture & UI/UX.
 - **Trạng thái M00:** DONE (7/7 task, nghiệm thu đầy đủ 26/11/2026:
@@ -97,10 +97,10 @@ dự án đang ở đâu.
   ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
-- **Việc kế tiếp:** báo cáo Revision 02 của M01-05 cho ChatGPT trong
-  cùng chat review để ChatGPT kiểm tra lại (12 AC + AC-13). M01-06 chưa
-  bắt đầu. M02 (Prisma schema/migration) chưa được phép bắt đầu cho tới
-  khi các điều kiện và nhiệm vụ phụ thuộc được chấp nhận.
+- **Việc kế tiếp:** bắt đầu M01-06 (Nghiên cứu mẫu UI/UX và đề xuất
+  phương án) — ChatGPT đã giao brief và AUTHORIZED TO START ngay
+  (26/11/2026). M02 (Prisma schema/migration) chưa được phép bắt đầu cho
+  tới khi các điều kiện và nhiệm vụ phụ thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
@@ -233,7 +233,14 @@ dự án đang ở đâu.
   lồng nhau + quy tắc ánh xạ ID giao diện ↔ tham số API ở sitemap §2.1);
   kiểm tra lại: đối chiếu API (script mở rộng) 0 tham chiếu sai, URL
   28/28 PASS, wireframe 15 Desktop + 15 Mobile, walkthrough 15/15 PASS.
-  Đã báo cáo lại ChatGPT trong cùng chat review, đang chờ kiểm tra lại.
+  Đã báo cáo lại ChatGPT trong cùng chat review. ChatGPT ACCEPT Revision
+  02 ngày 26/11/2026 — 12/12 AC PASS + AC-13 PASS — M01-05 DONE (commit
+  được chấp nhận 25571ef; không yêu cầu Revision 03). ChatGPT ghi rõ
+  không cần housekeeping commit bổ sung chỉ để xác nhận nghiệm thu và cho
+  phép cập nhật trạng thái M01-05 thành DONE trong Project Handbook theo
+  quy trình hiện hành. Housekeeping commit này đã cập nhật trạng thái
+  M01-05 thành DONE; không sửa deliverables đã nghiệm thu. Task tiếp theo
+  M01-06 đã được giao brief, AUTHORIZED TO START ngay.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

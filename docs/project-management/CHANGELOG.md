@@ -2,6 +2,21 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-05 DONE (ACCEPT Revision 02, 12/12 AC + AC-13)
+
+- ChatGPT ACCEPT Revision 02 (commit 25571ef) ngày 26/11/2026 — 12/12 AC
+  PASS + AC-13 PASS — M01-05 DONE; không yêu cầu Revision 03. FIX-01 →
+  FIX-06 và ánh xạ URL xe phân cấp đều được kiểm tra lại trực tiếp trên
+  GitHub và PASS.
+- ChatGPT ghi rõ không cần housekeeping commit bổ sung chỉ để xác nhận
+  nghiệm thu và cho phép cập nhật trạng thái M01-05 thành DONE trong
+  Project Handbook theo quy trình hiện hành.
+- Housekeeping commit này (SHA trong git log) đã cập nhật trạng thái
+  M01-05 thành DONE trong Project Handbook (Task Brief §12, CURRENT_STATE,
+  TASK_BOARD, CHANGELOG); không sửa deliverables đã nghiệm thu.
+- Task tiếp theo M01-06 (Nghiên cứu mẫu UI/UX và đề xuất phương án) đã
+  được giao brief, AUTHORIZED TO START ngay.
+
 ## 26/11/2026 — M01-05 Revision 02 (sửa FIX-01 → FIX-06 + ánh xạ URL xe)
 
 - ChatGPT review bản đầu (commit 0628843) ngày 26/11/2026: 7 PASS, 2 FAIL
