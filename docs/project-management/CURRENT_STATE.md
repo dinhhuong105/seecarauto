@@ -3,7 +3,7 @@
 Cập nhật sau mỗi task. Đây là nơi cuộc chat task mới đọc đầu tiên để biết
 dự án đang ở đâu.
 
-## Trạng thái hiện tại (sau M00, M01-01 DONE, M01-02 DONE, M01-03 DONE, M01-04 IN_REVIEW — 26/11/2026)
+## Trạng thái hiện tại (sau M00, M01-01 DONE, M01-02 DONE, M01-03 DONE, M01-04 DONE, M01-05 IN_REVIEW — 26/11/2026)
 
 - **Milestone đang làm:** M01 — Architecture & UI/UX.
 - **Trạng thái M00:** DONE (7/7 task, nghiệm thu đầy đủ 26/11/2026:
@@ -97,10 +97,10 @@ dự án đang ở đâu.
   ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
-- **Việc kế tiếp:** bắt đầu M01-05 (Admin Dashboard) — ChatGPT đã giao
-  brief và AUTHORIZED TO START ngay (26/11/2026). M01-06 chưa bắt đầu.
-  M02 (Prisma schema/migration) chưa được phép bắt đầu cho tới khi các
-  điều kiện và nhiệm vụ phụ thuộc được chấp nhận.
+- **Việc kế tiếp:** báo cáo M01-05 (bản đầu) cho ChatGPT trong chat mới
+  của Project để ChatGPT review (12 AC). M01-06 chưa bắt đầu. M02 (Prisma
+  schema/migration) chưa được phép bắt đầu cho tới khi các điều kiện và
+  nhiệm vụ phụ thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
@@ -207,7 +207,25 @@ dự án đang ở đâu.
   M01-04 DONE (commit được chấp nhận fcd4db7; không yêu cầu Revision 03).
   Housekeeping commit này đã cập nhật trạng thái M01-04 thành DONE; không
   sửa deliverables đã nghiệm thu. Task tiếp theo M01-05 đã được giao
-  brief, AUTHORIZED TO START ngay.
+  brief, AUTHORIZED TO START ngay. ChatGPT xác minh housekeeping ngày
+  26/11/2026 (commit 91d308b — M01-04 chính thức DONE) và giao brief chi
+  tiết M01-05 (7 deliverables + 12 AC).
+- M01-05 (Cấu trúc Admin Dashboard) IN_REVIEW: bản đầu hoàn thành ngày
+  26/11/2026 trên nhánh `feature/M01-05-admin-dashboard` (base commit
+  91d308b): `docs/ui-ux/ADMIN_SITEMAP.md` (30 mục), `docs/ui-ux/ADMIN_NAVIGATION.md`
+  (sidebar 7 nhóm/14 mục, header, breadcrumb, quy tắc theo quyền),
+  `docs/ui-ux/RBAC_MATRIX.md` (13 module × 7 hành động ↔ permission code
+  ↔ API endpoint, 5 vai trò ví dụ), `docs/ui-ux/ADMIN_WIREFRAMES.md`
+  (12 mẫu / 15 bề mặt, desktop + mobile), `docs/ui-ux/ADMIN_USER_FLOWS.md`
+  (15 luồng F-01 → F-15, 5 luồng thay thế, 10 trường hợp lỗi), Task Brief
+  `tasks/M01-05.md` (7 deliverables + 12 AC theo brief chi tiết ChatGPT).
+  Kiểm tra thật: URL 28/28 PASS, đối chiếu API 168 tham chiếu PASS (3 gap
+  đã ghi rõ: không endpoint liệt kê/tạo/xem chi tiết tài khoản admin —
+  M02), đếm wireframe 15 Desktop + 15 Mobile PASS, walkthrough 15/15 PASS,
+  tự đánh giá 12/12 AC + AC-13 quy trình PASS. Gap ghi rõ: không bảng
+  admin trong ERD (M02); không endpoint tạo `vehicle_applications`;
+  Export/Manage chưa có endpoint; Cài đặt là đề xuất (không FR). Đã báo
+  cáo ChatGPT trong chat mới của Project, đang chờ review.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

@@ -2,6 +2,26 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-05 IN_REVIEW (bản đầu — Cấu trúc Admin Dashboard)
+
+- Bản đầu M01-05 hoàn thành ngày 26/11/2026 trên nhánh
+  `feature/M01-05-admin-dashboard` (base commit 91d308b): 7 deliverables
+  theo brief chi tiết M01-05 của ChatGPT (nhận cùng xác nhận housekeeping
+  M01-04): ADMIN_SITEMAP.md (30 mục), ADMIN_NAVIGATION.md (sidebar 7
+  nhóm/14 mục), RBAC_MATRIX.md (13 module × 7 hành động), ADMIN_WIREFRAMES.md
+  (12 mẫu / 15 bề mặt), ADMIN_USER_FLOWS.md (15 luồng chính + 5 thay thế +
+  10 lỗi), Task Brief M01-05.md (12 AC), Handbook.
+- Kiểm tra thật: URL 28/28 PASS, đối chiếu API 168 tham chiếu PASS (3 gap
+  đã ghi rõ: không endpoint liệt kê/tạo/xem chi tiết tài khoản admin —
+  M02), đếm wireframe 15 Desktop + 15 Mobile PASS, walkthrough 15/15 PASS,
+  tự đánh giá 12/12 AC + AC-13 quy trình PASS.
+- Gap ghi rõ (không tự lấp): không bảng admin trong ERD (M02); không
+  endpoint tạo `vehicle_applications`; Export/Manage chưa có endpoint;
+  Cài đặt là đề xuất (không FR); 4 code `*.view` chỉ có trong bảng module
+  API_SPEC §6 (các `GET` tương ứng là public).
+- M01-05 IN_REVIEW — đã báo cáo ChatGPT trong chat mới của Project, đang
+  chờ review. M01-06 và M02 chưa bắt đầu.
+
 ## 26/11/2026 — M01-04 DONE (ACCEPT Revision 02, 15/15 AC)
 
 - ChatGPT ACCEPT Revision 02 (commit fcd4db7) ngày 26/11/2026 — 15/15 AC
