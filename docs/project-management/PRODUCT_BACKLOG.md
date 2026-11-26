@@ -121,10 +121,10 @@ chưa chốt nhưng không chặn thiết kế).
 | M03-03 | SKU + product_identifiers (OEM codes) | 1 SKU nội bộ/sản phẩm (PD-02) + 4 loại mã khác (PART/OEM/Manufacturer/Alternate); chuẩn hóa + tìm chính xác, không fuzzy mạnh trên OEM (FR-035/FR-036) | Critical | M02-01; PD-02, PD-03, PD-04 | BACKLOG |
 | M03-04 | Product images | Upload/sắp xếp/xóa ảnh sản phẩm (qua M02-04); ảnh chính + thứ tự hiển thị | High | M02-04, M03-01 | BACKLOG |
 | M03-05 | Product specifications | Trường spec key/value (P1, PD-07); bộ lọc theo spec (FR-013 P1) | Medium | M02-01; PD-07 | BACKLOG |
-| M03-06 | Variants | Biến thể sản phẩm theo roadmap M03 ("variants") — G-01: ERD chưa có bảng variants, cần quyết định schema ở M02 | Medium | M02-01 | BACKLOG |
+| M03-06 | Variants | Biến thể sản phẩm theo roadmap M03 ("variants") — G-01: ERD chưa có bảng variants, cần quyết định schema ở M02 | Medium | M02-01; G-01 | BACKLOG |
 | M03-07 | Import/Export Excel (products) | Import Excel sản phẩm + xuất Excel; validate mã trùng | High | M03-01; D-02 | BACKLOG |
 | M03-08 | Search API (Meilisearch, ADR-010) | Tìm theo SKU/OEM/tên/thương hiệu (FR-034 → FR-041); thứ tự ưu tiên ADR-010; cache Redis | Critical | M02-03, M03-01, M03-03 | BACKLOG |
-| M03-09 | Search UI | Ô tìm kiếm header + autocomplete (FR-037) + bộ lọc (FR-038) + không có kết quả (FR-040); kết hợp xe đã chọn (FR-039) | Critical | M03-08; M01-06 | BACKLOG |
+| M03-09 | Search UI | Ô tìm kiếm header + autocomplete (FR-037) + bộ lọc (FR-038) + không có kết quả (FR-040); kết hợp xe đã chọn (FR-039) | Critical | M03-08; M01-06; D-07 | BACKLOG |
 | M03-10 | Reverse lookup (part → vehicles) | Tra cứu ngược: từ phụ tùng ra danh sách xe tương thích (FR-030) | High | M03-01, M04-05 | BACKLOG |
 
 ## 6. M04 — Vehicle & Fitment (tuần 7–10) — BACKLOG 9/9
@@ -145,7 +145,7 @@ chưa chốt nhưng không chặn thiết kế).
 
 | Task | Tên | Mục tiêu / Phạm vi | Priority | Phụ thuộc | Trạng thái |
 | --- | --- | --- | --- | --- | --- |
-| M05-01 | Cart (server-side session) | Giỏ hàng theo session (HttpOnly cookie token); G-03: ERD chưa có bảng cart — quyết định nơi lưu ở M02 | Critical | M03-01 | BACKLOG |
+| M05-01 | Cart (server-side session) | Giỏ hàng theo session (HttpOnly cookie token); G-03: ERD chưa có bảng cart — quyết định nơi lưu ở M02 | Critical | M03-01; M02-01; G-03 | BACKLOG |
 | M05-02 | Checkout flow (guest, D-08) | Checkout khách vãng lai (FR-092); trường bắt buộc theo đề xuất M01-04; chỉ COD + chuyển khoản ở P0 | Critical | M05-01; D-08 | BACKLOG |
 | M05-03 | Orders + snapshot | Tạo đơn + snapshot tên/SKU/giá/số lượng lúc đặt (FR-054); mã đơn không đoán được (FR-058) | Critical | M05-02, M02-01 | BACKLOG |
 | M05-04 | Order management (admin) | Quản lý đơn (FR-060 → FR-066); vòng đời trạng thái đơn — tên trạng thái là PROVISIONAL chờ PD-08 | Critical | M05-03; PD-08 | BACKLOG |
@@ -160,7 +160,7 @@ chưa chốt nhưng không chặn thiết kế).
 
 | Task | Tên | Mục tiêu / Phạm vi | Priority | Phụ thuộc | Trạng thái |
 | --- | --- | --- | --- | --- | --- |
-| M06-01 | Admin users + bootstrap Super Admin | Bảng users (G-04); tạo tài khoản admin đầu tiên (bootstrap Super Admin — API chưa có endpoint tạo users, M01-05 đã ghi) | Critical | M02-01, M02-05 | BACKLOG |
+| M06-01 | Admin users + bootstrap Super Admin | Bảng users (G-04); tạo tài khoản admin đầu tiên (bootstrap Super Admin — API chưa có endpoint tạo users, M01-05 đã ghi) | Critical | M02-01, M02-05; G-04 | BACKLOG |
 | M06-02 | Roles CRUD | CRUD vai trò (FR-082) | Critical | M02-06 | BACKLOG |
 | M06-03 | Permissions + role_permissions matrix | Ma trận role × module × action, checkbox + Select All/None theo module (FR-080) | Critical | M02-06 | BACKLOG |
 | M06-04 | user_roles + user_permissions exceptions | Gán vai trò; ngoại lệ user_permissions (FR-083) | High | M06-02, M06-03 | BACKLOG |
@@ -174,7 +174,7 @@ chưa chốt nhưng không chặn thiết kế).
 
 | Task | Tên | Mục tiêu / Phạm vi | Priority | Phụ thuộc | Trạng thái |
 | --- | --- | --- | --- | --- | --- |
-| M07-01 | Articles CRUD | CRUD bài viết (FR-067/FR-068); G-02: ERD chưa có bảng articles — quyết định schema ở M02 | High | M02-01 | BACKLOG |
+| M07-01 | Articles CRUD | CRUD bài viết (FR-067/FR-068); G-02: ERD chưa có bảng articles — quyết định schema ở M02 | High | M02-01; G-02 | BACKLOG |
 | M07-02 | Article listing + detail (public) | Trang danh sách + chi tiết bài viết; SEO metadata (FR-049) | High | M07-01 | BACKLOG |
 | M07-03 | Slug + redirects (articles) | Slug chuẩn SEO; redirect khi đổi slug (FR-017 → FR-020 áp dụng cho bài viết) | High | M07-01 | BACKLOG |
 | M07-04 | AI SEO Assistant — Layer 1 Rule Engine | Rule engine sinh SEO gợi ý (FR-069) | High | M07-01 | BACKLOG |
@@ -234,13 +234,18 @@ PD-09) thì **không phải lúc nào cũng BLOCKED** — cần phân biệt 3 m
 | M02-07, M02-08 | D-05 | Pipeline CI + cấu hình môi trường mẫu | Chốt hosting + deploy thật lên provider |
 | M03-03 | PD-02/PD-03/PD-04 | CRUD identifiers theo ERD; chuẩn hóa mã | Chốt quy tắc issuer (make/brand) cho từng loại mã |
 | M03-05 | PD-07 | Khung spec key/value; UI lọc spec | Chốt danh sách trường spec có cấu trúc (nếu PD-07 đổi) |
+| M03-06 | G-01 (ERD chưa có bảng variants; quyết định schema ở M02-01) | Nghiên cứu yêu cầu variants; thiết kế interface nháp; UI khung | Chốt schema variants; triển khai CRUD variants |
 | M03-07 | D-02 | Khung import/export Excel; validate mã | Triển khai import dữ liệu thật (chưa có nguồn) |
+| M03-09 | D-07 (font tự host Inter vs system font — M01-06 đề xuất, chưa chốt) | Xây khung UI tìm kiếm với system font fallback; dùng tokens màu/spacing đã chốt | Chốt typography tokens (font family); áp dụng font tự host |
 | M04-04 | PD-01 | CRUD vehicle_applications theo ERD | Chốt độ chi tiết fitment tối thiểu |
 | M04-05 | PD-09 | Gắn/gỡ fitment; change log | Thêm cột source/verification (nếu PD-09 đổi) |
 | M04-06 | D-03 | Khung import fitment Excel | Triển khai import dữ liệu fitment thật (chưa có nguồn) |
+| M05-01 | G-03 (ERD chưa có bảng cart; quyết định nơi lưu ở M02-01) | Thiết kế API giỏ theo API_SPEC; UI giỏ khung | Chốt nơi lưu giỏ (DB/session); triển khai lưu trữ |
 | M05-02 | D-08 | Checkout theo đề xuất M01-04; UI + validation | Chốt luồng checkout (trường bắt buộc, bước xác nhận) |
 | M05-04 | PD-08 | Quản lý đơn với tên trạng thái PROVISIONAL | Chốt tên vòng đời trạng thái đơn |
 | M05-05 | D-09 | Tra cứu theo mã đơn (7 trường an toàn) | Thêm bước xác minh bổ sung |
+| M06-01 | G-04 (ERD chưa có bảng admin; quyết định schema ở M02-01) | Thiết kế luồng bootstrap Super Admin theo M01-05 | Chốt schema bảng users; tạo tài khoản admin thật |
+| M07-01 | G-02 (ERD chưa có bảng articles; quyết định schema ở M02-01) | Thiết kế API/UI bài viết theo API_SPEC | Chốt schema bảng articles; triển khai CRUD bài viết |
 | M07-05 | D-04 | Không — BLOCKED hoàn toàn (cần AI provider + ngân sách) | Mọi phần của task |
 | M08-02 | D-01 | Meta/canonical/robots; khung sitemap | Sinh sitemap chính thức (cần domain thật) |
 | M08-05 | D-07 | Tối ưu vitals theo system font | Chốt font tự host (ảnh hưởng LCP) |

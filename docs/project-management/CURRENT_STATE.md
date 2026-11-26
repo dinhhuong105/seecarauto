@@ -97,8 +97,8 @@ dự án đang ở đâu.
   ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
-- **Việc kế tiếp:** M01-07 Revision 02 đang chờ ChatGPT review lại
-  trong CÙNG chat "Review M01-07". M02 (Prisma schema/migration)
+- **Việc kế tiếp:** M01-07 Revision 03 đang chờ ChatGPT review lần
+  cuối trong CÙNG chat "Review M01-07". M02 (Prisma schema/migration)
   chưa được phép bắt đầu cho tới khi các điều kiện và nhiệm vụ phụ
   thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
@@ -294,19 +294,23 @@ dự án đang ở đâu.
   DONE.** M01-07 (Backlog và chia Sprint) đã được ChatGPT đề xuất kế
   hoạch; Henry đã duyệt kế hoạch ngày 26/11/2026 ~20:36; M01-07 đã
   bắt đầu (branch feature/M01-07-backlog-sprint).
-- **M01-07 IN_PROGRESS (Revision 02, commit SHA trong git log —
+- **M01-07 IN_PROGRESS (Revision 03, commit SHA trong git log —
   26/11/2026):** PRODUCT_BACKLOG.md (89 mã task M00-01 → M09-10,
   priority/dependency/trạng thái) + SPRINT_PLAN.md (10 Sprint × 2
   tuần, tuần 1–20) + Task Brief M01-07.md (11 AC). Kiểm tra thật bằng
   script: 89 mã, không trùng/thiếu; 48 dependency đều tồn tại, không
   vòng lặp; 88 task trong Sprint + M07-05 BLOCKED_BY_D-04 ngoài
-  Sprint. ChatGPT review bản đầu ngày 26/11/2026: NOT ACCEPTED — 8/11
-  AC PASS (3 có điều kiện), AC-05 + AC-08 FAIL, AC-10 FIX; **ISSUE-01
-  ĐÃ QUYẾT ĐỊNH: tổng 89** (phương án (a)). Revision 02 đã sửa tổng
-  87 → 89 (MASTER_ROADMAP, TASK_BOARD, M00-07.md), đồng bộ lại
-  timeline Sprint 3–10 theo khung tuần roadmap, bổ sung dependency
-  gates (§13 backlog) + điều kiện hoàn thành Sprint thực chất. Đã báo
-  cáo lại ChatGPT trong CÙNG chat "Review M01-07", đang chờ review.
+  Sprint; gates §13: 20 hàng / 21 task. **ISSUE-01 ĐÃ QUYẾT ĐỊNH:
+  tổng 89** (phương án (a)). ChatGPT review Revision 02 ngày
+  26/11/2026: NOT ACCEPTED — AC-08 FAIL, AC-05/AC-06 CONDITIONAL
+  (thiếu gate M03-06/G-01, D-07 chưa đồng bộ M03-09, trạng thái
+  Sprint 1/2 mâu thuẫn, Sprint 10 chưa mở khóa tuần tự). Revision 03
+  đã bổ sung 5 gate (G-01 M03-06, D-07 M03-09, G-02 M07-01, G-03
+  M05-01, G-04 M06-01), sửa lịch sử Sprint 1 (M01-01 thuộc Sprint 1,
+  đã ACCEPT trong Sprint 1) + trạng thái Sprint 2 (CHƯA HOÀN THÀNH),
+  M03-10 ghi rõ NGOẠI LỆ TIẾN ĐỘ, mở khóa tuần tự Sprint 10. Đã báo
+  cáo lại ChatGPT trong CÙNG chat "Review M01-07", đang chờ review
+  lần cuối.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 
