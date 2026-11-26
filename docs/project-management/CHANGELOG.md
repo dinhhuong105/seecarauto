@@ -2,6 +2,30 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-04 IN_REVIEW (bản đầu — Sitemap và Wireframe)
+
+- ChatGPT xác minh housekeeping M01-03 (commit f320968) ngày 26/11/2026
+  ~15:51: M01-03 chính thức DONE; ChatGPT giao Task Brief M01-04 và ủy
+  quyền bắt đầu ngay (không cần chờ Henry duyệt lại kế hoạch).
+- Bản đầu M01-04 hoàn thành trên nhánh `feature/M01-04-sitemap-wireframe`
+  (base commit f320968): `docs/ui-ux/SITEMAP.md` (19 mục — 18 trang +
+  trạng thái lỗi chung; URL theo ADR-004; truy vết FR → trang),
+  `docs/ui-ux/diagrams/sitemap.mmd` (Mermaid render OK: 18 node / 25
+  cạnh), `docs/ui-ux/WIREFRAMES.md` (13 mẫu trang, desktop + mobile),
+  `docs/ui-ux/USER_FLOWS.md` (15 luồng F-01 → F-15, 5 luồng thay thế,
+  10 trường hợp lỗi), Task Brief `tasks/M01-04.md` (15 AC).
+- Kiểm tra thật: URL 20/20 PASS; đối chiếu API 30/30 PASS; Mermaid
+  render (Mermaid 11 + jsdom) 18 node / 25 cạnh PASS; walkthrough 15/15
+  PASS; tự đánh giá 15/15 AC (AC-11, AC-12 theo bằng chứng đếm được;
+  AC-15 hoàn tất sau khi commit này được push và xác minh remote HEAD).
+- D-08/D-09 giữ Pending — chỉ trình bày đề xuất và vị trí/luồng dự kiến,
+  không tự chốt; không tạo dữ liệu kinh doanh giả (mọi ví dụ đều ghi
+  "ví dụ minh họa, không phải dữ liệu thật"). Không sửa PRD/SRS/ERD/API
+  đã nghiệm thu; không tạo Prisma schema/migration; không code frontend.
+- M01-04 IN_REVIEW — đã báo cáo ChatGPT trong chat mới của Project, đang
+  chờ review. M01-05 (Admin Dashboard) là task tiếp theo sau khi M01-04
+  được ACCEPT.
+
 ## 26/11/2026 — M01-03 DONE (ChatGPT ACCEPT 15/15, commit b625015)
 
 - ChatGPT ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí nghiệm thu

@@ -1,0 +1,66 @@
+%% Sitemap — SeeCar Auto (M01-04)
+%% Quy ước: {slug} trong nhãn nghĩa là tham số động (ví dụ: /parts/{category-slug}).
+%% Trang P0 thuộc website khách hàng; Admin thuộc M01-05 (không có trong sơ đồ này).
+%% Sơ đồ này là bản tóm tắt trực quan của docs/ui-ux/SITEMAP.md (bảng mục 2).
+flowchart TD
+    home["/ — Homepage"]
+
+    subgraph CATALOGUE["Catalogue — danh mục & thương hiệu"]
+        parts["/parts<br/>Catalogue"]
+        cat["/parts/{category-slug}<br/>Trang danh mục"]
+        brands["/brands<br/>Danh sách thương hiệu"]
+        brand["/brands/{brand-slug}<br/>Trang thương hiệu"]
+    end
+
+    subgraph VEHICLE["Tra cứu theo xe"]
+        vehicles["/vehicles<br/>Danh sách hãng xe"]
+        make["/vehicles/{make-slug}<br/>Trang hãng xe — dòng xe"]
+        vehicle["/vehicles/{make-slug}/{model-slug}<br/>Trang xe — phụ tùng theo xe"]
+    end
+
+    subgraph BUY["Tìm kiếm & mua hàng"]
+        search["/search<br/>Kết quả tìm kiếm"]
+        product["/products/{product-slug}<br/>Chi tiết sản phẩm"]
+        cart["/cart<br/>Giỏ hàng"]
+        checkout["/checkout<br/>Checkout"]
+        success["/checkout/success<br/>Xác nhận đơn hàng"]
+        lookup["/orders/lookup<br/>Tra cứu đơn hàng"]
+    end
+
+    subgraph CONTENT["Nội dung & liên hệ"]
+        blog["/blog<br/>Blog"]
+        post["/blog/{post-slug}<br/>Chi tiết bài viết"]
+        contact["/contact<br/>Liên hệ"]
+    end
+
+    notfound["404 — Trang không tồn tại<br/>(template lỗi, noindex)"]
+
+    home --> parts
+    home --> brands
+    home --> vehicles
+    home --> search
+    home --> blog
+    home --> contact
+    home --> lookup
+    home --> cart
+
+    parts --> cat
+    cat --> product
+    brands --> brand
+    brand --> product
+
+    vehicles --> make
+    make --> vehicle
+    vehicle --> product
+
+    search --> product
+    product --> cart
+    product --> vehicle
+    cart --> checkout
+    checkout --> success
+    success --> lookup
+
+    blog --> post
+    product -.-> contact
+    home -.-> notfound
+    product -.-> notfound

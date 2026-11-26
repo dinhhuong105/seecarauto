@@ -3,7 +3,7 @@
 Cập nhật sau mỗi task. Đây là nơi cuộc chat task mới đọc đầu tiên để biết
 dự án đang ở đâu.
 
-## Trạng thái hiện tại (sau M00, M01-01 DONE, M01-02 DONE, M01-03 DONE — 26/11/2026)
+## Trạng thái hiện tại (sau M00, M01-01 DONE, M01-02 DONE, M01-03 DONE, M01-04 IN_REVIEW — 26/11/2026)
 
 - **Milestone đang làm:** M01 — Architecture & UI/UX.
 - **Trạng thái M00:** DONE (7/7 task, nghiệm thu đầy đủ 26/11/2026:
@@ -97,16 +97,18 @@ dự án đang ở đâu.
   ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
-- **Việc kế tiếp:** báo cáo housekeeping cho ChatGPT trong cùng chat
-  review để ChatGPT xác minh commit, rồi nhờ ChatGPT giao brief M01-04
-  (Sitemap và Wireframe). M01-04 chưa bắt đầu — chỉ bắt đầu sau khi
-  ChatGPT giao brief. M02 (Prisma schema/migration) chưa được phép bắt đầu
-  cho tới khi các điều kiện và nhiệm vụ phụ thuộc được chấp nhận.
+- **Việc kế tiếp:** báo cáo M01-04 (bản đầu) cho ChatGPT trong chat mới
+  của Project để ChatGPT review (15 AC). M01-05 (Admin Dashboard) là task
+  tiếp theo sau khi M01-04 được ACCEPT. M02 (Prisma schema/migration)
+  chưa được phép bắt đầu cho tới khi các điều kiện và nhiệm vụ phụ thuộc
+  được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
   e82cd0e đã push — xem `git log`). M01-03 làm trên nhánh
   `feature/M01-03-api-spec` (commit + push — xem `git log` trên nhánh).
+  M01-04 làm trên nhánh `feature/M01-04-sitemap-wireframe` (commit +
+  push — xem `git log` trên nhánh).
 - **Môi trường chạy:** frontend http://localhost:3000, admin
   http://localhost:3001, backend http://localhost:3002
   (`GET /api/v1/health`, Swagger tại `/api/docs`).
@@ -180,9 +182,22 @@ dự án đang ở đâu.
   checklist Handbook chưa xác nhận trạng thái sau Revision 05. M01-03 đang
   chờ ChatGPT kiểm tra lại AC-15 sau bản ghi này (Revision 06 cập nhật các
   điểm trên). ChatGPT ACCEPT M01-03 ngày 26/11/2026 ~15:22 (15/15 AC đạt,
-  commit được chấp nhận b625015). M01-03 chốt DONE (housekeeping commit —
-  xem git log); M01-04 chưa bắt đầu — chỉ bắt đầu sau khi ChatGPT giao
-  brief.
+  commit được chấp nhận b625015). M01-03 chốt DONE (housekeeping commit
+  f320968 — xem git log); ChatGPT xác minh housekeeping ngày 26/11/2026
+  ~15:51 (M01-03 chính thức DONE) và giao brief M01-04 (Sitemap và
+  Wireframe), ủy quyền bắt đầu ngay.
+- M01-04 (Sitemap và Wireframe) IN_REVIEW: bản đầu hoàn thành ngày
+  26/11/2026 trên nhánh `feature/M01-04-sitemap-wireframe` (base commit
+  f320968): `docs/ui-ux/SITEMAP.md` (19 mục, URL theo ADR-004, truy vết
+  FR → trang), `docs/ui-ux/diagrams/sitemap.mmd` (Mermaid render OK: 18
+  node / 25 cạnh), `docs/ui-ux/WIREFRAMES.md` (13 mẫu trang, desktop +
+  mobile), `docs/ui-ux/USER_FLOWS.md` (15 luồng F-01 → F-15, 5 luồng thay
+  thế, 10 trường hợp lỗi), Task Brief `tasks/M01-04.md`. Kiểm tra thật:
+  URL 20/20 PASS, đối chiếu API 30/30 PASS, walkthrough 15/15 PASS,
+  tự đánh giá 15/15 AC (AC-15 hoàn tất sau khi commit này được push và
+  xác minh remote HEAD). D-08/D-09 giữ Pending (chỉ đề xuất, không tự
+  chốt); không tạo dữ liệu kinh doanh giả. Đã báo cáo ChatGPT trong chat
+  mới của Project, đang chờ review.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 
