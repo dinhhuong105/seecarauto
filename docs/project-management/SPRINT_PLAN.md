@@ -47,7 +47,7 @@ Kế hoạch Sprint cho roadmap 16–20 tuần. Nguồn: `MASTER_ROADMAP.md` +
 | Milestone | Khung tuần roadmap | Sprint bao phủ | Ghi chú |
 | --- | --- | --- | --- |
 | M00 | Tuần 1 | Sprint 1 (tuần 1–2) | DONE |
-| M01 | Tuần 2–3 | Sprint 1 (M01-01) + Sprint 2 (M01-02 → M01-07) | DONE trừ M01-07 IN_PROGRESS |
+| M01 | Tuần 2–3 | Sprint 1 (M01-01) + Sprint 2 (M01-02 → M01-07) | DONE |
 | M02 | Tuần 3–5 | Sprint 2 (M02-01/02/03/05) + Sprint 3 (M02-04/06/07/08) | Đuôi (M02-04/06/07/08) sang tuần 6 vì M02-06 phụ thuộc M02-05, M02-07/08 phụ thuộc M02-06 + D-05 |
 | M03 | Tuần 5–8 | Sprint 3 (M03-01/02/03) + Sprint 4 (M03-04 → M03-09) + Sprint 5 (M03-10) | NGOẠI LỆ TIẾN ĐỘ: M03-10 sang tuần 9 vì phụ thuộc M04-05 (Sprint 5) — đây là ngoại lệ do dependency, không phải timeline M03 đã được đồng bộ hoàn toàn |
 | M04 | Tuần 7–10 | Sprint 4 (M04-01/02/03) + Sprint 5 (M04-04 → M04-09) | Khớp đúng khung |
@@ -75,11 +75,11 @@ Kế hoạch Sprint cho roadmap 16–20 tuần. Nguồn: `MASTER_ROADMAP.md` +
 | --- | --- |
 | Mục tiêu | Hoàn thành toàn bộ tài liệu kiến trúc và UI/UX; bắt đầu schema + auth (M02 mở đầu tuần 3 theo roadmap) |
 | Task | M01-02, M01-03, M01-04, M01-05, M01-06, M01-07, M02-01, M02-02, M02-03, M02-05 (10 task) |
-| Trạng thái task | Đủ điều kiện: M01-02 → M01-06 (DONE), M01-07 (IN_PROGRESS — task này). Chờ dependency: M02-01 (sau M01-02 — đủ điều kiện khi Sprint bắt đầu vì M01-02 xong trong Sprint này, làm sau M01-02), M02-02/M02-03/M02-05 (sau M02-01). Chờ gate: M02-01 (PD-01 → PD-06 — chỉ chuẩn bị schema theo ERD, chưa chốt migration cho tới khi PD quyết) |
+| Trạng thái task | Đủ điều kiện: M01-02 → M01-07 (DONE). Chờ dependency: M02-01 (sau M01-02 — đủ điều kiện khi Sprint bắt đầu vì M01-02 xong trong Sprint này, làm sau M01-02), M02-02/M02-03/M02-05 (sau M02-01). Chờ gate: M02-01 (PD-01 → PD-06 — chỉ chuẩn bị schema theo ERD, chưa chốt migration cho tới khi PD quyết) |
 | Deliverables | ERD (17 bảng); API Spec (96 operations); Sitemap/Wireframe; Admin Dashboard; UI Research + Design System + UI Proposal; Backlog + Sprint Plan (M01-07); Prisma schema nháp; Redis + BullMQ; Meilisearch index; JWT login admin |
 | Điều kiện hoàn thành | ChatGPT ACCEPT M01-02 → M01-07; migration chạy (phần không phụ thuộc PD); login admin được; Meilisearch trả kết quả đúng ADR-010 |
 | Dependency | M00 DONE; PD-01 → PD-06 (gate M02-01) |
-| Trạng thái | CHƯA HOÀN THÀNH — đã hết khung tuần (tuần 3–4) nhưng chưa thỏa quy tắc hoàn thành §1: M01-07 còn IN_PROGRESS; M02-01/02/03/05 còn BACKLOG. 6/10 task DONE (M01-02 → M01-06). Sprint chỉ ghi DONE khi M01-07 được ACCEPT và các task M02 đủ điều kiện đạt điều kiện hoàn thành. |
+| Trạng thái | CHƯA HOÀN THÀNH — đã hết khung tuần (tuần 3–4) nhưng chưa thỏa quy tắc hoàn thành §1: M02-01/02/03/05 còn BACKLOG. 6/10 task DONE (M01-02 → M01-07). Sprint chỉ ghi DONE khi các task M02 đủ điều kiện đạt điều kiện hoàn thành. |
 
 ## 5. Sprint 3 — Tuần 5–6: RBAC nền + Catalog bắt đầu — BACKLOG
 
@@ -185,7 +185,7 @@ Kế hoạch Sprint cho roadmap 16–20 tuần. Nguồn: `MASTER_ROADMAP.md` +
 | Sprint | Tuần | Số task | Trạng thái |
 | --- | --- | --- | --- |
 | Sprint 1 | 1–2 | 8 (M00 7 + M01-01) | DONE |
-| Sprint 2 | 3–4 | 10 (M01 6 + M02 4) | CHƯA HOÀN THÀNH — đã hết khung tuần; 6/10 DONE, M01-07 IN_PROGRESS, M02 BACKLOG |
+| Sprint 2 | 3–4 | 10 (M01 6 + M02 4) | CHƯA HOÀN THÀNH — đã hết khung tuần; 6/10 DONE (M01-02 → M01-07), M02 BACKLOG |
 | Sprint 3 | 5–6 | 7 (M02 4 + M03 3) | BACKLOG |
 | Sprint 4 | 7–8 | 9 (M03 6 + M04 3) | BACKLOG |
 | Sprint 5 | 9–10 | 10 (M04 6 + M03-10 + M05 2 + M06-01) | BACKLOG |

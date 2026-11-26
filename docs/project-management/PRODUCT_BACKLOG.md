@@ -11,7 +11,7 @@ Wireframe, Admin Dashboard, UI/UX Research).
 | --- | --- |
 | Tổng số mã task trong backlog này | **89** |
 | M00 | 7 — DONE 7/7 |
-| M01 | 7 — DONE 6/7, IN_PROGRESS 1/7 (M01-07) |
+| M01 | 7 — DONE 7/7 |
 | M02 | 8 — BACKLOG 8/8 |
 | M03 | 10 — BACKLOG 10/10 |
 | M04 | 9 — BACKLOG 9/9 |
@@ -20,8 +20,8 @@ Wireframe, Admin Dashboard, UI/UX Research).
 | M07 | 10 — BACKLOG 9/10, BLOCKED 1/10 (M07-05) |
 | M08 | 9 — BACKLOG 9/9 |
 | M09 | 10 — BACKLOG 10/10 |
-| DONE | 13 (M00 7 + M01 6) |
-| IN_PROGRESS | 1 (M01-07) |
+| DONE | 14 (M00 7 + M01 7) |
+| IN_PROGRESS | 0 |
 | BACKLOG | 74 |
 | BLOCKED | 1 (M07-05) |
 
@@ -109,7 +109,7 @@ chưa chốt nhưng không chặn thiết kế).
 | M00-06 | Setup Docker và docker-compose | Dockerfile ×3, `docker-compose.yml` (6 services); runtime UNVERIFIED trên máy Muse — chỉ validate config | Critical | M00-01 | DONE |
 | M00-07 | Tạo Project Handbook | `docs/project-management/` + `TASK_BOARD.md` | High | M00-01 | DONE |
 
-## 3. M01 — Architecture & UI/UX (tuần 2–3) — DONE 6/7, IN_PROGRESS 1/7
+## 3. M01 — Architecture & UI/UX (tuần 2–3) — DONE 7/7
 
 | Task | Tên | Mục tiêu / Phạm vi | Priority | Phụ thuộc | Trạng thái |
 | --- | --- | --- | --- | --- | --- |
@@ -119,7 +119,7 @@ chưa chốt nhưng không chặn thiết kế).
 | M01-04 | Sitemap và Wireframe | Sitemap 19 mục; 13 mẫu wireframe (Desktop + Mobile); 15 luồng F-01 → F-15; D-08/D-09 chỉ đề xuất | High | M01-01, M01-03 | DONE |
 | M01-05 | Cấu trúc Admin Dashboard | Admin sitemap 30 mục; navigation 7 nhóm/14 mục; RBAC Matrix 13 module × 7 hành động; 12 mẫu wireframe | High | M01-01, M01-02, M01-03 | DONE |
 | M01-06 | Nghiên cứu mẫu UI/UX và đề xuất phương án | Nghiên cứu 5 website thật; Design System (màu/chữ/spacing/component); đề xuất Tailwind + shadcn/ui; D-07 chỉ là đề xuất | High | M01-01, M01-04, M01-05 | DONE |
-| M01-07 | Backlog và chia Sprint | Backlog 89 mã task + Sprint plan 10 Sprint × 2 tuần (tuần 1–20) | High | M01-01 → M01-06 | IN_PROGRESS |
+| M01-07 | Backlog và chia Sprint | Backlog 89 mã task + Sprint plan 10 Sprint × 2 tuần (tuần 1–20) | High | M01-01 → M01-06 | DONE |
 
 ## 4. M02 — Infrastructure & Authentication (tuần 3–5) — BACKLOG 8/8
 
