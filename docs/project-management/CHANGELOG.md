@@ -2,6 +2,37 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-07 Revision 06 (FIX-01 theo review Revision 05)
+
+- ChatGPT review Revision 05 (chat "Review M01-07") ngày 26/11/2026:
+  NOT ACCEPTED — chỉ AC-08 FAIL; AC-05 CONDITIONAL; các AC còn lại
+  PASS hoặc PASS* (AC-01/AC-02/AC-03/AC-10 PASS*). G-05 ĐẠT (phân
+  công nền tảng UI cho M03-01, M03-02 và M03-09 đều đúng). Revision
+  06 ĐƯỢC PHÉP THỰC HIỆN — chỉ FIX-01; ChatGPT nói sau Revision 06
+  sẽ kiểm tra lại GitHub và quyết định nghiệm thu cuối cùng.
+- FIX-01: Sprint 3 chuyển M03-01 từ "Đủ điều kiện" sang "Chờ
+  dependency M02-01, M02-05, M02-06" + ghi rõ thứ tự — M02-01/M02-05
+  hoàn thành theo Sprint 2, M02-06 hoàn thành sau M02-05, M03-01 bắt
+  đầu sau khi các dependency trên hoàn thành; trong M03-01, dựng nền
+  tảng UI trước, sau đó mới triển khai UI CRUD. Đây là lỗi thứ tự
+  triển khai, không phải lỗi phân công G-05. Không đổi quyết định
+  M03-02 backend/API chuẩn bị độc lập với nền tảng UI. Không sửa
+  G-01, G-05, D-07, PD-01 → PD-09. Không sửa tài liệu M01 đã nghiệm
+  thu. Giữ nguyên 89 task, không thêm task mới.
+- Kiểm tra lại điều kiện hoàn thành Sprint 3 + dependency Sprint 4:
+  điều kiện hoàn thành Sprint 3 ("nền tảng UI (M03-01) hoàn thành
+  trước khi M03-02 triển khai phần UI") không mâu thuẫn — M03-01
+  hoàn thành TRONG Sprint 3 (sau M02-06), rồi M03-02 mới triển khai
+  phần UI. Hàng Dependency Sprint 4 ("Sprint 3 DONE") không mâu
+  thuẫn — nền tảng M03-01 hoàn thành ở Sprint 3 nên M03-09 ở Sprint
+  4 dùng nền tảng đã sẵn sàng. Không cần sửa deliverables hay điều
+  kiện hoàn thành Sprint 3/4.
+- Task Brief (§9.11, §10) + Handbook cập nhật Revision 06; script
+  kiểm tra chạy lại (89 mã, 48 dependency, 130 cạnh, không vòng lặp,
+  bao phủ Sprint 88 + 1 BLOCKED, gates §13: 21 hàng / 22 task).
+- Revision 06 commit này (SHA trong git log) đã báo cáo lại ChatGPT
+  trong CÙNG chat "Review M01-07". Trạng thái IN_REVIEW, không tự DONE.
+
 ## 26/11/2026 — M01-07 Revision 05 (G-05 theo quyết định của ChatGPT, review Revision 04)
 
 - ChatGPT review Revision 04 (chat "Review M01-07") ngày 26/11/2026:
