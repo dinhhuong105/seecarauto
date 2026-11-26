@@ -138,7 +138,7 @@
 
 **Tương tác:** lưu nháp/xuất bản; tab chuyển không mất dữ liệu đã nhập; lỗi form báo từng trường; trùng SKU/slug → báo lỗi + gợi ý; xóa sản phẩm → modal xác nhận (RESTRICT khi còn dữ liệu liên quan — PD-05).
 
-**API:** `POST/PATCH/DELETE /products/{productId}`, `POST /products/{productId}/identifiers`, `DELETE /products/{productId}/identifiers/{identifierId}`, `POST /products/{productId}/images`, `DELETE /products/{productId}/images/{imageId}`, `POST /products/{productId}/fitments`, `DELETE /products/{productId}/fitments/{fitmentId}`.
+**API:** `POST /products` (tạo mới), `PATCH/DELETE /products/{productId}` (sửa/xóa), `POST /products/{productId}/identifiers`, `DELETE /products/{productId}/identifiers/{identifierId}`, `POST /products/{productId}/images`, `DELETE /products/{productId}/images/{imageId}`, `POST /products/{productId}/fitments`, `DELETE /products/{productId}/fitments/{fitmentId}`.
 
 ---
 
@@ -169,13 +169,15 @@
 
 **Mobile:** cây danh mục thành danh sách thụt lề; nút Sửa/Ẩn/Xóa thành menu "..." trên mỗi dòng; form tạo/sửa mở modal full-screen.
 
-**Tương tác:** tạo danh mục con (chọn danh mục cha); đổi tên → slug giữ nguyên (FR-017); đổi slug đã công bố → hệ thống tạo redirect 301 + báo rõ (FR-018); slug trùng → gợi ý slug khác (FR-019); kéo thả đổi thứ tự hiển thị (P1 FR-014 — hiển thị vị trí, chưa triển khai ở P0).
+**Tương tác:** tạo danh mục con (chọn danh mục cha); đổi tên → slug giữ nguyên (FR-017); đổi slug đã công bố → hệ thống tạo redirect 301 + báo rõ (FR-018); slug trùng → gợi ý slug khác (FR-019); đặt số thứ tự hiển thị cho danh mục trong form (trường số — FR-015, P0); kéo-thả sắp xếp lại thứ tự là tương tác P1 (FR-014 — thứ tự sản phẩm trong danh mục), không thuộc P0.
 
 **API:** `GET/POST /categories`, `PATCH/DELETE /categories/{slug}`; `GET/POST /brands`, `PATCH/DELETE /brands/{slug}`; `POST /redirects` (`redirects.create`).
 
 ---
 
-### 6. Hãng xe (`/vehicles`, `/vehicles/<make-id>`, `/vehicles/models/<model-id>`, `/vehicles/generations/<generation-id>`)
+### 6. Hãng xe (`/vehicles`, `/vehicles/<make-slug>`, `/vehicles/<make-slug>/<model-slug>`, `/vehicles/<make-slug>/<model-slug>/<generation-slug>`)
+
+**Ánh xạ URL ↔ API:** URL giao diện dùng slug lồng nhau, khớp tham số `{slug}` của API (`GET /vehicles/makes/{slug}/models`, `GET /vehicles/models/{slug}/generations`); UUID của bản ghi lấy từ response danh sách (chứa cả `id` + `slug`) và dùng cho PATCH/DELETE — với resource merged-path, server phân biệt slug/UUID theo định dạng (API_SPEC §9); với generations/variants, API dùng `{generationId}`/`{variantId}` (UUID) nên giao diện lấy UUID từ response danh sách của cấp cha. Giao diện không tự suy đoán ID/slug.
 
 **Mục đích (FR-021, FR-022):** quản lý hãng xe → dòng xe → thế hệ → phiên bản (điều hướng phân cấp).
 
@@ -222,9 +224,10 @@
 │ │ Sản phẩm | Xe áp dụng | Ghi chú | Người gắn | Thao tác        │ │
 │ │ ...      | Toyota Vios | ...     | ...       | [Bỏ gắn]        │ │
 │ └──────────────────────────────────────────────────────────────┘ │
-│ Nhập Excel (màn hình /fitments/import): [Chọn file .xlsx]       │
-│   → kết quả từng dòng: OK / lỗi (ghi rõ dòng + lý do)           │
-│   → lịch sử import (trạng thái, số dòng OK/lỗi)                 │
+│ Nhập Excel (màn hình /fitments/import — LUỒNG MỤC TIÊU M04):    │
+│   [Chọn file .xlsx] → kết quả từng dòng: OK / lỗi (dòng + lý do)│
+│   → lịch sử import (trạng thái, số dòng OK/lỗi) — M01-05 chỉ    │
+│   thiết kế cấu trúc màn hình, tính năng nhập chưa triển khai.    │
 │ Lịch sử thay đổi (/fitments/change-logs): ai, khi nào, sản phẩm │
 │   nào, xe nào, gắn/bỏ gắn (trước–sau)                            │
 └──────────────────────────────────────────────────────────────────┘
@@ -232,7 +235,7 @@
 
 **Mobile:** bảng thành thẻ; form gắn fitment mở modal full-screen (chọn sản phẩm → chọn xe → ghi chú → xác nhận); kết quả import thành danh sách dòng lỗi có thể lọc.
 
-**Tương tác:** gắn fitment (1 sản phẩm ↔ 1 xe + ghi chú); bỏ gắn có xác nhận; import Excel báo lỗi từng dòng (SRS AC-05); xem lịch sử thay đổi fitment (FR-033).
+**Tương tác:** gắn fitment (1 sản phẩm ↔ 1 xe + ghi chú); bỏ gắn có xác nhận; import Excel (luồng mục tiêu M04) báo lỗi từng dòng (SRS AC-05); xem lịch sử thay đổi fitment (FR-033).
 
 **API:** `GET /fitments` (public), `POST /products/{productId}/fitments`, `DELETE /products/{productId}/fitments/{fitmentId}`, `POST /fitments/import`, `GET /fitments/import/{importId}`, `GET /fitments/change-logs`.
 
@@ -332,7 +335,7 @@
 
 **Tương tác:** đổi tiêu đề bài đã xuất bản → slug/URL giữ nguyên (FR-068); Generate SEO → Lớp 1 cảnh báo độ dài/từ khóa/slug (FR-069), Lớp 2 báo "chưa cấu hình AI" khi chưa có nhà cung cấp (FR-070); sửa tay SEO → không bị ghi đè khi Generate lại (FR-071); bỏ override → đề xuất lại (FR-072); sửa Title/Description → preview cập nhật (FR-073).
 
-**API:** `POST/PATCH/DELETE /articles/{slug}`, `PATCH /articles/{slug}/seo`, `POST /articles/{slug}/seo/generate`.
+**API:** `POST /articles` (tạo bài), `PATCH/DELETE /articles/{slug}` (sửa/xóa), `PATCH /articles/{slug}/seo` (cập nhật SEO thủ công), `POST /articles/{slug}/seo/generate` (Generate SEO).
 
 ---
 
@@ -392,7 +395,10 @@
 │ │  GET /users/{userId} — M02 bổ sung; màn hình thiết kế theo cấu    │ │
 │ │  trúc, chờ endpoint)                                          │ │
 │ └──────────────────────────────────────────────────────────────┘ │
-│ Chi tiết tài khoản: vai trò đã gán [Gán vai trò ▾] [Bỏ gán];    │
+│ Chi tiết tài khoản: vai trò đã gán [Gán vai trò ▾] [Bỏ gán] —    │
+│   chỉ gán được cho tài khoản đã biết ID (chưa có GET /users để  │
+│   liệt kê — BLOCKED_BY_M02); tạo tài khoản mới cũng BLOCKED_BY_ │
+│   M02 (chưa có POST /users).                                     │
 │   Ngoại lệ quyền (user_permissions): [+ Thêm ngoại lệ] — chỉ    │
 │   tài khoản này đổi quyền, các tài khoản cùng vai trò không đổi  │
 └──────────────────────────────────────────────────────────────────┘
@@ -442,13 +448,15 @@
 │ │   Email liên hệ [____] | Địa chỉ [____]                       │ │
 │ │ Thanh toán: Ngân hàng [____] | Số tài khoản [____] | Chủ TK   │ │
 │ │   [____] | Nội dung chuyển khoản mẫu [____]                   │ │
-│ │ (ĐỀ XUẤT: không có FR/endpoint; mọi giá trị thật chờ Henry    │ │
-│ │  cung cấp — không bịa giá trị mặc định thành dữ liệu thật)     │ │
+│ │ (ĐỀ XUẤT: không có FR/endpoint; nút [Lưu] chỉ là phần tử bố   │ │
+│ │  cục đề xuất, không thực hiện thao tác lưu; mọi giá trị thật  │ │
+│ │  chờ Henry cung cấp — không bịa giá trị mặc định thành dữ     │ │
+│ │  liệu thật)                                                  │ │
 │ └──────────────────────────────────────────────────────────────┘ │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-**Mobile:** tab + form một cột; nút Lưu cố định dưới.
+**Mobile:** tab + form một cột; nút [Lưu] (phần tử bố cục đề xuất) cố định dưới.
 
 **API:** — (không có endpoint; M02 chốt).
 

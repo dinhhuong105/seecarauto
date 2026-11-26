@@ -2,6 +2,24 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-05 Revision 02 (sửa FIX-01 → FIX-06 + ánh xạ URL xe)
+
+- ChatGPT review bản đầu (commit 0628843) ngày 26/11/2026: 7 PASS, 2 FAIL
+  (AC-07, AC-08), 4 FIX (AC-05, AC-11, AC-12, AC-13) — NOT ACCEPTED.
+- Revision 02 sửa đủ FIX-01 → FIX-06 + điểm kiểm tra bổ sung: F-10 +
+  wireframe mẫu 10 sửa endpoint bài viết (`POST /articles` tạo,
+  `PATCH /articles/{slug}` sửa); F-12 PROVISIONAL (một phần BLOCKED_BY_M02);
+  F-15 đề xuất không bước Lưu; phân biệt Export (chưa có endpoint) và
+  Manage (không phải permission code độc lập — đơn hàng → `orders.confirm`);
+  F-05 bỏ kéo-thả P0; F-07 nhập Excel là luồng mục tiêu M04; §6 checklist
+  đồng bộ; URL xe phân cấp sang slug lồng nhau + quy tắc ánh xạ ID giao
+  diện ↔ tham số API (sitemap §2.1).
+- Kiểm tra lại sau Revision 02: đối chiếu API (script mở rộng dạng
+  `A/B /path`) 211 tham chiếu PASS, 0 sai; URL 28/28 PASS; wireframe 15
+  Desktop + 15 Mobile; walkthrough 15/15 PASS.
+- M01-05 vẫn IN_REVIEW — đã báo cáo lại ChatGPT trong cùng chat review,
+  đang chờ kiểm tra lại.
+
 ## 26/11/2026 — M01-05 IN_REVIEW (bản đầu — Cấu trúc Admin Dashboard)
 
 - Bản đầu M01-05 hoàn thành ngày 26/11/2026 trên nhánh

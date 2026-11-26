@@ -84,7 +84,7 @@ Sidebar cố định bên trái trên desktop; 7 nhóm, 14 mục. Mỗi mục gh
 | Vai trò → Tài khoản dùng vai trò đó | `/users?role=<id>` | `users.view` |
 | Tài khoản → Vai trò của tài khoản | `/roles/<id>` | `roles.view` |
 | Danh mục/Thương hiệu đổi slug đã công bố | `/redirects` (tạo redirect 301) | `redirects.view` + `redirects.create` |
-| Lịch sử fitment → Sản phẩm/Xe liên quan | `/products/<id>`, `/vehicles/<make-id>` | quyền xem tương ứng |
+| Lịch sử fitment → Sản phẩm/Xe liên quan | `/products/<id>`, `/vehicles/<make-slug>` | quyền xem tương ứng |
 | Audit log → Vai trò/Tài khoản liên quan | `/roles/<id>`, `/users/<id>` | quyền xem tương ứng |
 
 ## 7. Responsive

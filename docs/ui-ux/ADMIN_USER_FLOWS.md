@@ -33,13 +33,13 @@
 ### F-05. Quản lý danh mục / thương hiệu
 
 - **Màn hình:** `/categories`, `/brands` (wireframe mẫu 5).
-- **Bước:** tạo danh mục con (chọn danh mục cha) / tạo thương hiệu → đặt tên, slug tiếng Anh, thứ tự, ẩn/hiện → Lưu → kiểm tra hiển thị ở website khách hàng.
+- **Bước:** tạo danh mục con (chọn danh mục cha) / tạo thương hiệu → đặt tên, slug tiếng Anh, số thứ tự hiển thị (trường số — FR-015, P0), ẩn/hiện → Lưu → kiểm tra hiển thị ở website khách hàng. (Không kéo-thả sắp xếp lại thứ tự — tương tác kéo-thả thuộc P1, FR-014.)
 - **FR:** FR-015 → FR-020. **API:** `POST /categories`, `POST /brands`, `PATCH /categories/{slug}`, `PATCH /brands/{slug}`.
 - **Kết quả:** danh mục/thương hiệu mới xuất hiện đúng vị trí; ẩn → không xuất hiện ở frontend, sản phẩm không bị xóa.
 
 ### F-06. Quản lý hãng xe / dòng xe / thế hệ / phiên bản
 
-- **Màn hình:** `/vehicles` → `/vehicles/<make-id>` → `/vehicles/models/<model-id>` → `/vehicles/generations/<generation-id>` (wireframe mẫu 6).
+- **Màn hình:** `/vehicles` → `/vehicles/<make-slug>` → `/vehicles/<make-slug>/<model-slug>` → `/vehicles/<make-slug>/<model-slug>/<generation-slug>` (wireframe mẫu 6; URL dùng slug lồng nhau, khớp tham số `{slug}` của API — xem ADMIN_SITEMAP.md §2.1).
 - **Bước:** tạo hãng xe (tên, slug, logo) → vào hãng → tạo dòng xe → vào dòng → tạo thế hệ (+ năm) → vào thế hệ → tạo phiên bản.
 - **FR:** FR-021, FR-022. **API:** `POST /vehicles/makes|models|generations|variants`.
 - **Kết quả:** hãng/dòng/thế hệ/phiên bản mới xuất hiện trong bộ chọn xe ở homepage.
@@ -48,8 +48,9 @@
 
 - **Màn hình:** `/fitments`, `/fitments/import`, `/fitments/change-logs` (wireframe mẫu 7).
 - **Bước:** (a) gắn lẻ: chọn sản phẩm → chọn xe → ghi chú áp dụng → xác nhận; (b) nhập hàng loạt: tải file Excel → xem kết quả từng dòng (OK/lỗi + lý do) → sửa file lỗi và nhập lại; (c) xem lịch sử thay đổi fitment.
+- **Lưu ý:** phần (b) nhập Excel là luồng mục tiêu cho M04 — M01-05 chỉ thiết kế cấu trúc màn hình `/fitments/import`; tính năng nhập chưa triển khai ở M01-05.
 - **FR:** FR-027 → FR-033. **API:** `POST /products/{productId}/fitments`, `DELETE /products/{productId}/fitments/{fitmentId}`, `POST /fitments/import`, `GET /fitments/change-logs`.
-- **Kết quả:** sản phẩm xuất hiện trong trang xe tương ứng (tra cứu 2 chiều); lịch sử thay đổi được ghi lại.
+- **Kết quả:** (a) sản phẩm xuất hiện trong trang xe tương ứng (tra cứu 2 chiều); (c) lịch sử thay đổi được ghi lại; (b) là luồng mục tiêu M04, chưa chạy ở M01-05.
 
 ### F-08. Xử lý đơn hàng (xác nhận → giao → hoàn tất)
 
@@ -69,7 +70,7 @@
 
 - **Màn hình:** `/articles/new`, `/articles/<slug>` (wireframe mẫu 10).
 - **Bước:** tạo bài (tiêu đề, nội dung, chuyên mục, slug) → bấm [Generate SEO] → Lớp 1 (rule engine) cảnh báo độ dài/từ khóa/slug; Lớp 2 báo "chưa cấu hình AI" (BLOCKED_BY_D-04) → sửa tay SEO Title/Meta Description (đánh dấu manual override) → xem Google preview → Lưu nháp / Xuất bản.
-- **FR:** FR-067 → FR-074. **API:** `POST/PATCH /articles/{slug}`, `POST /articles/{slug}/seo/generate`, `PATCH /articles/{slug}/seo`.
+- **FR:** FR-067 → FR-074. **API:** `POST /articles` (tạo bài), `PATCH /articles/{slug}` (sửa bài), `POST /articles/{slug}/seo/generate` (Generate SEO), `PATCH /articles/{slug}/seo` (cập nhật SEO thủ công).
 - **Kết quả:** bài nháp không xuất hiện ở `/blog`; bài xuất bản xuất hiện; SEO sửa tay không bị ghi đè khi Generate lại.
 
 ### F-11. Thay đổi quyền của vai trò (ma trận RBAC)
@@ -79,12 +80,12 @@
 - **FR:** FR-080, FR-081, FR-084. **API:** `GET/PUT /roles/{roleId}/permissions`, `GET /permissions`.
 - **Kết quả:** tài khoản thuộc vai trò đó mất/có nút tương ứng ngay sau invalidate; API trả lỗi quyền nếu gọi không có quyền.
 
-### F-12. Tạo vai trò + gán cho tài khoản
+### F-12. Tạo vai trò + gán cho tài khoản (PROVISIONAL — một phần BLOCKED_BY_M02)
 
 - **Màn hình:** `/roles`, `/users/<id>` (wireframe mẫu 11, 12a).
-- **Bước:** tạo vai trò mới (tên, mô tả) → mở ma trận quyền của vai trò → tick quyền → Lưu → vào tài khoản → gán vai trò → tài khoản có đúng quyền của vai trò đó.
+- **Bước:** (1) tạo vai trò mới (tên, mô tả) — khả thi: `POST /roles`; (2) mở ma trận quyền của vai trò → tick quyền → Lưu — khả thi: `PUT /roles/{roleId}/permissions`; (3) gán vai trò cho tài khoản ĐÃ TỒN TẠI khi đã biết userId (ví dụ từ audit log) — khả thi: `POST /users/{userId}/roles`; (4) tìm/liệt kê tài khoản để gán — KHÔNG khả thi qua API: chưa có `GET /users` (BLOCKED_BY_M02); màn hình `/users` là PROVISIONAL; (5) tạo tài khoản mới — KHÔNG khả thi: chưa có `POST /users` (BLOCKED_BY_M02).
 - **FR:** FR-082. **API:** `POST /roles`, `PUT /roles/{roleId}/permissions`, `POST /users/{userId}/roles`.
-- **Kết quả:** tài khoản mới gán thấy đúng module/nút theo quyền vai trò.
+- **Kết quả:** vai trò mới được tạo + quyền được thiết lập; gán vai trò chỉ thực hiện được cho tài khoản đã biết ID; tạo tài khoản mới và liệt kê tài khoản chờ M02 bổ sung endpoint.
 
 ### F-13. Xem audit log
 
@@ -100,12 +101,12 @@
 - **FR:** FR-018, BR-005. **API:** `PATCH /categories/{slug}`, `PATCH /brands/{slug}`, `GET/POST /redirects`, `DELETE /redirects/{redirectId}`.
 - **Kết quả:** truy cập URL cũ nhận 301 tới URL mới; không gãy liên kết.
 
-### F-15. Thay đổi cài đặt (đề xuất)
+### F-15. Xem trước cấu trúc Cài đặt (ĐỀ XUẤT — chưa phải chức năng triển khai)
 
 - **Màn hình:** `/settings`, `/settings/payments` (wireframe mẫu 12c).
-- **Bước:** mở Cài đặt → sửa tên cửa hàng/hotline (tab Chung) hoặc thông tin ngân hàng (tab Thanh toán) → Lưu.
+- **Bước:** mở Cài đặt → xem bố cục đề xuất (tab Chung: tên cửa hàng, hotline; tab Thanh toán: thông tin ngân hàng). KHÔNG có bước Lưu hợp lệ: chưa có endpoint, chưa có FR — nút [Lưu] trong wireframe chỉ là phần tử bố cục đề xuất, không thực hiện thao tác lưu. Không tự đặt tên cửa hàng hoặc tài khoản ngân hàng — nội dung thật chờ Henry cung cấp.
 - **FR:** — (không có FR; đề xuất M01-05). **API:** — (không có endpoint; M02 chốt).
-- **Kết quả:** cấu trúc màn hình sẵn sàng; nội dung thật chờ Henry cung cấp (không bịa giá trị mặc định thành dữ liệu thật).
+- **Kết quả:** cấu trúc màn hình sẵn sàng để M02 triển khai khi có endpoint + dữ liệu thật từ Henry.
 
 ## 2. Luồng thay thế (A-01 → A-05)
 
@@ -153,15 +154,15 @@
 | F-03 | `/products`, `/products/new` | Mẫu 3, 4 | PASS |
 | F-04 | `/products/<id>` | Mẫu 4 | PASS |
 | F-05 | `/categories`, `/brands` | Mẫu 5 | PASS |
-| F-06 | `/vehicles`, `/vehicles/<make-id>`, `/vehicles/models/<model-id>`, `/vehicles/generations/<generation-id>` | Mẫu 6 | PASS |
-| F-07 | `/fitments`, `/fitments/import`, `/fitments/change-logs` | Mẫu 7 | PASS |
+| F-06 | `/vehicles`, `/vehicles/<make-slug>`, `/vehicles/<make-slug>/<model-slug>`, `/vehicles/<make-slug>/<model-slug>/<generation-slug>` | Mẫu 6 | PASS |
+| F-07 | `/fitments`, `/fitments/import`, `/fitments/change-logs` | Mẫu 7 | PASS (phần nhập Excel: luồng mục tiêu M04) |
 | F-08 | `/orders`, `/orders/<id>` | Mẫu 8, 9 | PASS |
 | F-09 | `/orders/<id>` | Mẫu 9 | PASS |
 | F-10 | `/articles/new`, `/articles/<slug>` | Mẫu 10 | PASS |
 | F-11 | `/roles/<id>` | Mẫu 11 | PASS |
-| F-12 | `/roles`, `/users/<id>` | Mẫu 11, 12a | PASS |
+| F-12 | `/roles`, `/users/<id>` | Mẫu 11, 12a | PASS (PROVISIONAL — tạo tài khoản mới + liệt kê tài khoản BLOCKED_BY_M02) |
 | F-13 | `/audit-logs` | Mẫu 12b | PASS |
 | F-14 | `/categories`, `/brands`, `/redirects` | Mẫu 5, 12d | PASS |
-| F-15 | `/settings`, `/settings/payments` | Mẫu 12c | PASS |
+| F-15 | `/settings`, `/settings/payments` | Mẫu 12c | PASS (ĐỀ XUẤT — chưa phải chức năng triển khai, không có bước Lưu) |
 
 - 15/15 luồng chính đi qua đúng màn hình trong sitemap, mỗi luồng có wireframe tương ứng — **PASS**.

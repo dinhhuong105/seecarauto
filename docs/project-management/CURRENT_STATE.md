@@ -97,10 +97,10 @@ dự án đang ở đâu.
   ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
-- **Việc kế tiếp:** báo cáo M01-05 (bản đầu) cho ChatGPT trong chat mới
-  của Project để ChatGPT review (12 AC). M01-06 chưa bắt đầu. M02 (Prisma
-  schema/migration) chưa được phép bắt đầu cho tới khi các điều kiện và
-  nhiệm vụ phụ thuộc được chấp nhận.
+- **Việc kế tiếp:** báo cáo Revision 02 của M01-05 cho ChatGPT trong
+  cùng chat review để ChatGPT kiểm tra lại (12 AC + AC-13). M01-06 chưa
+  bắt đầu. M02 (Prisma schema/migration) chưa được phép bắt đầu cho tới
+  khi các điều kiện và nhiệm vụ phụ thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
@@ -224,8 +224,16 @@ dự án đang ở đâu.
   M02), đếm wireframe 15 Desktop + 15 Mobile PASS, walkthrough 15/15 PASS,
   tự đánh giá 12/12 AC + AC-13 quy trình PASS. Gap ghi rõ: không bảng
   admin trong ERD (M02); không endpoint tạo `vehicle_applications`;
-  Export/Manage chưa có endpoint; Cài đặt là đề xuất (không FR). Đã báo
-  cáo ChatGPT trong chat mới của Project, đang chờ review.
+  Export chưa có endpoint; Manage không phải permission code độc lập
+  (đơn hàng → `orders.confirm`); Cài đặt là đề xuất (không FR). Đã báo
+  cáo ChatGPT trong chat mới của Project ngày 26/11/2026. ChatGPT review
+  bản đầu: 7 PASS, 2 FAIL (AC-07, AC-08), 4 FIX (AC-05, AC-11, AC-12,
+  AC-13) — NOT ACCEPTED, yêu cầu Revision 02. Revision 02 đã sửa đủ
+  FIX-01 → FIX-06 + điểm kiểm tra bổ sung (URL xe phân cấp sang slug
+  lồng nhau + quy tắc ánh xạ ID giao diện ↔ tham số API ở sitemap §2.1);
+  kiểm tra lại: đối chiếu API (script mở rộng) 0 tham chiếu sai, URL
+  28/28 PASS, wireframe 15 Desktop + 15 Mobile, walkthrough 15/15 PASS.
+  Đã báo cáo lại ChatGPT trong cùng chat review, đang chờ kiểm tra lại.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

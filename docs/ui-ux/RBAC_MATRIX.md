@@ -73,7 +73,8 @@ Chú thích:
 | Không có endpoint `GET /users`, `POST /users`, `GET /users/{userId}` | Màn hình `/users` + `/users/<id>` là PROVISIONAL (thiết kế cấu trúc, chờ endpoint); chưa có cách tạo tài khoản admin ngoài bootstrap | M02 |
 | Không có endpoint tạo `vehicle_applications` | Màn hình `/vehicles/applications` chỉ xem (PROVISIONAL) | M02 |
 | Không có endpoint đổi mật khẩu admin | Menu header "Đổi mật khẩu" chỉ là vị trí đề xuất | M02 |
-| Export/Manage chưa có endpoint | Ô Export = "—" toàn ma trận; không tự tạo `*.export` | M02/M03 |
+| Export chưa có permission/endpoint tương ứng | Ô Export = "—" toàn ma trận; không tự tạo `*.export` | M02/M03 |
+| Manage không phải permission code độc lập trong API hiện tại | Cột Manage ánh xạ theo từng module: đơn hàng → `orders.confirm` (`POST /orders/{orderId}/confirm-payment`); các module khác không có hành động Manage | Đã chốt trong API hiện tại (M01-03) |
 | API_SPEC §6 liệt kê `fitments.update` trong bảng module nhưng không endpoint nào trong OpenAPI dùng code này | Ma trận ghi theo OpenAPI (Fitment không có Update — sửa = xóa + gắn lại), không tự thêm `fitments.update` | M02 (xác nhận khi triển khai RBAC) |
 | 4 code `*.view` (products/categories/brands/articles) chỉ có trong bảng module API_SPEC §6, không xuất hiện trong `x-required-permission` của OpenAPI (các `GET` tương ứng là public) | Các code này là quyền hiển thị màn hình theo §6, không phải quyền gọi endpoint — ma trận và sitemap ghi rõ nguồn | Đã chốt trong API_SPEC §6 (M01-03) |
 | Không có endpoint admin xem liên hệ | Không có module quản lý liên hệ trong admin | M01-04/M05 (đích đến form liên hệ) |
