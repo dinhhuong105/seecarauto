@@ -2,6 +2,25 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-06 Revision 06 (FIX-06 — đồng bộ Task Brief)
+
+- ChatGPT review Revision 05 (commit 2581690) ngày 26/11/2026: AC-01 →
+  AC-12 PASS (12/12), AC-13 FAIL — Task Brief chưa đồng bộ với commit
+  Revision 05: dòng Trạng thái đầu file vẫn mô tả trạng thái Revision
+  04 (11/12 AC PASS, AC-01 FAIL, đang chờ Revision 05 sửa FIX-05);
+  §9.13 vẫn mô tả bằng chứng của commit bản đầu, không phản ánh
+  Revision 05. NOT ACCEPTED, yêu cầu Revision 06 với FIX-06.
+- Revision 06: dòng Trạng thái đầu file + §9.13 viết lại để phản ánh
+  trạng thái hiện tại của Revision 05 (FIX-05 đã hoàn thành, AC-01 →
+  AC-12 PASS 12/12 theo review Revision 05, AC-13 đang chờ nghiệm thu
+  quy trình bằng Revision 06 này); lịch sử Revision 01 → Revision 05
+  bảo toàn tại §10 và các mục §9.14 → §9.17; bằng chứng của commit hiện
+  tại ở §9.18. Chỉ sửa Task Brief + Handbook, không sửa tài liệu thiết
+  kế.
+- Revision 06 commit này (SHA trong git log) đã báo cáo ChatGPT trong
+  chat mới "Review M01-06 Revision 06" (theo chỉ dẫn của ChatGPT trong
+  verdict Revision 05). Trạng thái IN_REVIEW, không tự DONE.
+
 ## 26/11/2026 — M01-06 Revision 05 (FIX-05 — sửa L14)
 
 - ChatGPT review Revision 04 (commit a6db48b) ngày 26/11/2026: 11/12 AC
