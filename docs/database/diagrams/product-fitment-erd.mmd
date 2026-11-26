@@ -1,0 +1,196 @@
+%% ERD — SeeCar Auto (M01-02)
+%% Sơ đồ Mermaid cho mô hình dữ liệu Product / SKU / OEM / Vehicle Fitment.
+%% Nguồn chi tiết: docs/database/ERD.md — mọi bảng/cột/khóa trong sơ đồ này
+%% phải khớp với ERD.md và docs/database/DATA_DICTIONARY.md.
+%% Quy ước: PK = Primary Key, FK = Foreign Key, UK = Unique.
+%% Bảng product_specifications là P1; orders/order_items là ranh giới (M05 thiết kế đầy đủ).
+erDiagram
+    brands ||--o{ products : has
+    categories ||--o{ products : "primary category"
+    categories ||--o{ categories : "parent of"
+    products ||--o{ product_identifiers : has
+    products ||--o{ product_categories : listed_in
+    categories ||--o{ product_categories : contains
+    products ||--o{ product_images : has
+    products ||--o{ product_specifications : has
+    products ||--o{ product_vehicle_fitments : "fits"
+    products ||--o{ fitment_change_logs : logged_for
+    products ||--o{ order_items : referenced_by
+    vehicle_makes ||--o{ vehicle_models : has
+    vehicle_models ||--o{ vehicle_generations : has
+    vehicle_generations ||--o{ vehicle_variants : has
+    vehicle_makes ||--o{ vehicle_applications : "in"
+    vehicle_models ||--o{ vehicle_applications : "in"
+    vehicle_generations ||--o{ vehicle_applications : "in"
+    vehicle_variants ||--o{ vehicle_applications : "in"
+    vehicle_applications ||--o{ product_vehicle_fitments : "fitted by"
+    vehicle_applications ||--o{ fitment_change_logs : logged_for
+    vehicle_makes ||--o{ product_identifiers : "issues OEM"
+    brands ||--o{ product_identifiers : "issues MPN"
+    orders ||--o{ order_items : contains
+
+    brands {
+        uuid id PK
+        string name
+        string slug UK
+        string description
+        string logo_url
+        boolean is_visible
+        timestamp created_at
+        timestamp updated_at
+    }
+    categories {
+        uuid id PK
+        uuid parent_id FK
+        string name
+        string slug UK
+        int display_order
+        boolean is_visible
+        timestamp created_at
+        timestamp updated_at
+    }
+    products {
+        uuid id PK
+        string sku UK
+        string name
+        string slug UK
+        string short_description
+        string description
+        uuid brand_id FK
+        uuid category_id FK
+        string status
+        string availability_status
+        decimal price
+        timestamp published_at
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+    product_identifiers {
+        uuid id PK
+        uuid product_id FK
+        string identifier_type
+        string identifier_value
+        string normalized_value
+        uuid issuing_make_id FK
+        uuid issuing_brand_id FK
+        boolean is_primary
+        timestamp created_at
+        timestamp updated_at
+    }
+    product_categories {
+        uuid product_id PK
+        uuid category_id PK
+        int display_order
+    }
+    product_images {
+        uuid id PK
+        uuid product_id FK
+        string image_url
+        string alt_text
+        int sort_order
+        boolean is_primary
+        timestamp created_at
+    }
+    product_specifications {
+        uuid id PK
+        uuid product_id FK
+        string spec_key
+        string spec_value
+        int display_order
+        timestamp created_at
+    }
+    vehicle_makes {
+        uuid id PK
+        string name
+        string slug UK
+        string logo_url
+        boolean is_visible
+        timestamp created_at
+        timestamp updated_at
+    }
+    vehicle_models {
+        uuid id PK
+        uuid make_id FK
+        string name
+        string slug UK
+        timestamp created_at
+        timestamp updated_at
+    }
+    vehicle_generations {
+        uuid id PK
+        uuid model_id FK
+        string name
+        string slug UK
+        int year_from
+        int year_to
+        timestamp created_at
+        timestamp updated_at
+    }
+    vehicle_variants {
+        uuid id PK
+        uuid generation_id FK
+        string name
+        string slug UK
+        string note
+        timestamp created_at
+        timestamp updated_at
+    }
+    vehicle_applications {
+        uuid id PK
+        uuid make_id FK
+        uuid model_id FK
+        uuid generation_id FK
+        uuid variant_id FK
+        int year
+        timestamp created_at
+        timestamp updated_at
+    }
+    product_vehicle_fitments {
+        uuid id PK
+        uuid product_id FK
+        uuid vehicle_application_id FK
+        string fitment_note
+        timestamp created_at
+        timestamp updated_at
+    }
+    fitment_change_logs {
+        uuid id PK
+        uuid product_id FK
+        uuid vehicle_application_id FK
+        string action
+        uuid changed_by_admin_id
+        timestamp created_at
+    }
+    url_redirects {
+        uuid id PK
+        string entity_type
+        uuid entity_id
+        string old_slug
+        string new_slug
+        timestamp created_at
+    }
+    orders {
+        uuid id PK
+        string order_code UK
+        string customer_name
+        string customer_phone
+        string shipping_address
+        uuid customer_id
+        string payment_method
+        string status
+        decimal total_amount
+        timestamp created_at
+        timestamp updated_at
+    }
+    order_items {
+        uuid id PK
+        uuid order_id FK
+        uuid product_id FK
+        string product_name_snapshot
+        string sku_snapshot
+        decimal unit_price_snapshot
+        int quantity
+        decimal line_total
+        timestamp created_at
+    }

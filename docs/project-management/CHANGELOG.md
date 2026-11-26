@@ -2,6 +2,22 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-02 bắt đầu (ERD, IN_PROGRESS)
+
+- ChatGPT giao M01-02 (ERD — Product, SKU, OEM, Vehicle Fitment) lúc
+  ~12:06 ngày 26/11/2026, kèm Task Brief đầy đủ (12 tiêu chí nghiệm
+  thu, 12 ràng buộc dữ liệu, 5 nhóm deliverables). M01-02 là DATABASE
+  DESIGN DOCUMENTATION ONLY: không Prisma schema/migration, không code,
+  không seed data, không dữ liệu thật.
+- Deliverables đang soạn: `docs/database/ERD.md` (17 bảng; khuyến nghị:
+  SKU là cột `products.sku` + bảng `product_identifiers` cho 4 loại mã
+  còn lại; fitment dùng mô hình `vehicle_applications` thống nhất;
+  không có bảng `vehicle_years` riêng; 9 Pending Decisions PD-01 →
+  PD-09), `docs/database/diagrams/product-fitment-erd.mmd` (Mermaid),
+  `docs/database/DATA_DICTIONARY.md`, `docs/project-management/tasks/M01-02.md`.
+- M01-01 giữ nguyên DONE. Sau khi xong M01-02: báo cáo ChatGPT trong
+  chat mới của project; ChatGPT ACCEPT mới sang M01-03 (API Specification).
+
 ## 26/11/2026 — M01-01 DONE (ChatGPT ACCEPT Revision 03; quyết định nghiệm thu của Henry)
 
 - ChatGPT final review Revision 03 (commit e82cd0e): 9/9 tiêu chí đạt,

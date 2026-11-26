@@ -3,7 +3,7 @@
 Cập nhật sau mỗi task. Đây là nơi cuộc chat task mới đọc đầu tiên để biết
 dự án đang ở đâu.
 
-## Trạng thái hiện tại (sau M00, M01-01 đã soạn — 26/11/2026)
+## Trạng thái hiện tại (sau M00, M01-01 DONE, M01-02 đang làm — 26/11/2026)
 
 - **Milestone đang làm:** M01 — Architecture & UI/UX.
 - **Trạng thái M00:** DONE (7/7 task, nghiệm thu đầy đủ 26/11/2026:
@@ -33,12 +33,19 @@ dự án đang ở đâu.
   tiêu chí đạt, ChatGPT ACCEPT M01-01 lúc ~10:22 ngày 26/11/2026.
   Henry quyết định lúc ~11:55 ngày 26/11/2026: chỉ cần ChatGPT đồng ý
   là được, không cần Henry click duyệt từng task — M01-01 chốt DONE
-  theo quyết định này. M01-02 chưa bắt đầu, đang chờ ChatGPT giao
-  brief M01-02.
+  theo quyết định này. ChatGPT giao M01-02 ngày 26/11/2026 ~12:06
+  (Task Brief đầy đủ, 12 tiêu chí nghiệm thu) — M01-02 đang làm.
   Tài liệu: `docs/product/PRD.md`, `docs/product/SRS.md`,
   `docs/project-management/tasks/M01-01.md`.
-- **Việc kế tiếp:** M01-01 DONE. Sang M01-02 (ERD chi tiết) sau khi
-  ChatGPT giao brief M01-02.
+- **Trạng thái M01-02 (ERD):** đang soạn (IN_PROGRESS) — ERD cho
+  Product, SKU, OEM, Vehicle Fitment. Tài liệu: `docs/database/ERD.md`,
+  `docs/database/diagrams/product-fitment-erd.mmd`,
+  `docs/database/DATA_DICTIONARY.md`,
+  `docs/project-management/tasks/M01-02.md`. Chỉ làm tài liệu thiết kế
+  — không Prisma schema/migration, không code, không seed data.
+- **Việc kế tiếp:** hoàn thành M01-02, báo cáo ChatGPT review trong
+  chat mới của project; sau khi ChatGPT ACCEPT M01-02 thì sang M01-03
+  (API Specification).
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
@@ -88,11 +95,11 @@ dự án đang ở đâu.
 
 ## Đang làm
 
-- M01-01 (PRD/SRS) DONE: Revision 03 đã commit e82cd0e và push lên
-  GitHub (remote HEAD e82cd0efb0f12413f6ef8cfdea51e9906788d8fd đã kiểm
-  chứng). ChatGPT ACCEPT 26/11/2026 ~10:22 (9/9 tiêu chí); M01-01 chốt
-  DONE theo quyết định của Henry 26/11/2026 ~11:55 (chỉ cần ChatGPT
-  đồng ý là đủ).
+- M01-02 (ERD) IN_PROGRESS: ChatGPT giao 26/11/2026 ~12:06 (12 tiêu chí
+  nghiệm thu). Đang soạn ERD.md + sơ đồ Mermaid + Data Dictionary +
+  Task Brief M01-02. Chỉ làm tài liệu thiết kế — không Prisma
+  schema/migration, không code, không seed data. Parent sẽ kiểm tra,
+  commit và push M01-02, rồi báo cáo ChatGPT trong chat mới của project.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 
