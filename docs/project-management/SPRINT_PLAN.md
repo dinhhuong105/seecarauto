@@ -75,11 +75,11 @@ Kế hoạch Sprint cho roadmap 16–20 tuần. Nguồn: `MASTER_ROADMAP.md` +
 | --- | --- |
 | Mục tiêu | Hoàn thành toàn bộ tài liệu kiến trúc và UI/UX; bắt đầu schema + auth (M02 mở đầu tuần 3 theo roadmap) |
 | Task | M01-02, M01-03, M01-04, M01-05, M01-06, M01-07, M02-01, M02-02, M02-03, M02-05 (10 task) |
-| Trạng thái task | Đủ điều kiện: M01-02 → M01-07 (DONE). Chờ dependency: M02-01 (sau M01-02 — đủ điều kiện khi Sprint bắt đầu vì M01-02 xong trong Sprint này, làm sau M01-02), M02-02/M02-03/M02-05 (sau M02-01). Chờ gate: M02-01 (PD-01 → PD-06 — chỉ chuẩn bị schema theo ERD, chưa chốt migration cho tới khi PD quyết) |
+| Trạng thái task | Đủ điều kiện: M01-02 → M01-07 (DONE); M02-01 (PD-01 → PD-06 đã được ChatGPT quyết định trong `M02_IMPLEMENTATION_DECISIONS.md`, task IN_PROGRESS). Chờ dependency: M02-02/M02-03/M02-05 (sau M02-01). Không còn gate PD-01 → PD-06 cho M02-01 |
 | Deliverables | ERD (17 bảng); API Spec (96 operations); Sitemap/Wireframe; Admin Dashboard; UI Research + Design System + UI Proposal; Backlog + Sprint Plan (M01-07); Prisma schema nháp; Redis + BullMQ; Meilisearch index; JWT login admin |
 | Điều kiện hoàn thành | ChatGPT ACCEPT M01-02 → M01-07; migration chạy (phần không phụ thuộc PD); login admin được; Meilisearch trả kết quả đúng ADR-010 |
 | Dependency | M00 DONE; PD-01 → PD-06 (gate M02-01) |
-| Trạng thái | CHƯA HOÀN THÀNH — đã hết khung tuần (tuần 3–4) nhưng chưa thỏa quy tắc hoàn thành §1: M02-01/02/03/05 còn BACKLOG. 6/10 task DONE (M01-02 → M01-07). Sprint chỉ ghi DONE khi các task M02 đủ điều kiện đạt điều kiện hoàn thành. |
+| Trạng thái | CHƯA HOÀN THÀNH — đã hết khung tuần (tuần 3–4) nhưng chưa thỏa quy tắc hoàn thành §1: M02-01 IN_PROGRESS; M02-02/03/05 còn BACKLOG. 6/10 task DONE (M01-02 → M01-07). Sprint chỉ ghi DONE khi các task M02 đủ điều kiện đạt điều kiện hoàn thành. |
 
 ## 5. Sprint 3 — Tuần 5–6: RBAC nền + Catalog bắt đầu — BACKLOG
 
