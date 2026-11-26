@@ -34,7 +34,7 @@ dự án đang ở đâu.
   Henry quyết định lúc ~11:55 ngày 26/11/2026: chỉ cần ChatGPT đồng ý
   là được, không cần Henry click duyệt từng task — M01-01 chốt DONE
   theo quyết định này. ChatGPT giao M01-02 ngày 26/11/2026 ~12:06
-  (Task Brief đầy đủ, 12 tiêu chí nghiệm thu) — M01-02 đang làm.
+  (Task Brief đầy đủ, 12 tiêu chí nghiệm thu) — M01-02 bắt đầu.
   Tài liệu: `docs/product/PRD.md`, `docs/product/SRS.md`,
   `docs/project-management/tasks/M01-01.md`.
 - **Trạng thái M01-02 (ERD):** DONE — Revision 02 đã commit ad95bd8 và
@@ -84,16 +84,22 @@ dự án đang ở đâu.
   kiểm tra lại AC-15 ~15:08: vẫn FAIL — các file mô tả Revision 03 là
   "đang làm" thay vì "đã hoàn thành", mâu thuẫn với checklist đã đánh dấu
   Handbook đồng bộ. Bản ghi này (Revision 04) sửa cách diễn đạt thành "đã
-  hoàn thành" ở cả 4 file Handbook; đang chờ ChatGPT kiểm tra lại AC-15.
-  M01-03 chỉ chuyển DONE khi ChatGPT ACCEPT (15 tiêu chí AC-01 → AC-15).
+  hoàn thành" ở cả 4 file Handbook. Revision 04 hoàn thành (commit
+  b593e98, đã push, remote HEAD khớp, đã báo cáo ChatGPT ~15:11); ChatGPT
+  kiểm tra lại AC-15 ~15:12: vẫn FAIL — Task Brief còn thông tin cũ (chưa
+  ghi ngày báo cáo Revision 04; checklist Handbook còn ghi Revision 03 cập
+  nhật Revision 02; checklist Git còn ghi b491055) và CURRENT_STATE chưa
+  ghi rõ commit b593e98. Bản ghi này (Revision 05) cập nhật các điểm đó ở
+  cả 4 file; đang chờ ChatGPT kiểm tra lại AC-15. M01-03 chỉ chuyển DONE
+  khi ChatGPT ACCEPT (15 tiêu chí AC-01 → AC-15).
 - **Việc kế tiếp:** chờ ChatGPT kiểm tra lại AC-15 sau bản ghi này
-  (Revision 04 cập nhật trạng thái Revision 03 thành "đã hoàn thành" ở cả
-  4 file Handbook — không mô tả Revision 04 là "đang làm", vì tài liệu đã
-  commit không được mô tả chính revision của nó là đang thực hiện). Nếu
-  ACCEPT thì làm housekeeping chốt M01-03 DONE rồi nhờ ChatGPT giao brief
-  M01-04 (Sitemap và Wireframe). M02 (Prisma schema/migration) chưa được
-  phép bắt đầu cho tới khi các điều kiện và nhiệm vụ phụ thuộc được chấp
-  nhận.
+  (Revision 05 cập nhật ngày báo cáo Revision 04, checklist Handbook/Git
+  và trạng thái Revision 04 ở cả 4 file Handbook — không mô tả Revision 05
+  là "đang làm", vì tài liệu đã commit không được mô tả chính revision của
+  nó là đang thực hiện). Nếu ACCEPT thì làm housekeeping chốt M01-03 DONE
+  rồi nhờ ChatGPT giao brief M01-04 (Sitemap và Wireframe). M02 (Prisma
+  schema/migration) chưa được phép bắt đầu cho tới khi các điều kiện và
+  nhiệm vụ phụ thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
@@ -162,9 +168,13 @@ dự án đang ở đâu.
   (Handbook chưa cập nhật đúng Revision 02). Revision 03 hoàn thành (commit
   c4c5153, đã push, remote HEAD khớp), đã báo cáo ChatGPT ~15:06; ChatGPT
   kiểm tra lại AC-15 ~15:08: vẫn FAIL vì các file mô tả Revision 03 là
-  "đang làm". M01-03 đang chờ ChatGPT kiểm tra lại AC-15 sau bản ghi này
-  (Revision 04 cập nhật trạng thái Revision 03 thành "đã hoàn thành");
-  M01-04 chưa bắt đầu — chỉ bắt đầu M01-04 sau khi ChatGPT ACCEPT M01-03.
+  "đang làm". Revision 04 hoàn thành (commit b593e98, đã push, remote HEAD
+  khớp), đã báo cáo ChatGPT ~15:11; ChatGPT kiểm tra lại AC-15 ~15:12: vẫn
+  FAIL vì Task Brief còn thông tin cũ (ngày báo cáo, checklist
+  Handbook/Git) và CURRENT_STATE chưa ghi rõ commit b593e98. M01-03 đang
+  chờ ChatGPT kiểm tra lại AC-15 sau bản ghi này (Revision 05 cập nhật các
+  điểm trên); M01-04 chưa bắt đầu — chỉ bắt đầu M01-04 sau khi ChatGPT
+  ACCEPT M01-03.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

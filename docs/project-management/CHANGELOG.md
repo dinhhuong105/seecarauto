@@ -2,7 +2,27 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
-## 26/11/2026 — M01-03 IN_REVIEW (Revision 03 hoàn thành — ghi nhận trạng thái; chờ kiểm tra lại AC-15)
+## 26/11/2026 — M01-03 IN_REVIEW (Revision 04 hoàn thành — ghi nhận trạng thái; chờ kiểm tra lại AC-15)
+
+- Revision 04 hoàn thành: commit b593e98 đã push lên GitHub (remote HEAD
+  b593e989a217a7ec5a6fb890c2944c1c743b07d6 đã kiểm chứng khớp local HEAD),
+  báo cáo ChatGPT trong chat "Review M01-03 API Specification" ngày
+  26/11/2026 ~15:11. ChatGPT kiểm tra lại AC-15 ~15:12: vẫn FAIL — lỗi
+  diễn đạt chính của Revision 03 đã sửa xong (cả 4 file đều ghi Revision
+  03 đã hoàn thành), nhưng Task Brief còn thông tin cũ: chưa ghi ngày báo
+  cáo Revision 04; checklist Handbook còn ghi Revision 03 cập nhật
+  Revision 02; checklist Git còn ghi remote HEAD khớp b491055 (không phải
+  b593e98); CURRENT_STATE chưa ghi rõ commit b593e98 đã push và gửi review.
+- Bản ghi này (Revision 05) cập nhật các điểm đó ở cả 4 file Handbook:
+  Task Brief bổ sung ngày báo cáo Revision 04 (~15:11) và commit b593e98;
+  checklist Handbook xác nhận cả 4 file đã đồng bộ trạng thái Revision 03
+  sau Revision 04; checklist Git ghi lần kiểm chứng gần nhất là Revision
+  04 (b593e98); CURRENT_STATE ghi nhận Revision 04 hoàn thành, đã push,
+  đang chờ kiểm tra lại AC-15. Không sửa tài liệu API, không sửa
+  PRD/SRS/ERD, không tạo Prisma schema/migration. Đang chờ ChatGPT kiểm tra
+  lại AC-15.
+
+## 26/11/2026 — M01-03 IN_REVIEW (Revision 03 hoàn thành — ghi nhận trạng thái; AC-15 kiểm tra lại: vẫn FAIL)
 
 - Revision 03 hoàn thành: commit c4c5153 đã push lên GitHub (remote HEAD
   c4c5153753597e8b13f93f9782d402474a1d1518 đã kiểm chứng khớp local HEAD),
@@ -16,7 +36,11 @@ Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nh
   mô tả Revision 04 là "đang làm" (bài học: tài liệu đã commit không được
   mô tả chính revision của nó là đang thực hiện — chỉ mô tả các revision
   trước là đã hoàn thành). Không sửa tài liệu API, không sửa PRD/SRS/ERD,
-  không tạo Prisma schema/migration. Đang chờ ChatGPT kiểm tra lại AC-15.
+  không tạo Prisma schema/migration. ChatGPT kiểm tra lại AC-15 ~15:12:
+  vẫn FAIL — Task Brief còn thông tin cũ (chưa ghi ngày báo cáo Revision
+  04; checklist Handbook còn ghi Revision 03 cập nhật Revision 02;
+  checklist Git còn ghi b491055) và CURRENT_STATE chưa ghi rõ commit
+  b593e98 đã push và gửi review. Giao Revision 05 cập nhật các điểm này.
 
 ## 26/11/2026 — M01-03 IN_REVIEW (ChatGPT review Revision 02: 14/15 PASS; Revision 03 đã hoàn thành, chờ kiểm tra lại AC-15)
 
