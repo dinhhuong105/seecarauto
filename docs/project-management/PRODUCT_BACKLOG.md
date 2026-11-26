@@ -121,7 +121,7 @@ chưa chốt nhưng không chặn thiết kế).
 | M01-06 | Nghiên cứu mẫu UI/UX và đề xuất phương án | Nghiên cứu 5 website thật; Design System (màu/chữ/spacing/component); đề xuất Tailwind + shadcn/ui; D-07 chỉ là đề xuất | High | M01-01, M01-04, M01-05 | DONE |
 | M01-07 | Backlog và chia Sprint | Backlog 89 mã task + Sprint plan 10 Sprint × 2 tuần (tuần 1–20) | High | M01-01 → M01-06 | DONE |
 
-## 4. M02 — Infrastructure & Authentication (tuần 3–5) — BACKLOG 8/8
+## 4. M02 — Infrastructure & Authentication (tuần 3–5) — IN_PROGRESS 1/8, BACKLOG 7/8
 
 | Task | Tên | Mục tiêu / Phạm vi | Priority | Phụ thuộc | Trạng thái |
 | --- | --- | --- | --- | --- | --- |
@@ -143,7 +143,7 @@ chưa chốt nhưng không chặn thiết kế).
 | M03-03 | SKU + product_identifiers (OEM codes) | 1 SKU nội bộ/sản phẩm (PD-02) + 4 loại mã khác (PART/OEM/Manufacturer/Alternate); chuẩn hóa + tìm chính xác, không fuzzy mạnh trên OEM (FR-035/FR-036) | Critical | M02-01; PD-02, PD-03, PD-04 | BACKLOG |
 | M03-04 | Product images | Upload/sắp xếp/xóa ảnh sản phẩm (qua M02-04); ảnh chính + thứ tự hiển thị | High | M02-04, M03-01 | BACKLOG |
 | M03-05 | Product specifications | Trường spec key/value (P1, PD-07); bộ lọc theo spec (FR-013 P1) | Medium | M02-01; PD-07 | BACKLOG |
-| M03-06 | Variants | Biến thể sản phẩm theo roadmap M03 ("variants") — G-01: ERD có vehicle_variants nhưng chưa có product_variants, cần quyết định schema ở M02 (liên quan PD-02) | Medium | M02-01; G-01; PD-02 | BACKLOG |
+| M03-06 | Variants | Biến thể sản phẩm theo roadmap M03 ("variants") — G-01: đã giải quyết trong M02-01 theo PD-02 — P0 một SKU/Product, không tạo product_variants; task chỉ mở lại nếu phát sinh nhu cầu variant bán độc lập | Medium | M02-01; G-01; PD-02 | BACKLOG |
 | M03-07 | Import/Export Excel (products) | Import Excel sản phẩm + xuất Excel; validate mã trùng | High | M03-01; D-02 | BACKLOG |
 | M03-08 | Search API (Meilisearch, ADR-010) | Tìm theo SKU/OEM/tên/thương hiệu (FR-034 → FR-041); thứ tự ưu tiên ADR-010; cache Redis | Critical | M02-03, M03-01, M03-03 | BACKLOG |
 | M03-09 | Search UI | Ô tìm kiếm header + autocomplete (FR-037) + bộ lọc (FR-038) + không có kết quả (FR-040); kết hợp xe đã chọn (FR-039); dùng nền tảng UI M03-01 (G-05) | Critical | M03-08; M01-06; D-07; M03-01 (nền tảng UI, G-05) | BACKLOG |
@@ -251,7 +251,7 @@ PD-09) thì **không phải lúc nào cũng BLOCKED** — cần phân biệt 3 m
 
 | Task | Gate (quyết định chặn) | Được làm trước khi quyết | Chưa được làm cho tới khi quyết |
 | --- | --- | --- | --- |
-| M02-01 | PD-01 → PD-06 | Thiết kế schema theo ERD; migration cho bảng không phụ thuộc PD | Chốt migration cho bảng phụ thuộc PD (fitment/SKU/OEM) |
+| M02-01 | PD-01 → PD-06 | Đã chốt theo `M02_IMPLEMENTATION_DECISIONS.md`; triển khai schema/migration theo các quyết định này | Không còn gate PD-01 → PD-06 cho M02-01 |
 | M02-04 | D-06 | Abstraction storage + interface upload; code dùng interface | Triển khai provider cụ thể (S3 hay R2) |
 | M02-07, M02-08 | D-05 | Pipeline CI + cấu hình môi trường mẫu | Chốt hosting + deploy thật lên provider |
 | M03-02 | G-05 (nền tảng UI dùng chung do M03-01 xây — quyết định ChatGPT 26/11/2026) | Chuẩn bị backend/API (không phụ thuộc nền tảng UI) | Dùng tokens/components trước khi nền tảng M03-01 sẵn sàng |
