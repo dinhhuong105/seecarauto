@@ -134,7 +134,16 @@ dự án đang ở đâu.
   ChatGPT ACCEPT Revision 02 ngày 26/11/2026 ~12:50 (12/12 tiêu chí);
   M01-02 chốt DONE theo quyết định của Henry 26/11/2026 ~11:55 (chỉ
   cần ChatGPT đồng ý là đủ). PD-01 → PD-09 giữ nguyên, chờ Henry
-  quyết định. Đang nhờ ChatGPT giao brief M01-03 (API Specification).
+  quyết định.
+- M01-03 (API Specification) IN_REVIEW: bản đầu commit 5cfcd3f đã push lên GitHub
+  (branch feature/M01-03-api-spec, remote HEAD đã kiểm chứng); ChatGPT review
+  trực tiếp trên GitHub ngày 26/11/2026 ~14:38 sau khi Henry cấp quyền truy cập
+  GitHub cho ChatGPT (chỉ repo seecarauto): 11/15 tiêu chí PASS (AC-11, AC-12
+  PASS* có điều kiện), 4 FAIL (AC-10, AC-13, AC-14, AC-15) — yêu cầu
+  Revision 02 (đồng bộ HTTP status, If-Match bắt buộc, đánh dấu P0-PROVISIONAL
+  cho endpoint phụ thuộc PD-02/03/04/05/06, cập nhật CURRENT_STATE). M01-03
+  đang làm Revision 02; M01-04 chưa bắt đầu — chỉ bắt đầu M01-04 sau khi
+  ChatGPT ACCEPT M01-03.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

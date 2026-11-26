@@ -37,7 +37,7 @@
 
 - **Mục đích:** khách đã có mã OEM trong tay, tìm đúng phụ tùng (FR-034 → FR-036).
 - **Các bước:**
-  1. `GET /api/v1/identifiers/lookup?type=OEM_NUMBER&code=<mã OEM đúng>` → trả đúng sản phẩm (có thể nhiều sản phẩm nếu 1 OEM map nhiều sản phẩm — PD-03).
+  1. `GET /api/v1/identifiers/lookup?type=OEM_NUMBER&code=<mã OEM đúng>` → trả đúng sản phẩm (có thể nhiều sản phẩm nếu 1 OEM map nhiều sản phẩm — PD-03: thiết kế dự kiến, chưa được Henry duyệt; đây là kiểm tra thiết kế, không phải nghiệp vụ đã chốt).
   2. `GET /api/v1/identifiers/lookup?type=OEM_NUMBER&code=<mã OEM sai 1 ký tự>` → không trả sản phẩm đó (không fuzzy mạnh với mã OEM — FR-036).
   3. `GET /api/v1/search?q=<mã OEM>` → sản phẩm có mã OEM chính xác đứng đầu (thứ tự ưu tiên ADR-010 — FR-035).
 - **Kết quả kỳ vọng:** bước 1 trả đúng; bước 2 trả `data: []`; bước 3 có `matchType: OEM_EXACT` ở đầu.
@@ -119,7 +119,7 @@
 - **Các bước:**
   1. `GET /api/v1/orders?status=PENDING` → chỉ đơn PENDING.
   2. `GET /api/v1/orders/{orderId}` → đủ snapshot + lịch sử trạng thái.
-  3. Đơn BANK_TRANSFER: `PATCH /orders/{id}/status` sang SHIPPING khi chưa confirm-payment → `409 PAYMENT_NOT_CONFIRMED` (BR-010); `POST /orders/{id}/confirm-payment` → `200`; rồi chuyển SHIPPING → `200`.
+  3. Đơn BANK_TRANSFER: `PATCH /orders/{id}/status` sang SHIPPING khi chưa confirm-payment → `422 PAYMENT_NOT_CONFIRMED` (BR-010); `POST /orders/{id}/confirm-payment` → `200`; rồi chuyển SHIPPING → `200`.
   4. `PATCH /orders/{id}/status` PENDING → COMPLETED (nhảy cóc) → `409 INVALID_STATUS_TRANSITION`.
   5. `POST /orders/{id}/cancel` với `reason` → `200`, đơn sang CANCELLED; sửa trạng thái đơn đã hủy → `409 ORDER_CANCELLED`.
   6. `PATCH /orders/{id}/shipping` trên đơn SHIPPING → `409 ORDER_ALREADY_SHIPPED`.
@@ -139,7 +139,7 @@
 
 - **Mục đích:** PD-01 và PD-03 không chặn luồng chính (PD-01, PD-03).
 - **Các bước:**
-  1. `GET /api/v1/identifiers/lookup?type=OEM_NUMBER&code=<OEM map 2 sản phẩm>` → trả cả 2 sản phẩm (PD-03: một OEM map nhiều sản phẩm).
+  1. `GET /api/v1/identifiers/lookup?type=OEM_NUMBER&code=<OEM map 2 sản phẩm>` → trả cả 2 sản phẩm (PD-03: một OEM map nhiều sản phẩm — thiết kế dự kiến, chưa được Henry duyệt; đây là kiểm tra thiết kế, không phải nghiệp vụ đã chốt).
   2. Fitment ở mức Model+Year (generationId null, variantId null) → `GET /api/v1/vehicle-applications/{applicationId}/products` trả đúng sản phẩm (PD-01).
   3. `GET /api/v1/vehicles/models/{slug}/generations` với dòng xe chưa có generation → `data: []` (không lỗi).
 - **Kết quả kỳ vọng:** đúng như từng bước; các endpoint PROVISIONAL hoạt động theo thiết kế dự kiến, không bị coi là đã chốt nghiệp vụ.

@@ -2,6 +2,23 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-03 IN_REVIEW (Revision 02, đang làm)
+
+- ChatGPT review trực tiếp trên GitHub ngày 26/11/2026 ~14:38 (sau khi Henry cấp
+  quyền truy cập GitHub cho ChatGPT, chỉ repo seecarauto; đọc đúng commit
+  5cfcd3f): 11/15 tiêu chí PASS (AC-11, AC-12 PASS* có điều kiện), 4 FAIL
+  (AC-10, AC-13, AC-14, AC-15) — yêu cầu Revision 02, M01-03 giữ IN_REVIEW.
+- Revision 02 sửa: đồng bộ HTTP status (PAYMENT_NOT_CONFIRMED 409 → 422,
+  PRODUCT_UNAVAILABLE 409 → 422, PRECONDITION_FAILED sang nhóm 412,
+  ACCOUNT_LOCKED sang nhóm 423, bỏ dòng mập mờ 400/409 của
+  INVALID_STATUS_TRANSITION, SKU_DUPLICATE/CART_CHANGED sang nhóm Conflict
+  409 — Error Catalog nay 11 nhóm, 44 mã lỗi); If-Match bắt buộc ở PATCH
+  /orders/{id}/status và PUT /roles/{id}/permissions; đánh dấu P0-PROVISIONAL
+  cho 14 endpoint phụ thuộc PD-02/03/04/05/06 (tổng 30 P0-PROVISIONAL, 66 P0);
+  S-03/S-14 ghi rõ OEM nhiều-sản-phẩm là thiết kế dự kiến; CURRENT_STATE cập
+  nhật (M01-03 IN_REVIEW, M01-04 chưa bắt đầu). Không sửa PRD/SRS/ERD, không
+  tạo Prisma schema/migration, không tự quyết PD-01 → PD-09.
+
 ## 26/11/2026 — M01-03 IN_REVIEW (bản đầu, chờ ChatGPT review)
 
 - ChatGPT giao M01-03 (API Specification) ngày 26/11/2026 ~12:54 trong
@@ -13,7 +30,7 @@ Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nh
   (từ main cecd37e): `docs/api/API_SPEC.md` (24 mục, 96 endpoint: 80 P0
   + 16 P0-PROVISIONAL), `docs/api/openapi.yaml` (OpenAPI 3.1.0, 68
   paths, 96 operations, 37 schemas), `docs/api/API_ERROR_CATALOG.md`
-  (9 nhóm lỗi), `docs/api/API_SCENARIOS.md` (S-01 → S-17),
+  (11 nhóm lỗi), `docs/api/API_SCENARIOS.md` (S-01 → S-17),
   `docs/api/API_SECURITY.md`, `docs/project-management/tasks/M01-03.md`.
 - Kiểm thử thực tế: Redocly CLI 2.83.0 lint 0 errors (4 warnings đã ghi
   rõ lý do chấp nhận — URL localhost là dev server thật, 3 GET danh sách

@@ -1007,6 +1007,8 @@ paths:
       tags: [Products]
       summary: Tạo sản phẩm (admin)
       x-required-permission: products.create
+      x-status: provisional
+      x-blocked-by: PD-02 (số SKU mỗi sản phẩm do Henry chốt — xem API_SPEC mục 21)
       security: [{ AdminAuth: [] }]
       requestBody:
         required: true
@@ -1148,6 +1150,8 @@ paths:
       tags: [Products]
       summary: Xóa sản phẩm — soft delete (admin); chặn khi đã có trong đơn hàng
       x-required-permission: products.delete
+      x-status: provisional
+      x-blocked-by: PD-05 (quy tắc xóa khi còn dữ liệu liên quan do Henry chốt — xem API_SPEC mục 21)
       security: [{ AdminAuth: [] }]
       parameters:
         - $ref: '#/components/parameters/ProductIdParam'
@@ -1415,6 +1419,8 @@ paths:
       tags: [Products]
       summary: Thêm mã định danh cho sản phẩm (admin) — kèm ma trận issuer CHECK
       x-required-permission: products.update
+      x-status: provisional
+      x-blocked-by: PD-04 (issuer Manufacturer vs Brand do Henry chốt — xem API_SPEC mục 21)
       security: [{ AdminAuth: [] }]
       parameters:
         - $ref: '#/components/parameters/ProductIdParam'
@@ -1625,6 +1631,8 @@ paths:
       tags: [Categories]
       summary: Xóa danh mục (admin) — chặn khi còn sản phẩm
       x-required-permission: categories.delete
+      x-status: provisional
+      x-blocked-by: PD-05 (quy tắc xóa khi còn dữ liệu liên quan do Henry chốt — xem API_SPEC mục 21)
       security: [{ AdminAuth: [] }]
       parameters:
         - name: slug
@@ -1862,6 +1870,8 @@ paths:
       tags: [Brands]
       summary: Xóa thương hiệu (admin) — chặn khi còn sản phẩm
       x-required-permission: brands.delete
+      x-status: provisional
+      x-blocked-by: PD-05 (quy tắc xóa khi còn dữ liệu liên quan do Henry chốt — xem API_SPEC mục 21)
       security: [{ AdminAuth: [] }]
       parameters:
         - name: slug
@@ -2095,6 +2105,8 @@ paths:
       tags: [Vehicles]
       summary: Xóa hãng xe (admin) — chặn khi còn model/fitment
       x-required-permission: vehicles.delete
+      x-status: provisional
+      x-blocked-by: PD-05 (quy tắc xóa khi còn dữ liệu liên quan do Henry chốt — xem API_SPEC mục 21)
       security: [{ AdminAuth: [] }]
       parameters:
         - name: slug
@@ -2286,6 +2298,8 @@ paths:
       tags: [Vehicles]
       summary: Xóa dòng xe (admin) — chặn khi còn generation/fitment
       x-required-permission: vehicles.delete
+      x-status: provisional
+      x-blocked-by: PD-05 (quy tắc xóa khi còn dữ liệu liên quan do Henry chốt — xem API_SPEC mục 21)
       security: [{ AdminAuth: [] }]
       parameters:
         - name: slug
@@ -2371,6 +2385,8 @@ paths:
       tags: [Vehicles]
       summary: Tạo thế hệ thuộc một dòng xe (admin)
       x-required-permission: vehicles.create
+      x-status: provisional
+      x-blocked-by: PD-06 (độ chi tiết năm do Henry chốt — xem API_SPEC mục 21)
       security: [{ AdminAuth: [] }]
       requestBody:
         required: true
@@ -2451,6 +2467,8 @@ paths:
       tags: [Vehicles]
       summary: Tạo phiên bản thuộc một thế hệ (admin)
       x-required-permission: vehicles.create
+      x-status: provisional
+      x-blocked-by: PD-06 (độ chi tiết năm do Henry chốt — xem API_SPEC mục 21)
       security: [{ AdminAuth: [] }]
       requestBody:
         required: true
@@ -2553,6 +2571,8 @@ paths:
       tags: [Vehicles]
       summary: Sửa thế hệ (admin)
       x-required-permission: vehicles.update
+      x-status: provisional
+      x-blocked-by: PD-06 (độ chi tiết năm do Henry chốt — xem API_SPEC mục 21)
       security: [{ AdminAuth: [] }]
       parameters:
         - name: generationId
@@ -2611,6 +2631,8 @@ paths:
       tags: [Vehicles]
       summary: Xóa thế hệ (admin) — chặn khi còn variant/fitment
       x-required-permission: vehicles.delete
+      x-status: provisional
+      x-blocked-by: PD-05 (quy tắc xóa khi còn dữ liệu liên quan do Henry chốt — xem API_SPEC mục 21)
       security: [{ AdminAuth: [] }]
       parameters:
         - name: generationId
@@ -2646,6 +2668,8 @@ paths:
       tags: [Vehicles]
       summary: Sửa phiên bản (admin)
       x-required-permission: vehicles.update
+      x-status: provisional
+      x-blocked-by: PD-06 (độ chi tiết năm do Henry chốt — xem API_SPEC mục 21)
       security: [{ AdminAuth: [] }]
       parameters:
         - name: variantId
@@ -2702,6 +2726,8 @@ paths:
       tags: [Vehicles]
       summary: Xóa phiên bản (admin) — chặn khi còn fitment
       x-required-permission: vehicles.delete
+      x-status: provisional
+      x-blocked-by: PD-05 (quy tắc xóa khi còn dữ liệu liên quan do Henry chốt — xem API_SPEC mục 21)
       security: [{ AdminAuth: [] }]
       parameters:
         - name: variantId
@@ -3167,6 +3193,8 @@ paths:
       tags: [Search]
       summary: Tra cứu chính xác theo mã (SKU/OEM/MPN/Part Number/Alternate) — không fuzzy
       x-required-permission: null
+      x-status: provisional
+      x-blocked-by: PD-02 (SKU), PD-03 (OEM_NUMBER), PD-04 (identifier issuer) — xem API_SPEC mục 21
       security: []
       parameters:
         - name: type
@@ -3567,9 +3595,9 @@ paths:
           schema: { type: string, format: uuid }
         - name: If-Match
           in: header
-          required: false
+          required: true
           schema: { type: string }
-          description: ETag (optimistic concurrency) — khuyến nghị gửi
+          description: ETag (optimistic concurrency) — bắt buộc gửi (API_SPEC mục 15)
       requestBody:
         required: true
         content:
@@ -4638,9 +4666,9 @@ paths:
           schema: { type: string, format: uuid }
         - name: If-Match
           in: header
-          required: false
+          required: true
           schema: { type: string }
-          description: ETag (optimistic concurrency) — khuyến nghị gửi
+          description: ETag (optimistic concurrency) — bắt buộc gửi (API_SPEC mục 15)
       requestBody:
         required: true
         content:

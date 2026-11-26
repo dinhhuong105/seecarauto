@@ -30,7 +30,7 @@ GitHub Actions CI cơ bản — CI file đã có, chạy trên GitHub sau khi pu
 | --- | --- | --- |
 | M01-01 | PRD / SRS | DONE | PRD + SRS đã soạn xong 26/11, ChatGPT ACCEPT Revision 03 (commit e82cd0e) ngày 26/11 ~10:22; M01-01 chốt DONE theo quyết định của Henry 26/11 ~11:55 (chỉ cần ChatGPT đồng ý là đủ) |
 | M01-02 | ERD chi tiết (Product, SKU, OEM, Vehicle Fitment) | DONE | ChatGPT ACCEPT Revision 02 (commit ad95bd8) ngày 26/11 ~12:50, 12/12 tiêu chí PASS; M01-02 chốt DONE theo quyết định của Henry 26/11 ~11:55; PD-01 → PD-09 giữ nguyên chờ Henry |
-| M01-03 | API Specification | IN_REVIEW | Bản đầu soạn xong 26/11 trên nhánh feature/M01-03-api-spec (API_SPEC.md 24 mục, openapi.yaml OpenAPI 3.1.0 — 68 paths, 96 operations; Error Catalog; Scenarios S-01 → S-17; Security; Task Brief); Redocly lint 0 errors, script đối chiếu ALL CHECKS PASS, preview render 96/96 operationId; đang báo cáo ChatGPT review trong chat mới của project (15 tiêu chí AC-01 → AC-15) |
+| M01-03 | API Specification | IN_REVIEW | Bản đầu soạn xong 26/11 trên nhánh feature/M01-03-api-spec (API_SPEC.md 24 mục, openapi.yaml OpenAPI 3.1.0 — 68 paths, 96 operations; Error Catalog; Scenarios S-01 → S-17; Security; Task Brief); Redocly lint 0 errors, script đối chiếu ALL CHECKS PASS, preview render 96/96 operationId; ChatGPT review trực tiếp trên GitHub 26/11 ~14:38: 11/15 PASS, 4 FAIL (AC-10, AC-13, AC-14, AC-15) — đang làm Revision 02 (đồng bộ HTTP status, If-Match bắt buộc, P0-PROVISIONAL cho endpoint PD-02/03/04/05/06); M01-04 chỉ bắt đầu sau khi ChatGPT ACCEPT M01-03 |
 | M01-04 | Sitemap và Wireframe | BACKLOG |
 | M01-05 | Cấu trúc Admin Dashboard | BACKLOG |
 | M01-06 | Nghiên cứu mẫu UI/UX và đề xuất phương án | BACKLOG |

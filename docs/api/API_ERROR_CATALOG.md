@@ -21,7 +21,6 @@
 | --- | --- | --- |
 | `VALIDATION_ERROR` | Input sai định dạng, thiếu trường bắt buộc, giá trị ngoài enum, khoảng giá ngược, UUID sai định dạng | `{ "statusCode": 400, "message": "Dữ liệu gửi lên không hợp lệ.", "error": "VALIDATION_ERROR", "details": [{ "field": "quantity", "code": "MIN_VALUE", "message": "Số lượng phải từ 1 trở lên." }] }` |
 | `EMPTY_CART` | Tạo đơn với giỏ trống (FR-056) | `{ "statusCode": 400, "message": "Giỏ hàng đang trống, không thể đặt hàng.", "error": "EMPTY_CART" }` |
-| `INVALID_STATUS_TRANSITION` (400 hay 409 — xem mục 5) | Chuyển trạng thái không đúng thứ tự — dùng 409, xem mục 5 | — |
 
 ## 2. Authentication — 401
 
@@ -40,7 +39,6 @@
 | `FORBIDDEN` | Đã đăng nhập nhưng không có permission cho thao tác này (FR-086, BR-006) | `{ "statusCode": 403, "message": "Tài khoản của bạn không có quyền thực hiện thao tác này.", "error": "FORBIDDEN" }` |
 | `LAST_SUPER_ADMIN` | Thao tác khiến tài khoản Super Admin cuối cùng mất quyền quản trị hoặc tự khóa mình (BR-007, FR-085) | `{ "statusCode": 403, "message": "Không thể thực hiện: đây là tài khoản Super Admin cuối cùng.", "error": "LAST_SUPER_ADMIN" }` |
 | `LAST_SUPER_ADMIN_ROLE` | Xóa vai trò của Super Admin cuối cùng (FR-082, FR-085) | `{ "statusCode": 403, "message": "Không thể xóa vai trò này: đây là vai trò của tài khoản Super Admin cuối cùng.", "error": "LAST_SUPER_ADMIN_ROLE" }` |
-| `ACCOUNT_LOCKED` | Tài khoản admin bị khóa tạm sau nhiều lần đăng nhập sai (FR-091) — HTTP status 423 (Locked), kèm `retryAfter` (giây) | `{ "statusCode": 423, "message": "Tài khoản tạm thời bị khóa do đăng nhập sai nhiều lần. Vui lòng thử lại sau.", "error": "ACCOUNT_LOCKED", "retryAfter": 900 }` |
 
 ## 4. Not found — 404
 
@@ -77,37 +75,48 @@
 | `CART_CHANGED` | Sản phẩm trong giỏ bị ẩn/xóa hoặc đổi giá sau khi thêm — đơn không được tạo, khách xác nhận lại với giá/tình trạng mới (FR-057) | `{ "statusCode": 409, "message": "Một số sản phẩm trong giỏ đã thay đổi giá hoặc tình trạng, vui lòng xác nhận lại.", "error": "CART_CHANGED", "details": [{ "field": "items[0].price", "code": "PRICE_CHANGED", "message": "Giá đã đổi từ 500.000đ thành 550.000đ." }] }` |
 | `DUPLICATE_ORDER` | Tạo đơn lần thứ hai từ cùng một giỏ (Idempotency-Key khác nhau) — trả kèm `orderCode` của đơn đã tạo | `{ "statusCode": 409, "message": "Đơn hàng đã được tạo trước đó.", "error": "DUPLICATE_ORDER", "details": [{ "field": "orderCode", "code": "DUPLICATE", "message": "Mã đơn đã tạo: SCA-XXXXXX." }] }` |
 
-## 6. Business rule violation — 422
+## 6. Precondition failed — 412
+
+| Error code | Ý nghĩa | Ví dụ response |
+| --- | --- | --- |
+| `PRECONDITION_FAILED` | Header `If-Match` (etag) không khớp — dữ liệu đã bị sửa bởi người khác (mục 15 API_SPEC) | `{ "statusCode": 412, "message": "Dữ liệu đã thay đổi, vui lòng tải lại rồi thử lại.", "error": "PRECONDITION_FAILED" }` |
+
+## 7. Business rule violation — 422
 
 | Error code | Ý nghĩa | Ví dụ response |
 | --- | --- | --- |
 | `PAYMENT_NOT_CONFIRMED` | Chuyển đơn sang SHIPPING khi đơn chuyển khoản chưa được xác nhận đã nhận tiền (BR-010) | `{ "statusCode": 422, "message": "Đơn chuyển khoản chưa được xác nhận đã nhận tiền.", "error": "PAYMENT_NOT_CONFIRMED" }` |
 | `PRODUCT_UNAVAILABLE` | Món trong giỏ đã bị ẩn/xóa (không tính vào tổng tiền; khách cần xóa món đó) | `{ "statusCode": 422, "message": "Một món trong giỏ không còn khả dụng.", "error": "PRODUCT_UNAVAILABLE" }` |
-| `PRECONDITION_FAILED` | Header `If-Match` (etag) không khớp — dữ liệu đã bị sửa bởi người khác (mục 15 API_SPEC) — HTTP status 412 | `{ "statusCode": 412, "message": "Dữ liệu đã thay đổi, vui lòng tải lại rồi thử lại.", "error": "PRECONDITION_FAILED" }` |
 
-## 7. Rate limit — 429
+## 8. Locked — 423
+
+| Error code | Ý nghĩa | Ví dụ response |
+| --- | --- | --- |
+| `ACCOUNT_LOCKED` | Tài khoản admin bị khóa tạm sau nhiều lần đăng nhập sai (FR-091) — kèm `retryAfter` (giây) | `{ "statusCode": 423, "message": "Tài khoản tạm thời bị khóa do đăng nhập sai nhiều lần. Vui lòng thử lại sau.", "error": "ACCOUNT_LOCKED", "retryAfter": 900 }` |
+
+## 9. Rate limit — 429
 
 | Error code | Ý nghĩa | Ví dụ response |
 | --- | --- | --- |
 | `RATE_LIMITED` | Vượt giới hạn tần suất — kèm header `Retry-After` (giây) | `{ "statusCode": 429, "message": "Bạn thao tác quá nhanh, vui lòng thử lại sau.", "error": "RATE_LIMITED", "retryAfter": 60 }` |
 
-## 8. Payload / media — 413 / 415
+## 10. Payload / media — 413 / 415
 
 | Error code | Ý nghĩa | Ví dụ response |
 | --- | --- | --- |
 | `PAYLOAD_TOO_LARGE` | Body JSON quá 1 MB hoặc file upload quá giới hạn (ảnh 5 MB, Excel 10 MB) | `{ "statusCode": 413, "message": "Dữ liệu gửi lên quá lớn.", "error": "PAYLOAD_TOO_LARGE" }` |
 | `UNSUPPORTED_MEDIA_TYPE` | Sai Content-Type (vd: gửi JSON cho endpoint upload file) | `{ "statusCode": 415, "message": "Định dạng dữ liệu không được hỗ trợ.", "error": "UNSUPPORTED_MEDIA_TYPE" }` |
 
-## 9. Internal server error / service unavailable — 500 / 503
+## 11. Internal server error / service unavailable — 500 / 503
 
 | Error code | Ý nghĩa | Ví dụ response |
 | --- | --- | --- |
 | `INTERNAL_ERROR` | Lỗi server không lường trước — message chung, không lộ chi tiết; ghi log đầy đủ server-side kèm `X-Request-Id` | `{ "statusCode": 500, "message": "Hệ thống đang gặp sự cố, vui lòng thử lại sau.", "error": "INTERNAL_ERROR" }` |
 | `SERVICE_UNAVAILABLE` | Dependency (DB/Redis/Meilisearch/S3) lỗi tạm thời — kèm `Retry-After` khi biết thời gian khôi phục | `{ "statusCode": 503, "message": "Dịch vụ tạm thời không khả dụng, vui lòng thử lại sau.", "error": "SERVICE_UNAVAILABLE", "retryAfter": 30 }` |
 
-## 10. Quy tắc dùng mã lỗi
+## 12. Quy tắc dùng mã lỗi
 
 1. Một tình huống chỉ có một error code duy nhất — không dùng `VALIDATION_ERROR` chung cho mọi lỗi 400 khi đã có code riêng (`SKU_DUPLICATE`, `EMPTY_CART`...).
-2. 400 = input sai (client sửa input là hết lỗi). 409 = xung đột trạng thái/dữ liệu (client phải thay đổi thao tác, không phải sửa input). 422 = vi phạm quy tắc nghiệp vụ (client cần thực hiện bước nghiệp vụ trước — vd: xác nhận tiền rồi mới giao hàng).
+2. 400 = input sai (client sửa input là hết lỗi). 409 = xung đột trạng thái/dữ liệu (client phải thay đổi thao tác, không phải sửa input). 412 = điều kiện If-Match không thỏa (client tải lại rồi sửa tiếp). 422 = vi phạm quy tắc nghiệp vụ (client cần thực hiện bước nghiệp vụ trước — vd: xác nhận tiền rồi mới giao hàng). 423 = tài khoản bị khóa tạm (kèm `retryAfter`).
 3. Không tạo error code mới trong code M02 mà không ghi vào file này trước (Error Catalog là nguồn duy nhất của error code).
 4. `details` chỉ xuất hiện khi có thông tin từng trường cụ thể (validation, `CART_CHANGED`, `DUPLICATE_ORDER`); các lỗi khác không có `details`.
