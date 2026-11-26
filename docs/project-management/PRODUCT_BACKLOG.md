@@ -21,8 +21,8 @@ Wireframe, Admin Dashboard, UI/UX Research).
 | M08 | 9 — BACKLOG 9/9 |
 | M09 | 10 — BACKLOG 10/10 |
 | DONE | 14 (M00 7 + M01 7) |
-| IN_PROGRESS | 0 |
-| BACKLOG | 74 |
+| IN_PROGRESS | 1 (M02-01) |
+| BACKLOG | 73 |
 | BLOCKED | 1 (M07-05) |
 
 ### ISSUE-01 — Mâu thuẫn tổng số task: 87 hay 89? — ĐÃ QUYẾT ĐỊNH (89)
