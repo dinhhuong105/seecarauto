@@ -66,13 +66,7 @@ chưa chốt nhưng không chặn thiết kế).
 
 ### Các gap đã biết từ tài liệu nghiệm thu (không tự lấp)
 
-- **G-01:** ERD (M01-02) CÓ bảng `vehicle_variants` cho biến thể xe
-  (§4.11), nhưng CHƯA CÓ bảng `product_variants` cho biến thể sản
-  phẩm dù roadmap M03 liệt kê "variants" — đường mở rộng là bảng
-  `product_variants` FK tới `products.id`, mỗi variant có SKU riêng
-  (ERD §3.1, dòng "SKU mở rộng nhiều biến thể?"), và đây là quyết
-  định nghiệp vụ PD-02 (1 SKU/sản phẩm hay nhiều SKU). M03-06 cần
-  quyết định schema ở M02.
+- **G-01 — ĐÃ GIẢI QUYẾT (M02-01, PD-02):** P0 một Product = một SKU nội bộ; không tạo bảng `product_variants`. `vehicle_variants` trong ERD là biến thể xe, không phải biến thể sản phẩm. Nếu sau này cần nhóm các sản phẩm bán riêng theo biến thể, mở decision/task riêng và migration có kiểm soát.
 - **G-02:** ERD không có bảng `articles` dù M07 cần CMS — M07-01 cần
   quyết định schema ở M02.
 - **G-03:** ERD không có bảng cart — M05-01 cần quyết định nơi lưu
@@ -257,7 +251,7 @@ PD-09) thì **không phải lúc nào cũng BLOCKED** — cần phân biệt 3 m
 | M03-02 | G-05 (nền tảng UI dùng chung do M03-01 xây — quyết định ChatGPT 26/11/2026) | Chuẩn bị backend/API (không phụ thuộc nền tảng UI) | Dùng tokens/components trước khi nền tảng M03-01 sẵn sàng |
 | M03-03 | PD-02/PD-03/PD-04 | CRUD identifiers theo ERD; chuẩn hóa mã | Chốt quy tắc issuer (make/brand) cho từng loại mã |
 | M03-05 | PD-07 | Khung spec key/value; UI lọc spec | Chốt danh sách trường spec có cấu trúc (nếu PD-07 đổi) |
-| M03-06 | G-01 + PD-02 (ERD có vehicle_variants cho biến thể xe, nhưng chưa có product_variants cho biến thể sản phẩm; đường mở rộng liên quan PD-02 — 1 SKU/sản phẩm hay nhiều SKU; quyết định schema ở M02-01) | Nghiên cứu yêu cầu variants; thiết kế interface nháp; UI khung | Chốt schema product_variants; triển khai CRUD variants |
+| M03-06 | G-01/PD-02 (đã giải quyết tại M02-01: P0 một SKU/Product, không tạo product_variants) | Chưa triển khai product variants P0; ghi nhận yêu cầu grouping nếu có | Chỉ mở lại bằng decision/task riêng nếu cần nhóm biến thể bán độc lập |
 | M03-07 | D-02 | Khung import/export Excel; validate mã | Triển khai import dữ liệu thật (chưa có nguồn) |
 | M03-09 | D-07 + G-05 (font tự host Inter vs system font — M01-06 đề xuất, chưa chốt; nền tảng UI do M03-01 xây) | Xây khung UI tìm kiếm với system font fallback, SAU KHI M03-08 xong, trên nền tảng UI M03-01; dùng tokens màu/spacing đã chốt | Chốt typography tokens (font family); áp dụng font tự host |
 | M04-04 | PD-01 | CRUD vehicle_applications theo ERD | Chốt độ chi tiết fitment tối thiểu |
