@@ -3,7 +3,7 @@
 Cập nhật sau mỗi task. Đây là nơi cuộc chat task mới đọc đầu tiên để biết
 dự án đang ở đâu.
 
-## Trạng thái hiện tại (sau M00, M01-01 DONE, M01-02 DONE, M01-03 DONE, M01-04 DONE, M01-05 DONE, M01-06 DONE, M01-07 IN_PROGRESS — 26/11/2026)
+## Trạng thái hiện tại (sau M00, M01-01 → M01-07 DONE — Milestone M01 DONE — 26/11/2026)
 
 - **Milestone đang làm:** M01 — Architecture & UI/UX.
 - **Trạng thái M00:** DONE (7/7 task, nghiệm thu đầy đủ 26/11/2026:
@@ -97,10 +97,10 @@ dự án đang ở đâu.
   ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
-- **Việc kế tiếp:** M01-07 Revision 06 đang chờ ChatGPT quyết định
-  nghiệm thu cuối cùng trong CÙNG chat "Review M01-07". M02 (Prisma
-  schema/migration) chưa được phép bắt đầu cho tới khi các điều kiện
-  và nhiệm vụ phụ thuộc được chấp nhận.
+- **Việc kế tiếp:** Milestone M01 DONE (nghiệm thu + hồ sơ quản lý
+  dự án). M02 (Prisma schema/migration) chưa được phép bắt đầu — việc
+  M01 hoàn tất không tự động đồng nghĩa Henry đã phê duyệt M02; M02
+  vẫn cần nhiệm vụ/điều kiện bắt đầu riêng.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
@@ -294,24 +294,20 @@ dự án đang ở đâu.
   DONE.** M01-07 (Backlog và chia Sprint) đã được ChatGPT đề xuất kế
   hoạch; Henry đã duyệt kế hoạch ngày 26/11/2026 ~20:36; M01-07 đã
   bắt đầu (branch feature/M01-07-backlog-sprint).
-- **M01-07 IN_PROGRESS (Revision 06, commit SHA trong git log —
-  26/11/2026):** PRODUCT_BACKLOG.md (89 mã task M00-01 → M09-10,
-  priority/dependency/trạng thái) + SPRINT_PLAN.md (10 Sprint × 2
-  tuần, tuần 1–20) + Task Brief M01-07.md (11 AC). Kiểm tra thật bằng
-  script: 89 mã, không trùng/thiếu; 48 dependency đều tồn tại, không
-  vòng lặp; 88 task trong Sprint + M07-05 BLOCKED_BY_D-04 ngoài
-  Sprint; gates §13: 21 hàng / 22 task. **ISSUE-01 ĐÃ QUYẾT ĐỊNH:
-  tổng 89** (phương án (a)). ChatGPT review Revision 05 ngày
-  26/11/2026: NOT ACCEPTED — chỉ AC-08 FAIL (Sprint 3 ghi M03-01 đủ
-  điều kiện dù phụ thuộc M02-06 còn BACKLOG trong chính Sprint 3);
-  G-05 ĐẠT. Revision 06 đã chuyển M03-01 sang "Chờ dependency
-  M02-01, M02-05, M02-06" ở Sprint 3 + ghi rõ thứ tự (M02-01/M02-05
-  theo Sprint 2, M02-06 sau M02-05, M03-01 bắt đầu sau khi các
-  dependency hoàn thành; trong M03-01 dựng nền tảng trước, sau đó
-  mới UI CRUD); kiểm tra lại điều kiện hoàn thành Sprint 3 +
-  dependency Sprint 4 (không mâu thuẫn). Đã báo cáo lại ChatGPT
-  trong CÙNG chat "Review M01-07", đang chờ quyết định nghiệm thu
-  cuối cùng.
+- **M01-07 DONE (ChatGPT ACCEPT Revision 06 ngày 26/11/2026 —
+  11/11 AC PASS, không yêu cầu Revision 07):** PRODUCT_BACKLOG.md
+  (89 mã task M00-01 → M09-10, priority/dependency/trạng thái) +
+  SPRINT_PLAN.md (10 Sprint × 2 tuần, tuần 1–20) + Task Brief
+  M01-07.md (11 AC). Kiểm tra thật bằng script: 89 mã, không
+  trùng/thiếu; 48 dependency đều tồn tại, không vòng lặp; 88 task
+  trong Sprint + M07-05 BLOCKED_BY_D-04 ngoài Sprint; gates §13:
+  21 hàng / 22 task. **ISSUE-01 ĐÃ QUYẾT ĐỊNH: tổng 89** (phương án
+  (a)). Commit được chấp nhận 5b6a67f (parent 507dc07, 5 file
+  +101/−22); ChatGPT xác minh trực tiếp trên GitHub. **Milestone
+  M01 hoàn thành về mặt nghiệm thu: M01-01 → M01-07 đều đã được
+  chấp nhận.** Housekeeping sau nghiệm thu (commit SHA trong git
+  log): Task Brief (§11 "Kết quả nghiệm thu"), CURRENT_STATE,
+  TASK_BOARD, CHANGELOG.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

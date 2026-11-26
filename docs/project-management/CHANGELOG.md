@@ -2,6 +2,35 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-07 ACCEPTED (Revision 06) — Milestone M01 DONE
+
+- ChatGPT ACCEPT Revision 06 (chat "Review M01-07") ngày 26/11/2026:
+  **11/11 AC PASS, không yêu cầu Revision 07.** Commit được chấp
+  nhận 5b6a67f (đầy đủ 5b6a67f5c3289f5745bbd0859e1f120609be64c4),
+  parent 507dc07, branch `feature/M01-07-backlog-sprint`, 5 file
+  +101/−22; ChatGPT xác minh trực tiếp trên GitHub (SHA, parent,
+  branch HEAD, số file và thống kê diff đều khớp báo cáo).
+- Bảng nghiệm thu cuối cùng: AC-01 PASS*, AC-02 PASS*, AC-03 PASS*,
+  AC-04 PASS, AC-05 PASS, AC-06 PASS, AC-07 PASS, AC-08 PASS, AC-09
+  PASS, AC-10 PASS*, AC-11 PASS. (PASS* = nội dung và bằng chứng báo
+  cáo phù hợp; kết quả script trên máy Muse chưa được ChatGPT tự chạy
+  lại độc lập.)
+- FIX-01 (AC-08) PASS: M03-01 đã chuyển sang "Chờ dependency
+  M02-01, M02-05, M02-06" ở Sprint 3 + ghi rõ thứ tự; điều kiện hoàn
+  thành Sprint 3 + dependency Sprint 4 không mâu thuẫn.
+- **Milestone M01 hoàn thành về mặt nghiệm thu: M01-01 → M01-07 đều
+  đã được chấp nhận. Tổng backlog giữ nguyên 89 task.**
+- Housekeeping sau nghiệm thu (commit này, SHA trong git log): Task
+  Brief M01-07 (dòng Trạng thái + §11 "Kết quả nghiệm thu"),
+  CURRENT_STATE (M01-07 DONE, Milestone M01 DONE), TASK_BOARD
+  (M01-07 DONE), CHANGELOG (mục này). Không sửa nội dung backlog,
+  Sprint plan hay các tài liệu M01 đã nghiệm thu ngoài phần
+  housekeeping. Không thay đổi D-01 → D-09 hoặc PD-01 → PD-09.
+  Không triển khai code hoặc Prisma schema.
+- **M02 chưa được phép bắt đầu.** Việc M01 hoàn tất không tự động
+  đồng nghĩa Henry đã phê duyệt M02 — M02 vẫn cần nhiệm vụ/điều kiện
+  bắt đầu riêng.
+
 ## 26/11/2026 — M01-07 Revision 06 (FIX-01 theo review Revision 05)
 
 - ChatGPT review Revision 05 (chat "Review M01-07") ngày 26/11/2026:
