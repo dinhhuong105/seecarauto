@@ -2,6 +2,32 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-07 Revision 02 (FIX-01 → FIX-05 theo review bản đầu)
+
+- ChatGPT review bản đầu (chat "Review M01-07") ngày 26/11/2026: NOT
+  ACCEPTED — 8/11 AC PASS (AC-01/AC-02/AC-03 PASS* có điều kiện;
+  AC-04/AC-06/AC-07/AC-09/AC-11 PASS), AC-05 FAIL, AC-08 FAIL,
+  AC-10 FIX. ISSUE-01 ĐÃ QUYẾT ĐỊNH: tổng 89 (phương án (a)).
+  Revision 02 ĐƯỢC PHÉP THỰC HIỆN trong phạm vi đã duyệt.
+- FIX-01: sửa tổng 87 → 89 trong MASTER_ROADMAP.md, TASK_BOARD.md và
+  tasks/M00-07.md (dòng tóm tắt roadmap). Mục CHANGELOG dòng 681 giữ
+  nguyên 87 vì là mục lịch sử M00.
+- FIX-02: phân bổ lại Sprint 3–10 theo khung tuần roadmap (M02 tuần
+  3–5 → M09 tuần 17–20); bảng đối chiếu §12 SPRINT_PLAN.md mới;
+  M01-01 sang Sprint 1, M02 bắt đầu Sprint 2; đuôi milestone tràn 1
+  tuần có lý do ghi rõ.
+- FIX-03: PRODUCT_BACKLOG.md §13 mới (15 dependency gates) + hàng
+  "Trạng thái task" mỗi Sprint (Đủ điều kiện / Chờ dependency / Chờ
+  gate / Chuyển sang Sprint sau); M03-10 chuyển sang Sprint 5.
+- FIX-04: quy tắc hoàn thành Sprint thực chất (§1 SPRINT_PLAN.md);
+  Sprint 10 còn 6 task chia 3 giai đoạn với tiêu chí độc lập; launch
+  chỉ khi Henry chấp thuận, không cam kết.
+- FIX-05: Task Brief (§9.7, §10) + Handbook cập nhật Revision 02;
+  script kiểm tra chạy lại (89 mã, 48 dependency, không vòng lặp,
+  bao phủ Sprint 88 + 1 BLOCKED).
+- Revision 02 commit này (SHA trong git log) đã báo cáo lại ChatGPT
+  trong CÙNG chat "Review M01-07". Trạng thái IN_REVIEW, không tự DONE.
+
 ## 26/11/2026 — M01-07 bản đầu (Backlog và chia Sprint)
 
 - Henry đã duyệt kế hoạch M01-07 ngày 26/11/2026 ~20:36 ("Duyệt M01-07,

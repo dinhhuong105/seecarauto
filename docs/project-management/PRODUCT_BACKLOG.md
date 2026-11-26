@@ -25,19 +25,19 @@ Wireframe, Admin Dashboard, UI/UX Research).
 | BACKLOG | 74 |
 | BLOCKED | 1 (M07-05) |
 
-### ISSUE-01 — Mâu thuẫn tổng số task: 87 hay 89? (vấn đề mở, chờ ChatGPT)
+### ISSUE-01 — Mâu thuẫn tổng số task: 87 hay 89? — ĐÃ QUYẾT ĐỊNH (89)
 
 - `MASTER_ROADMAP.md` tiêu đề ghi "Tổng: **87 task**" và cuối
   `TASK_BOARD.md` ghi "Tổng: 87 task (M00: 7, M01: 7, M02: 8, M03: 10,
   M04: 9, M05: 10, M06: 9, M07: 10, M08: 9, M09: 10)" — nhưng cộng các
   số trong ngoặc: 7+7+8+10+9+10+9+10+9+10 = **89**, không phải 87.
-- Nguyên nhân có thể: con số 87 được tính khi M00 còn 5 task ("5 task
-  cũ → 7 task mới" trong MASTER_ROADMAP); M00 mở rộng 5 → 7 mà tổng
-  chưa được cập nhật. Đây là suy đoán — không phải quyết định.
-- Backlog này liệt kê **89 mã task** theo đúng số task từng milestone
-  trong roadmap. M01-07 KHÔNG tự sửa "87" thành "89" trong
-  MASTER_ROADMAP/TASK_BOARD — chờ ChatGPT quyết định: (a) sửa tổng
-  thành 89, hoặc (b) gộp/bỏ 2 task để về 87.
+- **Quyết định của ChatGPT ngày 26/11/2026 (review M01-07 bản đầu):
+  tổng là 89 — phương án (a): sửa tổng thành 89, không gộp hoặc loại
+  bỏ task.** Lý do: số lượng task từng milestone đã liệt kê cụ thể;
+  không có căn cứ nghiệp vụ để gộp/bỏ 2 task.
+- MASTER_ROADMAP.md và TASK_BOARD.md đã sửa 87 → 89 trong Revision
+  02 của M01-07 (xem `tasks/M01-07.md` §10 v0.2). Backlog này liệt kê
+  **89 mã task** theo đúng số task từng milestone trong roadmap.
 
 ### Phân rã task M02–M09 là đề xuất của M01-07
 
@@ -213,6 +213,44 @@ chưa chốt nhưng không chặn thiết kế).
 | M09-08 | Production launch | Launch Production — KHÔNG tự deploy khi chưa được Henry chấp thuận | Critical | M09-05, M09-07 | BACKLOG |
 | M09-09 | Post-launch monitoring | Giám sát sau launch + runbook xử lý sự cố | High | M09-08 | BACKLOG |
 | M09-10 | Post-launch optimization | Tối ưu đợt đầu sau launch (dựa trên số liệu thật) | Medium | M09-09 | BACKLOG |
+
+
+## 13. Dependency gates — điều kiện bắt đầu (FIX-03, BL-01)
+
+Một task có dependency là Pending Decision (D-01 → D-09 / PD-01 →
+PD-09) thì **không phải lúc nào cũng BLOCKED** — cần phân biệt 3 mức:
+
+1. **Được chuẩn bị kỹ thuật** — đọc spec, thiết kế, viết code không
+   phụ thuộc quyết định (ví dụ: abstraction, interface, UI khung).
+2. **Chưa được chốt thiết kế/schema** — phần thiết kế phụ thuộc trực
+   tiếp vào quyết định thì dừng ở bản nháp, chưa chốt.
+3. **Chưa được triển khai chức năng phụ thuộc quyết định** — code
+   chạy của phần đó chỉ làm sau khi quyết định được chốt.
+
+| Task | Gate (quyết định chặn) | Được làm trước khi quyết | Chưa được làm cho tới khi quyết |
+| --- | --- | --- | --- |
+| M02-01 | PD-01 → PD-06 | Thiết kế schema theo ERD; migration cho bảng không phụ thuộc PD | Chốt migration cho bảng phụ thuộc PD (fitment/SKU/OEM) |
+| M02-04 | D-06 | Abstraction storage + interface upload; code dùng interface | Triển khai provider cụ thể (S3 hay R2) |
+| M02-07, M02-08 | D-05 | Pipeline CI + cấu hình môi trường mẫu | Chốt hosting + deploy thật lên provider |
+| M03-03 | PD-02/PD-03/PD-04 | CRUD identifiers theo ERD; chuẩn hóa mã | Chốt quy tắc issuer (make/brand) cho từng loại mã |
+| M03-05 | PD-07 | Khung spec key/value; UI lọc spec | Chốt danh sách trường spec có cấu trúc (nếu PD-07 đổi) |
+| M03-07 | D-02 | Khung import/export Excel; validate mã | Triển khai import dữ liệu thật (chưa có nguồn) |
+| M04-04 | PD-01 | CRUD vehicle_applications theo ERD | Chốt độ chi tiết fitment tối thiểu |
+| M04-05 | PD-09 | Gắn/gỡ fitment; change log | Thêm cột source/verification (nếu PD-09 đổi) |
+| M04-06 | D-03 | Khung import fitment Excel | Triển khai import dữ liệu fitment thật (chưa có nguồn) |
+| M05-02 | D-08 | Checkout theo đề xuất M01-04; UI + validation | Chốt luồng checkout (trường bắt buộc, bước xác nhận) |
+| M05-04 | PD-08 | Quản lý đơn với tên trạng thái PROVISIONAL | Chốt tên vòng đời trạng thái đơn |
+| M05-05 | D-09 | Tra cứu theo mã đơn (7 trường an toàn) | Thêm bước xác minh bổ sung |
+| M07-05 | D-04 | Không — BLOCKED hoàn toàn (cần AI provider + ngân sách) | Mọi phần của task |
+| M08-02 | D-01 | Meta/canonical/robots; khung sitemap | Sinh sitemap chính thức (cần domain thật) |
+| M08-05 | D-07 | Tối ưu vitals theo system font | Chốt font tự host (ảnh hưởng LCP) |
+
+- M07-05 là task duy nhất BLOCKED hoàn toàn (API_SPEC ghi
+  BLOCKED_BY_D-04). Các task còn lại trong bảng ở trạng thái BACKLOG
+  với gate tương ứng — được chuẩn bị kỹ thuật, chưa triển khai phần
+  phụ thuộc quyết định.
+- Sprint nào chứa task có gate thì Sprint Plan ghi rõ gate đó trong
+  hàng "Trạng thái task" của Sprint (xem `SPRINT_PLAN.md`).
 
 ## 12. Dependency liên milestone (tóm tắt)
 

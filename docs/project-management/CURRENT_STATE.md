@@ -97,10 +97,10 @@ dự án đang ở đâu.
   ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
-- **Việc kế tiếp:** M01-07 đang làm (IN_PROGRESS): backlog + Sprint
-  plan — báo cáo ChatGPT trong chat mới "Review M01-07" để review.
-  M02 (Prisma schema/migration) chưa được phép bắt đầu cho tới khi các
-  điều kiện và nhiệm vụ phụ thuộc được chấp nhận.
+- **Việc kế tiếp:** M01-07 Revision 02 đang chờ ChatGPT review lại
+  trong CÙNG chat "Review M01-07". M02 (Prisma schema/migration)
+  chưa được phép bắt đầu cho tới khi các điều kiện và nhiệm vụ phụ
+  thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
@@ -294,16 +294,19 @@ dự án đang ở đâu.
   DONE.** M01-07 (Backlog và chia Sprint) đã được ChatGPT đề xuất kế
   hoạch; Henry đã duyệt kế hoạch ngày 26/11/2026 ~20:36; M01-07 đã
   bắt đầu (branch feature/M01-07-backlog-sprint).
-- **M01-07 IN_PROGRESS (bản đầu, commit SHA trong git log —
+- **M01-07 IN_PROGRESS (Revision 02, commit SHA trong git log —
   26/11/2026):** PRODUCT_BACKLOG.md (89 mã task M00-01 → M09-10,
   priority/dependency/trạng thái) + SPRINT_PLAN.md (10 Sprint × 2
   tuần, tuần 1–20) + Task Brief M01-07.md (11 AC). Kiểm tra thật bằng
   script: 89 mã, không trùng/thiếu; 48 dependency đều tồn tại, không
   vòng lặp; 88 task trong Sprint + M07-05 BLOCKED_BY_D-04 ngoài
-  Sprint. **ISSUE-01 (vấn đề mở):** tổng kiểm đếm 89 ≠ 87 ghi trong
-  tiêu đề MASTER_ROADMAP — chờ ChatGPT quyết định sửa tổng thành 89
-  hay gộp/bỏ 2 task; M01-07 không tự sửa. Đã báo cáo ChatGPT trong
-  chat mới "Review M01-07", đang chờ review.
+  Sprint. ChatGPT review bản đầu ngày 26/11/2026: NOT ACCEPTED — 8/11
+  AC PASS (3 có điều kiện), AC-05 + AC-08 FAIL, AC-10 FIX; **ISSUE-01
+  ĐÃ QUYẾT ĐỊNH: tổng 89** (phương án (a)). Revision 02 đã sửa tổng
+  87 → 89 (MASTER_ROADMAP, TASK_BOARD, M00-07.md), đồng bộ lại
+  timeline Sprint 3–10 theo khung tuần roadmap, bổ sung dependency
+  gates (§13 backlog) + điều kiện hoàn thành Sprint thực chất. Đã báo
+  cáo lại ChatGPT trong CÙNG chat "Review M01-07", đang chờ review.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

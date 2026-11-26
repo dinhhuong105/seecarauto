@@ -1,6 +1,6 @@
 # MASTER ROADMAP — SEECARAUTO (M00–M09)
 
-Tổng: **87 task**, dự kiến **16–20 tuần**. Mỗi task có Task Brief riêng
+Tổng: **89 task**, dự kiến **16–20 tuần**. Mỗi task có Task Brief riêng
 trong `tasks/` (mã task, mục tiêu, yêu cầu kỹ thuật, tiêu chí nghiệm thu,
 test cases, trạng thái).
 
