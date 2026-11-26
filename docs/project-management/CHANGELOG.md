@@ -2,6 +2,39 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-07 Revision 04 (FIX-01 → FIX-03 theo review Revision 03)
+
+- ChatGPT review Revision 03 (chat "Review M01-07") ngày 26/11/2026:
+  NOT ACCEPTED — 4 AC PASS đầy đủ (AC-04/AC-07/AC-09/AC-11), 4 AC
+  PASS* (AC-01/AC-02/AC-03/AC-10), AC-05 CONDITIONAL, AC-06 FAIL,
+  AC-08 FAIL. FIX-03 (Sprint 1/2) ĐẠT, FIX-04 (Sprint 10) ĐẠT về
+  nguyên tắc, FIX-05 (Handbook) ĐẠT; G-02/G-03/G-04 được đồng ý giữ.
+  Revision 04 ĐƯỢC PHÉP THỰC HIỆN; ChatGPT nói sẽ review lần cuối.
+- FIX-01: sửa G-01 sau khi đọc trực tiếp ERD.md — ERD có bảng
+  `vehicle_variants` (§4.11) cho biến thể xe, nhưng chưa có bảng
+  `product_variants` cho biến thể sản phẩm; đường mở rộng là bảng
+  `product_variants` FK tới `products.id` (ERD §3.1) và liên quan
+  PD-02 (1 SKU/sản phẩm hay nhiều SKU). Đồng bộ ở: §1 (gap G-01),
+  hàng M03-06 (mô tả + dependency thêm "; PD-02"), §13 (gate M03-06
+  thành "G-01 + PD-02"), Sprint 4, Task Brief §6 + §9.8 (có ghi chú
+  lịch sử wording cũ). Không tự quyết PD-02.
+- FIX-02: đối chiếu UI_PROPOSAL §7.3 (M02 cài tokens + font theo
+  D-07) với MASTER_ROADMAP M02 (chỉ infra/auth, không có tokens/
+  font) và grep backlog (không task M02 nào nhắc tokens/font) — kết
+  luận công việc cài tokens + font ở M02 KHÔNG nằm trong phạm vi task
+  M02 hiện tại. Ghi là gap mới G-05 (§1): phải xong trước M03-09
+  (Sprint 4); vị trí xử lý (mở rộng phạm vi task M02 hay thêm task
+  mới — thêm task đổi tổng 89) là câu hỏi mở cho ChatGPT. Không tự
+  quyết D-07. Không đổi tổng 89.
+- FIX-03: Sprint 4 ghi rõ M03-09 chờ CẢ HAI — M03-08 hoàn thành trước
+  (triển khai sau M03-08 trong cùng Sprint 4) VÀ D-07 đối với phần
+  typography; gate §13 M03-09 cũng ghi "SAU KHI M03-08 xong".
+- Task Brief (§9.9, §10) + Handbook cập nhật Revision 04; script
+  kiểm tra chạy lại (89 mã, 48 dependency, 127 cạnh, không vòng lặp,
+  bao phủ Sprint 88 + 1 BLOCKED, gates §13: 20 hàng / 21 task).
+- Revision 04 commit này (SHA trong git log) đã báo cáo lại ChatGPT
+  trong CÙNG chat "Review M01-07". Trạng thái IN_REVIEW, không tự DONE.
+
 ## 26/11/2026 — M01-07 Revision 03 (FIX-01 → FIX-05 theo review Revision 02)
 
 - ChatGPT review Revision 02 (chat "Review M01-07") ngày 26/11/2026:
