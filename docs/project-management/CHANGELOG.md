@@ -2,7 +2,23 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
-## 26/11/2026 — M01-03 IN_REVIEW (ChatGPT review Revision 02: 14/15 PASS; Revision 03 đang làm)
+## 26/11/2026 — M01-03 IN_REVIEW (Revision 03 hoàn thành — ghi nhận trạng thái; chờ kiểm tra lại AC-15)
+
+- Revision 03 hoàn thành: commit c4c5153 đã push lên GitHub (remote HEAD
+  c4c5153753597e8b13f93f9782d402474a1d1518 đã kiểm chứng khớp local HEAD),
+  báo cáo ChatGPT trong chat "Review M01-03 API Specification" ngày
+  26/11/2026 ~15:06. ChatGPT kiểm tra lại AC-15 ~15:08: vẫn FAIL — các
+  file mô tả Revision 03 là "đang làm" thay vì "đã hoàn thành", mâu thuẫn
+  với checklist đã đánh dấu Handbook đồng bộ bằng chính commit đó.
+- Bản ghi này (Revision 04) sửa cách diễn đạt ở cả 4 file Handbook:
+  mọi trạng thái Revision 03 đều là "đã hoàn thành (commit c4c5153, đã
+  push, đã báo cáo ChatGPT ~15:06, đang chờ kiểm tra lại AC-15)"; không
+  mô tả Revision 04 là "đang làm" (bài học: tài liệu đã commit không được
+  mô tả chính revision của nó là đang thực hiện — chỉ mô tả các revision
+  trước là đã hoàn thành). Không sửa tài liệu API, không sửa PRD/SRS/ERD,
+  không tạo Prisma schema/migration. Đang chờ ChatGPT kiểm tra lại AC-15.
+
+## 26/11/2026 — M01-03 IN_REVIEW (ChatGPT review Revision 02: 14/15 PASS; Revision 03 đã hoàn thành, chờ kiểm tra lại AC-15)
 
 - ChatGPT đọc trực tiếp commit b491055 trên GitHub và review ngày 26/11/2026
   ~15:00: AC-01 → AC-14 PASS (AC-11, AC-12 PASS* có điều kiện — chấp nhận
@@ -11,15 +27,18 @@ Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nh
   bản đầu/16 provisional/test cũ; TASK_BOARD còn ghi 11/15 và Revision 02
   đang làm; Task Brief còn ghi Revision 02 đang làm; CHANGELOG chưa ghi
   nhận commit b491055 đã hoàn thành).
-- Revision 03 (đang làm): chỉ sửa 4 file Handbook — CURRENT_STATE (ghi
-  Revision 02 hoàn thành, commit b491055, 30 provisional / 66 P0, kết quả
-  kiểm thử mới, trạng thái chờ review), TASK_BOARD (dòng M01-03), CHANGELOG
-  (bản ghi Revision 02 hoàn thành + kết quả review), Task Brief (metadata +
-  checklist). Không sửa API_SPEC/OpenAPI/Error Catalog/Scenarios/Security,
-  không sửa PRD/SRS/ERD, không tạo Prisma schema/migration. Không cần chạy
-  lại toàn bộ test API — chỉ `git diff --check`, xác minh phạm vi 4 file,
-  commit và kiểm chứng remote HEAD. Sau Revision 03, ChatGPT kiểm tra lại
-  AC-15; nếu đạt sẽ ACCEPT M01-03.
+- Revision 03 (đã hoàn thành, commit c4c5153): chỉ sửa 4 file Handbook —
+  CURRENT_STATE (ghi Revision 02 hoàn thành, commit b491055, 30 provisional
+  / 66 P0, kết quả kiểm thử mới, trạng thái chờ review), TASK_BOARD (dòng
+  M01-03), CHANGELOG (bản ghi Revision 02 hoàn thành + kết quả review),
+  Task Brief (metadata + checklist). Không sửa API_SPEC/OpenAPI/Error
+  Catalog/Scenarios/Security, không sửa PRD/SRS/ERD, không tạo Prisma
+  schema/migration. Commit c4c5153 đã push (remote HEAD đã kiểm chứng),
+  báo cáo ChatGPT ~15:06. ChatGPT kiểm tra lại AC-15 ~15:08: vẫn FAIL —
+  các file mô tả Revision 03 là "đang làm" thay vì "đã hoàn thành", mâu
+  thuẫn với checklist đã đánh dấu Handbook đồng bộ. Bản ghi này (Revision
+  04) sửa cách diễn đạt thành "đã hoàn thành" ở cả 4 file; đang chờ ChatGPT
+  kiểm tra lại AC-15; nếu đạt sẽ ACCEPT M01-03.
 
 ## 26/11/2026 — M01-03 IN_REVIEW (Revision 02 hoàn thành, đã báo cáo ChatGPT)
 
