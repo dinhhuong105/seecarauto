@@ -24,7 +24,7 @@
 | rockauto.com | Có — đầy đủ | Bản text 608 dòng: danh sách hãng A–Z chiếm phần lớn trang chủ |
 | partsgeek.com | Có — đầy đủ | Bản text 1126 dòng: trust badges, Best Sellers, danh mục A–Z |
 | autozone.com | Có — đầy đủ | Bản text 184 dòng: hero carousel, danh mục nổi bật, deals, thương hiệu, hãng/dòng xe phổ biến |
-| mast.com.vn | Có — đầy đủ | Bản text 64 dòng: trang chủ chủ yếu là tin tức/thông báo, không có danh mục sản phẩm |
+| mast.com.vn | Có — đầy đủ | Bản text 64 dòng: trang chủ chủ yếu là tin tức/thông báo, không thấy danh mục sản phẩm trên trang chủ đã đọc |
 
 ### 1.3 Bảng so sánh nhanh
 
@@ -43,17 +43,17 @@
 
 ### 1.4 Bảng phân loại mức độ quan sát (FIX-03 — Revision 02)
 
-Bảng này phân biệt bằng chứng quan sát thực tế với suy luận và đề xuất thiết kế. "Đã quan sát" = đọc được trong bản text crawl ngày 26/11/2026. "Quan sát một phần" = chỉ thấy trên trang chủ (thẻ/danh sách), chưa đọc được trang con đầy đủ. "Chưa quan sát" = không thấy trong bản text (thường do JavaScript) — không suy đoán thay. "Không có" = website không có tính năng đó (xác nhận từ trang chủ).
+Bảng này phân biệt bằng chứng quan sát thực tế với suy luận và đề xuất thiết kế. "Đã quan sát" = đọc được trong bản text crawl ngày 26/11/2026. "Quan sát một phần" = chỉ thấy trên trang chủ (thẻ/danh sách), chưa đọc được trang con đầy đủ. "Chưa quan sát" = không thấy trong bản text (thường do JavaScript) — không suy đoán thay. **"Chưa xác minh có/không" = không thấy tính năng đó trên trang đã quan sát; chưa kiểm tra trang con/khu vực đăng nhập/catalogue riêng — không kết luận website có hay không có tính năng đó.** Nhãn "Không có" chỉ dùng khi có bằng chứng đủ để xác nhận website không cung cấp tính năng đó — không dùng trong bảng này (Revision 03, theo yêu cầu của ChatGPT: không suy diễn từ việc thiếu thông tin trên trang chủ).
 
 | Loại trang | Quang Vũ | RockAuto | PartsGeek | AutoZone | MAST |
 | --- | --- | --- | --- | --- | --- |
 | Trang chủ | Đã quan sát (275 dòng) | Đã quan sát (608 dòng) | Đã quan sát (1126 dòng) | Đã quan sát (184 dòng) | Đã quan sát (64 dòng) |
-| Danh mục | Đã quan sát (tab theo hệ thống xe + 40+ nhóm trên trang chủ) | Chưa quan sát trực tiếp (cây danh mục chỉ hiện sau khi chọn xe; suy luận từ luồng chọn xe) | Đã quan sát (Best Sellers + danh mục A–Z) | Đã quan sát (Featured Categories) | Không có (B2B, không có danh mục sản phẩm) |
-| Tìm kiếm | Quan sát một phần (ô tìm theo mã + dòng xe ở hero; chưa đọc trang kết quả) | Quan sát một phần (ô Part Number Search trên trang chủ; chưa đọc trang kết quả) | Quan sát một phần (ô tìm theo năm/hãng/dòng; chưa đọc trang kết quả) | Chưa quan sát trong bản text (ô tìm kiếm ở header, JavaScript) | Không có |
-| Bộ lọc theo xe | Quan sát một phần (mục "Phụ tùng cho xe của bạn" trên trang chủ; chưa đọc luồng chọn đầy đủ) | Đã quan sát (toàn bộ trang chủ là danh sách hãng → chọn năm/dòng/động cơ) | Quan sát một phần (ô năm/hãng/dòng ở đầu trang; chưa đọc luồng lọc đầy đủ) | Chưa quan sát trong bản text (bộ chọn xe ở header, JavaScript) | Không có |
-| Chi tiết sản phẩm | Quan sát một phần (thẻ sản phẩm: ảnh, tên, mã, đã bán, kho, sao, giá; chưa đọc trang chi tiết đầy đủ) | Quan sát một phần (mỗi món có nhiều thương hiệu/giá/mã + nút Info — theo cấu trúc danh mục; chưa đọc trang món đầy đủ) | Quan sát một phần (món trong Best Sellers; chưa đọc trang món đầy đủ) | Quan sát một phần (thẻ deals; chưa đọc trang món đầy đủ) | Không có |
+| Danh mục | Đã quan sát (tab theo hệ thống xe + 40+ nhóm trên trang chủ) | Chưa quan sát trực tiếp (cây danh mục chỉ hiện sau khi chọn xe; suy luận từ luồng chọn xe) | Đã quan sát (Best Sellers + danh mục A–Z) | Đã quan sát (Featured Categories) | Chưa xác minh có/không (không thấy trên trang chủ 64 dòng đã đọc; có thể nằm ở trang con/catalogue riêng) |
+| Tìm kiếm | Quan sát một phần (ô tìm theo mã + dòng xe ở hero; chưa đọc trang kết quả) | Quan sát một phần (ô Part Number Search trên trang chủ; chưa đọc trang kết quả) | Quan sát một phần (ô tìm theo năm/hãng/dòng; chưa đọc trang kết quả) | Chưa quan sát trong bản text (ô tìm kiếm ở header, JavaScript) | Chưa xác minh có/không (không thấy trên trang chủ đã đọc) |
+| Bộ lọc theo xe | Quan sát một phần (mục "Phụ tùng cho xe của bạn" trên trang chủ; chưa đọc luồng chọn đầy đủ) | Đã quan sát (toàn bộ trang chủ là danh sách hãng → chọn năm/dòng/động cơ) | Quan sát một phần (ô năm/hãng/dòng ở đầu trang; chưa đọc luồng lọc đầy đủ) | Chưa quan sát trong bản text (bộ chọn xe ở header, JavaScript) | Chưa xác minh có/không (không thấy trên trang chủ đã đọc) |
+| Chi tiết sản phẩm | Quan sát một phần (thẻ sản phẩm: ảnh, tên, mã, đã bán, kho, sao, giá; chưa đọc trang chi tiết đầy đủ) | Quan sát một phần (mỗi món có nhiều thương hiệu/giá/mã + nút Info — theo cấu trúc danh mục; chưa đọc trang món đầy đủ) | Quan sát một phần (món trong Best Sellers; chưa đọc trang món đầy đủ) | Quan sát một phần (thẻ deals; chưa đọc trang món đầy đủ) | Chưa xác minh có/không (không thấy trên trang chủ đã đọc) |
 
-**Kết luận từ bảng:** chỉ có **Trang chủ** là được quan sát đầy đủ ở cả 5 website. Mọi phân tích về trang chi tiết trong tài liệu này đều dựa trên thẻ sản phẩm ở trang chủ + cấu trúc danh mục đã đọc được — không bịa chi tiết trang con chưa đọc. Mọi khuyến nghị thiết kế (R-V/R-S/R-P/R-A) đều ghi rõ căn cứ FR/wireframe, không ghi là "đã quan sát" khi chỉ là suy luận.
+**Kết luận từ bảng:** chỉ có **Trang chủ** là được quan sát đầy đủ ở cả 5 website. Mọi phân tích về trang chi tiết trong tài liệu này đều dựa trên thẻ sản phẩm ở trang chủ + cấu trúc danh mục đã đọc được — không bịa chi tiết trang con chưa đọc. Mọi khuyến nghị thiết kế (R-V/R-S/R-P/R-A) đều ghi rõ căn cứ FR/wireframe, không ghi là "đã quan sát" khi chỉ là suy luận. **Đối với MAST:** các ô "Chưa xác minh có/không" không có nghĩa là website không có các chức năng đó — chỉ là chưa kiểm tra trang con; kết luận "MAST không phù hợp làm mẫu bán lẻ" dựa trên những gì trang chủ đã đọc được (tin tức + "Liên hệ" thay vì mua online), không dựa trên khẳng định website không có danh mục/tìm kiếm.
 
 ### 1.5 Giới hạn của nghiên cứu này (ghi rõ)
 
@@ -128,17 +128,17 @@ Bảng này phân biệt bằng chứng quan sát thực tế với suy luận v
 - **L12:** "Advice and How-To's" (blog hướng dẫn) là kênh SEO + tin cậy — SeeCar Auto đã có module bài viết + SEO (FR-067 → FR-074, AI SEO Layer 1); nên dùng blog để giải thích "món này dùng cho xe nào, dấu hiệu hỏng là gì".
 - **L13:** Popular Makes/Models là shortcut vào xe phổ biến — SeeCar Auto nên có "Xe phổ biến" trên trang chủ khi có dữ liệu thật (không bịa lượt xem).
 
-### 2.5 MAST — `mast.com.vn` (mẫu đối chứng — B2B, không bán lẻ online)
+### 2.5 MAST — `mast.com.vn` (mẫu đối chứng — B2B; trang chủ đã đọc không có mua online)
 
 **Cấu trúc trang chủ (đọc thật 26/11/2026):**
 
 - Trang chủ chủ yếu là **tin tức/thông báo công ty** (lịch nghỉ lễ, tri ân, ký kết hợp tác, hội nghị đối tác).
-- Không có danh mục sản phẩm, không có ô tìm kiếm, không có giá ("Price Range: Liên hệ"), không đặt hàng online.
+- Không thấy trên trang chủ đã đọc: danh mục sản phẩm, ô tìm kiếm, giá ("Price Range: Liên hệ"), đặt hàng online.
 - Điểm mạnh duy nhất: uy tín thương hiệu (21 năm, phân phối KIA/Hyundai/Mobis/GM/SsangYong…), hotline miễn cước 1800 1539, giờ làm việc 07:30–17:30.
 
 **Bài học cho SeeCar Auto:**
 
-- **L14 (ĐỐI CHỨNG):** một trang chỉ có tin tức + "liên hệ báo giá" không bán được hàng online — SeeCar Auto phải tránh mẫu này: trang chủ phải cho khách **tìm và mua được ngay** (tìm theo xe/mã → xem món → giỏ hàng → đặt hàng COD/chuyển khoản), không bắt khách gọi điện mới biết giá.
+- **L14 (ĐỐI CHỨNG):** một trang chủ chỉ có tin tức + "liên hệ báo giá" (không thấy mua online trên trang đã đọc) không bán được hàng online — SeeCar Auto phải tránh mẫu này: trang chủ phải cho khách **tìm và mua được ngay** (tìm theo xe/mã → xem món → giỏ hàng → đặt hàng COD/chuyển khoản), không bắt khách gọi điện mới biết giá.
 - **L15:** uy tín nhà phân phối (số năm, thương hiệu phân phối, hotline miễn cước) vẫn đáng học cho mục "Về chúng tôi" + dải tin cậy — nhưng đặt sau luồng mua hàng, không thay luồng mua hàng.
 
 ## 3. Phân tích theo loại trang
@@ -151,7 +151,7 @@ Bảng này phân biệt bằng chứng quan sát thực tế với suy luận v
 | RockAuto | Toàn bộ trang chủ = chọn hãng → năm → dòng → động cơ | Lọc cứng: chỉ hiện món hợp xe đã chọn | **Chuẩn mực** — vehicle-first triệt để |
 | PartsGeek | Ô năm/hãng/dòng ở đầu trang | Lọc theo xe đã chọn | Tốt — nhưng ô tìm kiếm vẫn là điểm vào chính |
 | AutoZone | Bộ chọn xe ở header (JS — chưa quan sát được trong bản text) | Lọc theo xe đã chọn | Không đánh giá được từ bản text |
-| MAST | Không có | Không có | Không áp dụng |
+| MAST | Chưa xác minh có/không (không thấy trên trang chủ đã đọc) | Chưa xác minh có/không | Không áp dụng |
 
 **Khuyến nghị cho SeeCar Auto (đối chiếu FR-001, FR-023 → FR-025, FR-027 → FR-031 + luồng F-01 → F-04 M01-04):**
 
@@ -168,7 +168,7 @@ Bảng này phân biệt bằng chứng quan sát thực tế với suy luận v
 | RockAuto | Part Number Search riêng | Có — tìm chính xác theo mã | Theo xe đã chọn + thương hiệu + giá | Chưa quan sát được |
 | PartsGeek | Ô tìm kiếm header + tìm theo xe | Có | Theo xe + danh mục + thương hiệu | Chưa quan sát được |
 | AutoZone | Ô tìm kiếm header | Có | Theo xe + danh mục + thương hiệu | Chưa quan sát được |
-| MAST | Không có | Không | Không | Không áp dụng |
+| MAST | Chưa xác minh có/không (không thấy trên trang chủ đã đọc) | Chưa xác minh có/không | Chưa xác minh có/không | Không áp dụng |
 
 **Khuyến nghị cho SeeCar Auto (đối chiếu ADR-010 + FR-034 → FR-041 + luồng F-05 M01-04):**
 

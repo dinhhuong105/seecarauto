@@ -97,11 +97,11 @@ dự án đang ở đâu.
   ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
-- **Việc kế tiếp:** báo cáo Revision 02 của M01-06 cho ChatGPT trong
-  chat mới "Review M01-06 Revision 02" (theo chỉ dẫn của ChatGPT trong
-  verdict bản đầu) để ChatGPT kiểm tra lại (12 AC + AC-13). M02 (Prisma
-  schema/migration) chưa được phép bắt đầu cho tới khi các điều kiện và
-  nhiệm vụ phụ thuộc được chấp nhận.
+- **Việc kế tiếp:** báo cáo Revision 03 của M01-06 cho ChatGPT trong
+  chat mới "Review M01-06 Revision 03" (theo chỉ dẫn của ChatGPT trong
+  verdict Revision 02) để ChatGPT kiểm tra lại (12 AC + AC-13). M02
+  (Prisma schema/migration) chưa được phép bắt đầu cho tới khi các điều
+  kiện và nhiệm vụ phụ thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
@@ -253,9 +253,14 @@ dự án đang ở đâu.
   bản đầu ngày 26/11/2026: 11/12 AC PASS, AC-12 FAIL, AC-11/AC-13 PASS*
   — NOT ACCEPTED, yêu cầu Revision 02 (FIX-01 tách R-A5/R-A6, FIX-02
   chú thích D-08/D-09, FIX-03 bảng phân loại mức độ quan sát). Revision
-  02 đã sửa đủ FIX-01 → FIX-03 (commit SHA trong git log), đã báo cáo
-  lại ChatGPT trong chat mới "Review M01-06 Revision 02", đang chờ kiểm
-  tra lại.
+  02 (commit 58a3e81) đã sửa đủ FIX-01 → FIX-03, đã báo cáo lại ChatGPT
+  trong chat mới "Review M01-06 Revision 02". ChatGPT review Revision
+  02 ngày 26/11/2026: 11/12 AC PASS, AC-01 FAIL, AC-13 PASS* — FIX-01
+  + FIX-02 PASS, FIX-03 chưa đạt (nhãn "Không có" cho MAST suy diễn quá
+  mức từ trang chủ) — NOT ACCEPTED, yêu cầu Revision 03 với phạm vi hẹp
+  (chỉ sửa phân loại MAST + kết luận). Revision 03 đã sửa đúng yêu cầu
+  (commit SHA trong git log), đã báo cáo lại ChatGPT trong chat mới
+  "Review M01-06 Revision 03", đang chờ kiểm tra lại.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

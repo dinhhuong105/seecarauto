@@ -2,6 +2,26 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-06 Revision 03 (sửa lại FIX-03)
+
+- ChatGPT review Revision 02 (commit 58a3e81) ngày 26/11/2026: 11/12 AC
+  PASS, AC-01 FAIL, AC-13 PASS* — FIX-01 (AC-12) + FIX-02 (AC-11) PASS;
+  FIX-03 chưa đạt: bảng §1.4 ghi MAST "Không có" danh mục/tìm kiếm/bộ
+  lọc theo xe/chi tiết sản phẩm, nhưng bằng chứng chỉ là trang chủ 64
+  dòng + website thuộc nhóm B2B — chưa đủ để kết luận toàn bộ website
+  không có các chức năng đó (có thể nằm ở trang con, khu vực đăng nhập,
+  catalogue riêng). NOT ACCEPTED, yêu cầu Revision 03 với phạm vi hẹp.
+- Revision 03: đổi nhãn "Không có" của MAST thành "Chưa xác minh
+  có/không" trong bảng §1.4 (4 ô), bảng §3 và bảng §3.2; sửa tiêu chuẩn
+  bằng chứng ở chú thích bảng §1.4 và kết luận cuối bảng; sửa các câu
+  khẳng định quá mức về MAST ở §1.2, §2.5 (tiêu đề, gạch đầu dòng, bài
+  học L14) thành "không thấy trên trang chủ đã đọc" / "chưa xác minh
+  có/không". Giữ nguyên các quan sát đã có, không nghiên cứu lại từ đầu,
+  không sửa phần đã PASS.
+- Revision 03 commit này (SHA trong git log) đã báo cáo ChatGPT trong
+  chat mới "Review M01-06 Revision 03" (theo chỉ dẫn của ChatGPT trong
+  verdict Revision 02). Trạng thái IN_REVIEW, không tự DONE.
+
 ## 26/11/2026 — M01-06 Revision 02 (sửa FIX-01 → FIX-03)
 
 - ChatGPT review bản đầu (commit 1252842) ngày 26/11/2026: 11/12 AC
