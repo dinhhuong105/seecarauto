@@ -140,7 +140,7 @@ chưa chốt nhưng không chặn thiết kế).
 | --- | --- | --- | --- | --- | --- |
 | M03-01 | Products CRUD (admin) | CRUD sản phẩm (FR-042; status DRAFT/PUBLISHED/HIDDEN; soft delete) + NỀN TẢNG UI DÙNG CHUNG (G-05, quyết định ChatGPT 26/11/2026): cài Tailwind config + tokens M01-06 vào @seecarauto/ui (package đã có từ M00), dựng primitive Button/Input/Modal/Toast/Tooltip (system font fallback, chưa chốt D-07) — dựng nền tảng TRƯỚC, sau đó mới triển khai UI CRUD | Critical | M02-01, M02-05, M02-06; M01-06 (tokens/design system cho nền tảng UI) | BACKLOG |
 | M03-02 | Categories + brands | CRUD danh mục (FR-015) + thương hiệu (FR-016); slug/redirect/delete (FR-017 → FR-020); phần UI dùng nền tảng M03-01 (G-05 — chỉ dùng tokens/components sau khi nền tảng sẵn sàng; phần backend/API không phụ thuộc nền tảng vẫn chuẩn bị được) | Critical | M02-01; M03-01 (nền tảng UI — phần UI) | BACKLOG |
-| M03-03 | SKU + product_identifiers (OEM codes) | 1 SKU nội bộ/sản phẩm (PD-02) + 4 loại mã khác (PART/OEM/Manufacturer/Alternate); chuẩn hóa + tìm chính xác, không fuzzy mạnh trên OEM (FR-035/FR-036) | Critical | M02-01; PD-02, PD-03, PD-04 | BACKLOG |
+| M03-03 | SKU + product_identifiers (OEM codes) | 1 SKU nội bộ/sản phẩm + 4 loại mã khác (PART/OEM/Manufacturer/Alternate); chuẩn hóa + tìm chính xác, không fuzzy mạnh trên OEM (FR-035/FR-036) | Critical | M02-01 | BACKLOG |
 | M03-04 | Product images | Upload/sắp xếp/xóa ảnh sản phẩm (qua M02-04); ảnh chính + thứ tự hiển thị | High | M02-04, M03-01 | BACKLOG |
 | M03-05 | Product specifications | Trường spec key/value (P1, PD-07); bộ lọc theo spec (FR-013 P1) | Medium | M02-01; PD-07 | BACKLOG |
 | M03-06 | Variants | Biến thể sản phẩm theo roadmap M03 ("variants") — G-01: đã giải quyết trong M02-01 theo PD-02 — P0 một SKU/Product, không tạo product_variants; task chỉ mở lại nếu phát sinh nhu cầu variant bán độc lập | Medium | M02-01; G-01; PD-02 | BACKLOG |
@@ -156,7 +156,7 @@ chưa chốt nhưng không chặn thiết kế).
 | M04-01 | Vehicle makes | CRUD hãng xe (FR-021) | Critical | M02-01 | BACKLOG |
 | M04-02 | Vehicle models + generations | CRUD dòng xe + đời xe (FR-022) | Critical | M04-01 | BACKLOG |
 | M04-03 | Vehicle variants + engines | Biến thể + động cơ (FR-022) | High | M04-02 | BACKLOG |
-| M04-04 | vehicle_applications | Bảng đích fitment thống nhất (make/model bắt buộc; generation/variant/year nullable; UNIQUE NULLS NOT DISTINCT) | Critical | M02-01, M04-01; PD-01 | BACKLOG |
+| M04-04 | vehicle_applications | Bảng đích fitment thống nhất (make/model bắt buộc; generation/variant/year nullable; UNIQUE NULLS NOT DISTINCT); minimum new fitment Model + Year theo quyết định PD-01 | Critical | M02-01, M04-01 | BACKLOG |
 | M04-05 | product_vehicle_fitments + change log | Gắn/gỡ fitment (FR-027); log thay đổi (FR-033); không cột source/verification ở P0 (PD-09) | Critical | M03-01, M04-04; PD-09 | BACKLOG |
 | M04-06 | Import Fitment Excel | Import Excel fitment (FR-032) | High | M04-05; D-03 | BACKLOG |
 | M04-07 | Vehicle selector UI | Bộ chọn hãng → dòng → đời (FR-024); xe được nhớ trong session (FR-025); trang xe (FR-023) | Critical | M04-01, M04-02; M01-04 | BACKLOG |
