@@ -2,6 +2,47 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-07 Revision 05 (G-05 theo quyết định của ChatGPT, review Revision 04)
+
+- ChatGPT review Revision 04 (chat "Review M01-07") ngày 26/11/2026:
+  NOT ACCEPTED — 0 FAIL; 4 AC PASS đầy đủ (AC-04/AC-07/AC-09/AC-11),
+  4 AC PASS* (AC-01/AC-02/AC-03/AC-10), 3 CONDITIONAL (AC-05/AC-06/
+  AC-08 — đều do G-05 chưa phân công đầy đủ). FIX-01 (G-01) ĐẠT,
+  FIX-03 (M03-09) ĐẠT; chỉ FIX-02 (G-05) chưa đạt. Revision 05 ĐƯỢC
+  PHÉP THỰC HIỆN — chỉ phần G-05; ChatGPT nói sẽ review lần cuối.
+- Hai điểm ChatGPT chỉ ra ở G-05: (1) G-05 nói "xong trước M03-09"
+  nhưng M03-01/M03-02 ở Sprint 3 đã là task CRUD admin — không thể
+  mặc định M03-09 là task UI đầu tiên dùng tokens; (2) G-05 để mở
+  câu hỏi vị trí, chưa chỉ rõ task nào chịu trách nhiệm nền tảng UI
+  dùng chung.
+- Quyết định của ChatGPT: KHÔNG thêm task mới (giữ tổng 89); giao
+  nền tảng UI dùng chung cho M03-01 (task CRUD admin đầu tiên nhóm
+  Catalog). Phạm vi bổ sung: cài Tailwind config + tokens M01-06;
+  khởi tạo nền tảng package `@seecarauto/ui`; dựng primitive Button,
+  Input, Modal, Toast, Tooltip; system font fallback tới khi D-07
+  được Henry quyết; không đổi màu/typography/tokens M01-06.
+- Đồng bộ: G-05 (§1) ghi rõ M03-01 chịu trách nhiệm; M03-01 (mô tả
+  nền tảng + dependency thêm M01-06); M03-02 (phần UI chờ nền tảng,
+  dependency thêm M03-01; phần backend/API vẫn làm được); M03-09
+  (dùng nền tảng M03-01, dependency thêm M03-01; ngoài G-05 vẫn chờ
+  M03-08 + D-07); §13 thêm hàng gate M03-02 (21 hàng / 22 task) và
+  hàng M03-09 thành "D-07 + G-05"; Sprint 3 (M03-01 dựng nền tảng
+  TRƯỚC, M03-02 chờ gate G-05, deliverables + điều kiện hoàn thành);
+  Sprint 4 (M03-09 "D-07 + G-05", deliverables "trên nền tảng UI
+  M03-01"). Đã kiểm chứng package `@seecarauto/ui` đã có từ M00
+  (Button/Modal/Toast/Tooltip, chưa có Input) — "khởi tạo nền tảng"
+  là cài config + tokens và dựng/chuẩn hoá primitive, không tạo
+  package mới.
+- Phạm vi Revision 05: chỉ phần G-05 nêu trên; không sửa G-01, D-07,
+  M03-08, Sprint 1/2/10; không sửa UI_PROPOSAL hoặc tài liệu M01-06
+  đã nghiệm thu; chỉ sửa các task ChatGPT nêu tên (M03-01, M03-02,
+  M03-09).
+- Task Brief (§9.10, §10) + Handbook cập nhật Revision 05; script
+  kiểm tra chạy lại (89 mã, 48 dependency, 130 cạnh, không vòng lặp,
+  bao phủ Sprint 88 + 1 BLOCKED, gates §13: 21 hàng / 22 task).
+- Revision 05 commit này (SHA trong git log) đã báo cáo lại ChatGPT
+  trong CÙNG chat "Review M01-07". Trạng thái IN_REVIEW, không tự DONE.
+
 ## 26/11/2026 — M01-07 Revision 04 (FIX-01 → FIX-03 theo review Revision 03)
 
 - ChatGPT review Revision 03 (chat "Review M01-07") ngày 26/11/2026:

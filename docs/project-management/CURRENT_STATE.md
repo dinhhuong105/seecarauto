@@ -97,7 +97,7 @@ dự án đang ở đâu.
   ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
-- **Việc kế tiếp:** M01-07 Revision 04 đang chờ ChatGPT review lần
+- **Việc kế tiếp:** M01-07 Revision 05 đang chờ ChatGPT review lần
   cuối trong CÙNG chat "Review M01-07". M02 (Prisma schema/migration)
   chưa được phép bắt đầu cho tới khi các điều kiện và nhiệm vụ phụ
   thuộc được chấp nhận.
@@ -294,23 +294,25 @@ dự án đang ở đâu.
   DONE.** M01-07 (Backlog và chia Sprint) đã được ChatGPT đề xuất kế
   hoạch; Henry đã duyệt kế hoạch ngày 26/11/2026 ~20:36; M01-07 đã
   bắt đầu (branch feature/M01-07-backlog-sprint).
-- **M01-07 IN_PROGRESS (Revision 04, commit SHA trong git log —
+- **M01-07 IN_PROGRESS (Revision 05, commit SHA trong git log —
   26/11/2026):** PRODUCT_BACKLOG.md (89 mã task M00-01 → M09-10,
   priority/dependency/trạng thái) + SPRINT_PLAN.md (10 Sprint × 2
   tuần, tuần 1–20) + Task Brief M01-07.md (11 AC). Kiểm tra thật bằng
   script: 89 mã, không trùng/thiếu; 48 dependency đều tồn tại, không
   vòng lặp; 88 task trong Sprint + M07-05 BLOCKED_BY_D-04 ngoài
-  Sprint; gates §13: 20 hàng / 21 task. **ISSUE-01 ĐÃ QUYẾT ĐỊNH:
-  tổng 89** (phương án (a)). ChatGPT review Revision 03 ngày
-  26/11/2026: NOT ACCEPTED — AC-06 + AC-08 FAIL, AC-05 CONDITIONAL
-  (G-01 mô tả sai: ERD có vehicle_variants, thiếu product_variants
-  liên quan PD-02; D-07 chưa đồng bộ UI_PROPOSAL §7.3; Sprint 4 chưa
-  rõ M03-09 chờ M03-08). Revision 04 đã sửa G-01 (ERD có
-  vehicle_variants, chưa có product_variants — liên quan PD-02),
-  ghi gap mới G-05 (công việc cài tokens + font ở M02 chưa có task
-  trong backlog — câu hỏi mở cho ChatGPT), Sprint 4 ghi rõ M03-09
-  chờ M03-08 xong VÀ chờ D-07. Đã báo cáo lại ChatGPT trong CÙNG
-  chat "Review M01-07", đang chờ review lần cuối.
+  Sprint; gates §13: 21 hàng / 22 task. **ISSUE-01 ĐÃ QUYẾT ĐỊNH:
+  tổng 89** (phương án (a)). ChatGPT review Revision 04 ngày
+  26/11/2026: NOT ACCEPTED — 0 FAIL, AC-05/AC-06/AC-08 CONDITIONAL
+  (đều do G-05 chưa phân công đầy đủ; FIX-01 + FIX-03 ĐẠT). ChatGPT
+  quyết định: KHÔNG thêm task mới (giữ 89); nền tảng UI dùng chung
+  giao cho M03-01 (cài Tailwind config + tokens M01-06, dựng
+  Button/Input/Modal/Toast/Tooltip, system font fallback tới khi D-07
+  được Henry quyết). Revision 05 đã giao nền tảng cho M03-01, M03-02
+  chỉ dùng tokens/components sau khi nền tảng sẵn sàng (phần
+  backend/API vẫn làm được), M03-09 cũng dùng nền tảng này (ngoài
+  G-05 vẫn chờ M03-08 + D-07), Sprint 3/4 thể hiện rõ điều kiện. Đã
+  báo cáo lại ChatGPT trong CÙNG chat "Review M01-07", đang chờ
+  review lần cuối.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

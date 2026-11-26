@@ -87,9 +87,9 @@ Kế hoạch Sprint cho roadmap 16–20 tuần. Nguồn: `MASTER_ROADMAP.md` +
 | --- | --- |
 | Mục tiêu | Phân quyền nền tảng + CI/CD + môi trường xong; bắt đầu quản lý sản phẩm (M03 mở đầu tuần 5 theo roadmap) |
 | Task | M02-04, M02-06, M02-07, M02-08, M03-01, M03-02, M03-03 (7 task) |
-| Trạng thái task | Đủ điều kiện: M02-06 (sau M02-05), M03-01, M03-02. Chờ gate: M02-04 (D-06 — chỉ chuẩn bị abstraction storage, chưa triển khai provider cho tới khi D-06 chốt); M02-07/M02-08 (D-05 — chỉ chuẩn bị pipeline/môi trường, chưa chốt hosting); M03-03 (PD-02/PD-03/PD-04 — chỉ chuẩn bị theo ERD, chưa chốt quy tắc issuer cho tới khi PD quyết) |
-| Deliverables | RBAC middleware + bảng roles/permissions; CI/CD chạy trên GitHub; môi trường Dev/Staging/Production + backup; CRUD sản phẩm/danh mục/thương hiệu; SKU + OEM codes |
-| Điều kiện hoàn thành | API kiểm tra permission mọi request; CI xanh; backup/restore đã kiểm thử; tạo được sản phẩm có SKU + OEM (phần không phụ thuộc PD) |
+| Trạng thái task | Đủ điều kiện: M02-06 (sau M02-05), M03-01 (dựng nền tảng UI dùng chung TRƯỚC, sau đó mới triển khai UI CRUD). Chờ gate: M02-04 (D-06 — chỉ chuẩn bị abstraction storage, chưa triển khai provider cho tới khi D-06 chốt); M02-07/M02-08 (D-05 — chỉ chuẩn bị pipeline/môi trường, chưa chốt hosting); M03-02 (G-05 — phần UI chờ nền tảng M03-01 xong; phần backend/API không phụ thuộc nền tảng vẫn làm được); M03-03 (PD-02/PD-03/PD-04 — chỉ chuẩn bị theo ERD, chưa chốt quy tắc issuer cho tới khi PD quyết) |
+| Deliverables | RBAC middleware + bảng roles/permissions; CI/CD chạy trên GitHub; môi trường Dev/Staging/Production + backup; Nền tảng UI dùng chung (Tailwind config + tokens M01-06, @seecarauto/ui, Button/Input/Modal/Toast/Tooltip — system font fallback); CRUD sản phẩm/danh mục/thương hiệu; SKU + OEM codes |
+| Điều kiện hoàn thành | API kiểm tra permission mọi request; CI xanh; backup/restore đã kiểm thử; nền tảng UI (M03-01) hoàn thành trước khi M03-02 triển khai phần UI; tạo được sản phẩm có SKU + OEM (phần không phụ thuộc PD) |
 | Dependency | Sprint 2 DONE (M02-01/05); D-05, D-06, PD-02/PD-03/PD-04 (gates) |
 | Trạng thái | BACKLOG |
 
@@ -99,8 +99,8 @@ Kế hoạch Sprint cho roadmap 16–20 tuần. Nguồn: `MASTER_ROADMAP.md` +
 | --- | --- |
 | Mục tiêu | Khách tìm được phụ tùng theo SKU/OEM/tên/thương hiệu; dữ liệu xe bắt đầu có (M04 mở đầu tuần 7 theo roadmap) |
 | Task | M03-04, M03-05, M03-06, M03-07, M03-08, M03-09, M04-01, M04-02, M04-03 (9 task) |
-| Trạng thái task | Đủ điều kiện: M03-04, M03-05, M03-08, M04-01, M04-02, M04-03. Chờ gate: M03-06 (G-01 + PD-02 — ERD có vehicle_variants nhưng chưa có product_variants; chỉ chuẩn bị kỹ thuật, chưa chốt schema/triển khai variants); M03-07 (D-02 — chỉ chuẩn bị import, chưa triển khai vì chưa có dữ liệu thật); M03-09 (D-07 — chờ M03-08 hoàn thành trước (triển khai sau M03-08 trong cùng Sprint 4) VÀ chờ D-07 đối với phần typography phụ thuộc quyết định — chỉ xây khung UI với system font fallback cho tới khi D-07 được xử lý). Chuyển sang Sprint sau: M03-10 (Reverse lookup — phụ thuộc M04-05 ở Sprint 5, chuyển sang Sprint 5) |
-| Deliverables | Ảnh sản phẩm; spec key/value; variants (chuẩn bị kỹ thuật — chưa triển khai; chờ PD-02 + schema product_variants); Search API + Search UI khung (autocomplete/bộ lọc — sau M03-08, chưa chốt font); hãng/dòng/đời/biến thể/động cơ xe |
+| Trạng thái task | Đủ điều kiện: M03-04, M03-05, M03-08, M04-01, M04-02, M04-03. Chờ gate: M03-06 (G-01 + PD-02 — ERD có vehicle_variants nhưng chưa có product_variants; chỉ chuẩn bị kỹ thuật, chưa chốt schema/triển khai variants); M03-07 (D-02 — chỉ chuẩn bị import, chưa triển khai vì chưa có dữ liệu thật); M03-09 (D-07 + G-05 — dùng nền tảng UI M03-01; chờ M03-08 hoàn thành trước (triển khai sau M03-08 trong cùng Sprint 4) VÀ chờ D-07 đối với phần typography phụ thuộc quyết định — chỉ xây khung UI với system font fallback cho tới khi D-07 được xử lý). Chuyển sang Sprint sau: M03-10 (Reverse lookup — phụ thuộc M04-05 ở Sprint 5, chuyển sang Sprint 5) |
+| Deliverables | Ảnh sản phẩm; spec key/value; variants (chuẩn bị kỹ thuật — chưa triển khai; chờ PD-02 + schema product_variants); Search API + Search UI khung (autocomplete/bộ lọc — sau M03-08, trên nền tảng UI M03-01, chưa chốt font); hãng/dòng/đời/biến thể/động cơ xe |
 | Điều kiện hoàn thành | Tìm kiếm đúng thứ tự ADR-010 (phần search UI không phụ thuộc D-07); import Excel sản phẩm được (phần không phụ thuộc D-02); hãng/dòng/đời xe CRUD được |
 | Dependency | Sprint 3 DONE; D-02 (gate M03-07); M04-05 (M03-10 — đã chuyển Sprint 5) |
 | Trạng thái | BACKLOG |

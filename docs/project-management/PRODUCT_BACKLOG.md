@@ -79,15 +79,23 @@ chưa chốt nhưng không chặn thiết kế).
   cart ở M02 (API_SPEC §10 đã ghi PROVISIONAL).
 - **G-04:** ERD không có bảng admin (users/roles/permissions) —
   M02-01/M06-01 cần tạo ở M02 (M01-05 đã ghi rõ).
-- **G-05:** UI_PROPOSAL §7.3 giao M02 cài Tailwind config + tokens
-  (màu/chữ/spacing) vào `@seecarauto/ui` + font theo D-07, nhưng phân
-  rã M02 trong backlog (theo đúng wording roadmap M02 — chỉ infra/
-  auth: schema, Redis, Meilisearch, S3/R2, Auth, RBAC, CI/CD, môi
-  trường) không có task nào bao việc này. Việc cài tokens (không phụ
-  thuộc D-07) + font (phụ thuộc D-07) phải xong trước task UI đầu
-  tiên dùng tokens (M03-09, Sprint 4). Vị trí xử lý — mở rộng phạm vi
-  một task M02 hay thêm task mới (thêm task đổi tổng 89 nên cần quyết
-  định) — là câu hỏi mở cho ChatGPT; M01-07 không tự quyết.
+- **G-05 (ĐÃ CÓ QUYẾT ĐỊNH — ChatGPT, review Revision 04, ngày
+  26/11/2026):** UI_PROPOSAL §7.3 giao M02 cài Tailwind config +
+  tokens (màu/chữ/spacing) vào `@seecarauto/ui` + font theo D-07,
+  nhưng phân rã M02 trong backlog (theo đúng wording roadmap M02 —
+  chỉ infra/auth: schema, Redis, Meilisearch, S3/R2, Auth, RBAC,
+  CI/CD, môi trường) không có task nào bao việc này. ChatGPT quyết
+  định: KHÔNG thêm task mới (giữ tổng 89); giao nền tảng UI dùng
+  chung cho **M03-01** (task CRUD admin đầu tiên nhóm Catalog).
+  M03-01 cài Tailwind config + tokens M01-06 vào `@seecarauto/ui`
+  (package đã có từ M00 — Button/Modal/Toast/Tooltip, chưa có
+  Input), dựng các primitive Button/Input/Modal/Toast/Tooltip, dùng
+  system font fallback cho tới khi D-07 được Henry quyết (không tự
+  quyết font, không đổi màu/typography/tokens M01-06). Thứ tự:
+  M03-01 dựng nền tảng TRƯỚC, sau đó mới triển khai UI CRUD; M03-02
+  chỉ dùng tokens/components sau khi nền tảng sẵn sàng (phần
+  backend/API không phụ thuộc nền tảng vẫn chuẩn bị được); M03-09
+  cũng dùng nền tảng này (ngoài G-05 vẫn chờ M03-08 + D-07).
 
 ## 2. M00 — Project Foundation & Engineering Standards (tuần 1) — DONE 7/7
 
@@ -130,15 +138,15 @@ chưa chốt nhưng không chặn thiết kế).
 
 | Task | Tên | Mục tiêu / Phạm vi | Priority | Phụ thuộc | Trạng thái |
 | --- | --- | --- | --- | --- | --- |
-| M03-01 | Products CRUD (admin) | CRUD sản phẩm (FR-042; status DRAFT/PUBLISHED/HIDDEN; soft delete) | Critical | M02-01, M02-05, M02-06 | BACKLOG |
-| M03-02 | Categories + brands | CRUD danh mục (FR-015) + thương hiệu (FR-016); slug/redirect/delete (FR-017 → FR-020) | Critical | M02-01 | BACKLOG |
+| M03-01 | Products CRUD (admin) | CRUD sản phẩm (FR-042; status DRAFT/PUBLISHED/HIDDEN; soft delete) + NỀN TẢNG UI DÙNG CHUNG (G-05, quyết định ChatGPT 26/11/2026): cài Tailwind config + tokens M01-06 vào @seecarauto/ui (package đã có từ M00), dựng primitive Button/Input/Modal/Toast/Tooltip (system font fallback, chưa chốt D-07) — dựng nền tảng TRƯỚC, sau đó mới triển khai UI CRUD | Critical | M02-01, M02-05, M02-06; M01-06 (tokens/design system cho nền tảng UI) | BACKLOG |
+| M03-02 | Categories + brands | CRUD danh mục (FR-015) + thương hiệu (FR-016); slug/redirect/delete (FR-017 → FR-020); phần UI dùng nền tảng M03-01 (G-05 — chỉ dùng tokens/components sau khi nền tảng sẵn sàng; phần backend/API không phụ thuộc nền tảng vẫn chuẩn bị được) | Critical | M02-01; M03-01 (nền tảng UI — phần UI) | BACKLOG |
 | M03-03 | SKU + product_identifiers (OEM codes) | 1 SKU nội bộ/sản phẩm (PD-02) + 4 loại mã khác (PART/OEM/Manufacturer/Alternate); chuẩn hóa + tìm chính xác, không fuzzy mạnh trên OEM (FR-035/FR-036) | Critical | M02-01; PD-02, PD-03, PD-04 | BACKLOG |
 | M03-04 | Product images | Upload/sắp xếp/xóa ảnh sản phẩm (qua M02-04); ảnh chính + thứ tự hiển thị | High | M02-04, M03-01 | BACKLOG |
 | M03-05 | Product specifications | Trường spec key/value (P1, PD-07); bộ lọc theo spec (FR-013 P1) | Medium | M02-01; PD-07 | BACKLOG |
 | M03-06 | Variants | Biến thể sản phẩm theo roadmap M03 ("variants") — G-01: ERD có vehicle_variants nhưng chưa có product_variants, cần quyết định schema ở M02 (liên quan PD-02) | Medium | M02-01; G-01; PD-02 | BACKLOG |
 | M03-07 | Import/Export Excel (products) | Import Excel sản phẩm + xuất Excel; validate mã trùng | High | M03-01; D-02 | BACKLOG |
 | M03-08 | Search API (Meilisearch, ADR-010) | Tìm theo SKU/OEM/tên/thương hiệu (FR-034 → FR-041); thứ tự ưu tiên ADR-010; cache Redis | Critical | M02-03, M03-01, M03-03 | BACKLOG |
-| M03-09 | Search UI | Ô tìm kiếm header + autocomplete (FR-037) + bộ lọc (FR-038) + không có kết quả (FR-040); kết hợp xe đã chọn (FR-039) | Critical | M03-08; M01-06; D-07 | BACKLOG |
+| M03-09 | Search UI | Ô tìm kiếm header + autocomplete (FR-037) + bộ lọc (FR-038) + không có kết quả (FR-040); kết hợp xe đã chọn (FR-039); dùng nền tảng UI M03-01 (G-05) | Critical | M03-08; M01-06; D-07; M03-01 (nền tảng UI, G-05) | BACKLOG |
 | M03-10 | Reverse lookup (part → vehicles) | Tra cứu ngược: từ phụ tùng ra danh sách xe tương thích (FR-030) | High | M03-01, M04-05 | BACKLOG |
 
 ## 6. M04 — Vehicle & Fitment (tuần 7–10) — BACKLOG 9/9
@@ -246,11 +254,12 @@ PD-09) thì **không phải lúc nào cũng BLOCKED** — cần phân biệt 3 m
 | M02-01 | PD-01 → PD-06 | Thiết kế schema theo ERD; migration cho bảng không phụ thuộc PD | Chốt migration cho bảng phụ thuộc PD (fitment/SKU/OEM) |
 | M02-04 | D-06 | Abstraction storage + interface upload; code dùng interface | Triển khai provider cụ thể (S3 hay R2) |
 | M02-07, M02-08 | D-05 | Pipeline CI + cấu hình môi trường mẫu | Chốt hosting + deploy thật lên provider |
+| M03-02 | G-05 (nền tảng UI dùng chung do M03-01 xây — quyết định ChatGPT 26/11/2026) | Chuẩn bị backend/API (không phụ thuộc nền tảng UI) | Dùng tokens/components trước khi nền tảng M03-01 sẵn sàng |
 | M03-03 | PD-02/PD-03/PD-04 | CRUD identifiers theo ERD; chuẩn hóa mã | Chốt quy tắc issuer (make/brand) cho từng loại mã |
 | M03-05 | PD-07 | Khung spec key/value; UI lọc spec | Chốt danh sách trường spec có cấu trúc (nếu PD-07 đổi) |
 | M03-06 | G-01 + PD-02 (ERD có vehicle_variants cho biến thể xe, nhưng chưa có product_variants cho biến thể sản phẩm; đường mở rộng liên quan PD-02 — 1 SKU/sản phẩm hay nhiều SKU; quyết định schema ở M02-01) | Nghiên cứu yêu cầu variants; thiết kế interface nháp; UI khung | Chốt schema product_variants; triển khai CRUD variants |
 | M03-07 | D-02 | Khung import/export Excel; validate mã | Triển khai import dữ liệu thật (chưa có nguồn) |
-| M03-09 | D-07 (font tự host Inter vs system font — M01-06 đề xuất, chưa chốt) | Xây khung UI tìm kiếm với system font fallback, SAU KHI M03-08 xong; dùng tokens màu/spacing đã chốt | Chốt typography tokens (font family); áp dụng font tự host |
+| M03-09 | D-07 + G-05 (font tự host Inter vs system font — M01-06 đề xuất, chưa chốt; nền tảng UI do M03-01 xây) | Xây khung UI tìm kiếm với system font fallback, SAU KHI M03-08 xong, trên nền tảng UI M03-01; dùng tokens màu/spacing đã chốt | Chốt typography tokens (font family); áp dụng font tự host |
 | M04-04 | PD-01 | CRUD vehicle_applications theo ERD | Chốt độ chi tiết fitment tối thiểu |
 | M04-05 | PD-09 | Gắn/gỡ fitment; change log | Thêm cột source/verification (nếu PD-09 đổi) |
 | M04-06 | D-03 | Khung import fitment Excel | Triển khai import dữ liệu fitment thật (chưa có nguồn) |
