@@ -3,7 +3,7 @@
 Cập nhật sau mỗi task. Đây là nơi cuộc chat task mới đọc đầu tiên để biết
 dự án đang ở đâu.
 
-## Trạng thái hiện tại (sau M00, M01-01 DONE, M01-02 DONE — 26/11/2026)
+## Trạng thái hiện tại (sau M00, M01-01 → M01-07 DONE — Milestone M01 DONE — 26/11/2026)
 
 - **Milestone đang làm:** M01 — Architecture & UI/UX.
 - **Trạng thái M00:** DONE (7/7 task, nghiệm thu đầy đủ 26/11/2026:
@@ -34,7 +34,7 @@ dự án đang ở đâu.
   Henry quyết định lúc ~11:55 ngày 26/11/2026: chỉ cần ChatGPT đồng ý
   là được, không cần Henry click duyệt từng task — M01-01 chốt DONE
   theo quyết định này. ChatGPT giao M01-02 ngày 26/11/2026 ~12:06
-  (Task Brief đầy đủ, 12 tiêu chí nghiệm thu) — M01-02 đang làm.
+  (Task Brief đầy đủ, 12 tiêu chí nghiệm thu) — M01-02 bắt đầu.
   Tài liệu: `docs/product/PRD.md`, `docs/product/SRS.md`,
   `docs/project-management/tasks/M01-01.md`.
 - **Trạng thái M01-02 (ERD):** DONE — Revision 02 đã commit ad95bd8 và
@@ -50,14 +50,64 @@ dự án đang ở đâu.
   `docs/database/DATA_DICTIONARY.md`,
   `docs/project-management/tasks/M01-02.md`. Chỉ làm tài liệu thiết kế
   — không Prisma schema/migration, không code, không seed data.
-- **Việc kế tiếp:** M01-02 DONE. Đang nhờ ChatGPT giao brief M01-03
-  (API Specification); sau khi có brief thì bắt đầu M01-03. M02 (Prisma
-  schema/migration) chưa được phép bắt đầu cho tới khi các điều kiện và
-  nhiệm vụ phụ thuộc được chấp nhận.
+- **Trạng thái M01-03 (API Specification):** DONE — Revision 02 đã
+  hoàn thành ngày 26/11/2026 (commit b491055 trên nhánh
+  `feature/M01-03-api-spec`, remote HEAD đã kiểm chứng khớp local HEAD)
+  và đã báo cáo ChatGPT review trong chat "Review M01-03 API Specification".
+  Deliverables: `docs/api/API_SPEC.md` (24 mục), `docs/api/openapi.yaml`
+  (OpenAPI 3.1.0, 68 paths, 96 operations, 37 schemas), `docs/api/API_ERROR_CATALOG.md`
+  (11 nhóm lỗi, 44 mã lỗi duy nhất), `docs/api/API_SCENARIOS.md` (S-01 → S-17),
+  `docs/api/API_SECURITY.md`, `docs/project-management/tasks/M01-03.md`.
+  Kiểm thử thực tế (Revision 02): Redocly CLI 2.83.0 lint 0 errors
+  (4 warnings đã ghi rõ lý do chấp nhận); script đối chiếu liên tài liệu
+  `/tmp/m0103_check2.py` ALL CHECKS PASS (96 endpoint §10 khớp 96 operation
+  OpenAPI — 66 P0 + 30 P0-PROVISIONAL; 14 endpoint phụ thuộc PD-02/03/04/05/06
+  đã đánh dấu provisional ở cả §10 và OpenAPI; If-Match required: true ở 2
+  operation; mọi cặp `NNN CODE` khớp Error Catalog; 37 $ref schema đều
+  resolve; 97 requirement ID trong §20 đều tồn tại trong PRD/SRS; 9/9 PD
+  được tham chiếu, không PD nào bị tự quyết; 135 field schema đối chiếu
+  Data Dictionary — 84 field API-only đã review; 88/88 FR P0 đều được map,
+  6/6 FR P1 liệt kê ở §22); scenario walkthrough S-01 → S-17 PASS (23
+  endpoint tham chiếu đều có trong OpenAPI, mã lỗi đều có trong Error
+  Catalog); preview OpenAPI render bằng Redocly build-docs, 96/96
+  operationId hiển thị; git diff --check sạch, secret scan sạch, không
+  Prisma schema/migration, không sửa PRD/SRS/ERD. 30 endpoint
+  P0-PROVISIONAL (16 cũ: giỏ hàng chờ M02 quyết bảng lưu trữ; import Excel
+  chờ M04; checkout chi tiết chờ D-08; tra cứu đơn bổ sung chờ D-09; AI SEO
+  Lớp 2 chờ D-04; vòng đời trạng thái đơn chờ PD-08; + 14 mới phụ thuộc
+  PD-02/03/04/05/06). PD-01 → PD-09 và D-01 → D-09 giữ nguyên, chờ Henry
+  quyết định. ChatGPT review Revision 02 ngày 26/11/2026 ~15:00: 14/15 tiêu
+  chí PASS (AC-11, AC-12 PASS* có điều kiện), chỉ AC-15 FAIL (Project
+  Handbook chưa cập nhật đúng Revision 02) — giao Revision 03 chỉ sửa 4
+  file Handbook, không sửa tài liệu API. Revision 03 hoàn thành (commit
+  c4c5153, đã push, remote HEAD khớp, đã báo cáo ChatGPT ~15:06); ChatGPT
+  kiểm tra lại AC-15 ~15:08: vẫn FAIL — các file mô tả Revision 03 là
+  "đang làm" thay vì "đã hoàn thành", mâu thuẫn với checklist đã đánh dấu
+  Handbook đồng bộ. Bản ghi này (Revision 04) sửa cách diễn đạt thành "đã
+  hoàn thành" ở cả 4 file Handbook. Revision 04 hoàn thành (commit
+  b593e98, đã push, remote HEAD khớp, đã báo cáo ChatGPT ~15:11); ChatGPT
+  kiểm tra lại AC-15 ~15:12: vẫn FAIL — Task Brief còn thông tin cũ (chưa
+  ghi ngày báo cáo Revision 04; checklist Handbook còn ghi Revision 03 cập
+  nhật Revision 02; checklist Git còn ghi b491055) và CURRENT_STATE chưa
+  ghi rõ commit b593e98. Revision 05 hoàn thành (commit 6a7301b, đã push,
+  remote HEAD khớp, đã báo cáo ChatGPT ~15:15); ChatGPT kiểm tra lại AC-15
+  ~15:16: vẫn FAIL — checklist Git còn ghi b593e98, CHANGELOG chưa ghi
+  Revision 05 hoàn thành, checklist Handbook chưa xác nhận trạng thái sau
+  Revision 05, ngày báo cáo chưa ghi Revision 05. Revision 06 hoàn thành, đã cập nhật các điểm này ở cả 4 file. ChatGPT
+  ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
+  PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
+  chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
+- **Việc kế tiếp:** Milestone M01 DONE (nghiệm thu + hồ sơ quản lý
+  dự án). M02 (Prisma schema/migration) chưa được phép bắt đầu — việc
+  M01 hoàn tất không tự động đồng nghĩa Henry đã phê duyệt M02; M02
+  vẫn cần nhiệm vụ/điều kiện bắt đầu riêng.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
-  e82cd0e đã push — xem `git log`).
+  e82cd0e đã push — xem `git log`). M01-03 làm trên nhánh
+  `feature/M01-03-api-spec` (commit + push — xem `git log` trên nhánh).
+  M01-04 làm trên nhánh `feature/M01-04-sitemap-wireframe` (commit +
+  push — xem `git log` trên nhánh).
 - **Môi trường chạy:** frontend http://localhost:3000, admin
   http://localhost:3001, backend http://localhost:3002
   (`GET /api/v1/health`, Swagger tại `/api/docs`).
@@ -108,7 +158,156 @@ dự án đang ở đâu.
   ChatGPT ACCEPT Revision 02 ngày 26/11/2026 ~12:50 (12/12 tiêu chí);
   M01-02 chốt DONE theo quyết định của Henry 26/11/2026 ~11:55 (chỉ
   cần ChatGPT đồng ý là đủ). PD-01 → PD-09 giữ nguyên, chờ Henry
-  quyết định. Đang nhờ ChatGPT giao brief M01-03 (API Specification).
+  quyết định.
+- M01-03 (API Specification) DONE: bản đầu commit 5cfcd3f đã push lên GitHub
+  (branch feature/M01-03-api-spec, remote HEAD đã kiểm chứng); ChatGPT review
+  trực tiếp trên GitHub ngày 26/11/2026 ~14:38 sau khi Henry cấp quyền truy cập
+  GitHub cho ChatGPT (chỉ repo seecarauto): 11/15 tiêu chí PASS (AC-11, AC-12
+  PASS* có điều kiện), 4 FAIL (AC-10, AC-13, AC-14, AC-15) — yêu cầu
+  Revision 02 (đồng bộ HTTP status, If-Match bắt buộc, đánh dấu P0-PROVISIONAL
+  cho endpoint phụ thuộc PD-02/03/04/05/06, cập nhật CURRENT_STATE). Revision
+  02 hoàn thành (commit b491055, đã push, remote HEAD khớp), đã báo cáo
+  ChatGPT; ChatGPT review 26/11 ~15:00: 14/15 PASS, chỉ AC-15 FAIL
+  (Handbook chưa cập nhật đúng Revision 02). Revision 03 hoàn thành (commit
+  c4c5153, đã push, remote HEAD khớp), đã báo cáo ChatGPT ~15:06; ChatGPT
+  kiểm tra lại AC-15 ~15:08: vẫn FAIL vì các file mô tả Revision 03 là
+  "đang làm". Revision 04 hoàn thành (commit b593e98, đã push, remote HEAD
+  khớp), đã báo cáo ChatGPT ~15:11; ChatGPT kiểm tra lại AC-15 ~15:12: vẫn
+  FAIL vì Task Brief còn thông tin cũ (ngày báo cáo, checklist
+  Handbook/Git) và CURRENT_STATE chưa ghi rõ commit b593e98. Revision 05
+  hoàn thành (commit 6a7301b, đã push, remote HEAD khớp), đã báo cáo
+  ChatGPT ~15:15; ChatGPT kiểm tra lại AC-15 ~15:16: vẫn FAIL vì checklist
+  Git còn ghi b593e98, CHANGELOG chưa ghi Revision 05 hoàn thành và
+  checklist Handbook chưa xác nhận trạng thái sau Revision 05. M01-03 đang
+  chờ ChatGPT kiểm tra lại AC-15 sau bản ghi này (Revision 06 cập nhật các
+  điểm trên). ChatGPT ACCEPT M01-03 ngày 26/11/2026 ~15:22 (15/15 AC đạt,
+  commit được chấp nhận b625015). M01-03 chốt DONE (housekeeping commit
+  f320968 — xem git log); ChatGPT xác minh housekeeping ngày 26/11/2026
+  ~15:51 (M01-03 chính thức DONE) và giao brief M01-04 (Sitemap và
+  Wireframe), ủy quyền bắt đầu ngay.
+- M01-04 (Sitemap và Wireframe) IN_REVIEW: bản đầu hoàn thành ngày
+  26/11/2026 trên nhánh `feature/M01-04-sitemap-wireframe` (base commit
+  f320968): `docs/ui-ux/SITEMAP.md` (19 mục, URL theo ADR-004, truy vết
+  FR → trang), `docs/ui-ux/diagrams/sitemap.mmd` (Mermaid render OK: 18
+  node / 25 cạnh), `docs/ui-ux/WIREFRAMES.md` (13 mẫu trang, desktop +
+  mobile), `docs/ui-ux/USER_FLOWS.md` (15 luồng F-01 → F-15, 5 luồng thay
+  thế, 10 trường hợp lỗi), Task Brief `tasks/M01-04.md`. Kiểm tra thật:
+  URL 20/20 PASS, đối chiếu API 30/30 PASS, walkthrough 15/15 PASS,
+  tự đánh giá 15/15 AC (AC-15 hoàn tất sau khi commit này được push và
+  xác minh remote HEAD). D-08/D-09 giữ Pending (chỉ đề xuất, không tự
+  chốt); không tạo dữ liệu kinh doanh giả. Đã báo cáo ChatGPT trong chat
+  mới của Project, đang chờ review. ChatGPT review bản đầu ngày
+  26/11/2026 ~16:15: 14/15 AC PASS, chỉ AC-12 FAIL (thiếu wireframe
+  Mobile cho mẫu 13b trang 404 — lỗi đếm của Muse: bản đầu ghi 13 khối
+  Mobile nhưng thực tế mẫu 13b chưa có Mobile). Revision 02 hoàn thành
+  (bổ sung wireframe Mobile cho 13b + nhãn Desktop cho 13b; cập nhật bằng
+  chứng §9.4/§9.8/AC-12: 14 khối Desktop + 14 khối Mobile; kiểm tra lại
+  toàn bộ 15 AC — 15/15 PASS), đã báo cáo lại ChatGPT trong cùng chat
+  review. ChatGPT ACCEPT Revision 02 ngày 26/11/2026 — 15/15 AC PASS —
+  M01-04 DONE (commit được chấp nhận fcd4db7; không yêu cầu Revision 03).
+  Housekeeping commit này đã cập nhật trạng thái M01-04 thành DONE; không
+  sửa deliverables đã nghiệm thu. Task tiếp theo M01-05 đã được giao
+  brief, AUTHORIZED TO START ngay. ChatGPT xác minh housekeeping ngày
+  26/11/2026 (commit 91d308b — M01-04 chính thức DONE) và giao brief chi
+  tiết M01-05 (7 deliverables + 12 AC).
+- M01-05 (Cấu trúc Admin Dashboard) IN_REVIEW: bản đầu hoàn thành ngày
+  26/11/2026 trên nhánh `feature/M01-05-admin-dashboard` (base commit
+  91d308b): `docs/ui-ux/ADMIN_SITEMAP.md` (30 mục), `docs/ui-ux/ADMIN_NAVIGATION.md`
+  (sidebar 7 nhóm/14 mục, header, breadcrumb, quy tắc theo quyền),
+  `docs/ui-ux/RBAC_MATRIX.md` (13 module × 7 hành động ↔ permission code
+  ↔ API endpoint, 5 vai trò ví dụ), `docs/ui-ux/ADMIN_WIREFRAMES.md`
+  (12 mẫu / 15 bề mặt, desktop + mobile), `docs/ui-ux/ADMIN_USER_FLOWS.md`
+  (15 luồng F-01 → F-15, 5 luồng thay thế, 10 trường hợp lỗi), Task Brief
+  `tasks/M01-05.md` (7 deliverables + 12 AC theo brief chi tiết ChatGPT).
+  Kiểm tra thật: URL 28/28 PASS, đối chiếu API 168 tham chiếu PASS (3 gap
+  đã ghi rõ: không endpoint liệt kê/tạo/xem chi tiết tài khoản admin —
+  M02), đếm wireframe 15 Desktop + 15 Mobile PASS, walkthrough 15/15 PASS,
+  tự đánh giá 12/12 AC + AC-13 quy trình PASS. Gap ghi rõ: không bảng
+  admin trong ERD (M02); không endpoint tạo `vehicle_applications`;
+  Export chưa có endpoint; Manage không phải permission code độc lập
+  (đơn hàng → `orders.confirm`); Cài đặt là đề xuất (không FR). Đã báo
+  cáo ChatGPT trong chat mới của Project ngày 26/11/2026. ChatGPT review
+  bản đầu: 7 PASS, 2 FAIL (AC-07, AC-08), 4 FIX (AC-05, AC-11, AC-12,
+  AC-13) — NOT ACCEPTED, yêu cầu Revision 02. Revision 02 đã sửa đủ
+  FIX-01 → FIX-06 + điểm kiểm tra bổ sung (URL xe phân cấp sang slug
+  lồng nhau + quy tắc ánh xạ ID giao diện ↔ tham số API ở sitemap §2.1);
+  kiểm tra lại: đối chiếu API (script mở rộng) 0 tham chiếu sai, URL
+  28/28 PASS, wireframe 15 Desktop + 15 Mobile, walkthrough 15/15 PASS.
+  Đã báo cáo lại ChatGPT trong cùng chat review. ChatGPT ACCEPT Revision
+  02 ngày 26/11/2026 — 12/12 AC PASS + AC-13 PASS — M01-05 DONE (commit
+  được chấp nhận 25571ef; không yêu cầu Revision 03). ChatGPT ghi rõ
+  không cần housekeeping commit bổ sung chỉ để xác nhận nghiệm thu và cho
+  phép cập nhật trạng thái M01-05 thành DONE trong Project Handbook theo
+  quy trình hiện hành. Housekeeping commit này đã cập nhật trạng thái
+  M01-05 thành DONE; không sửa deliverables đã nghiệm thu. Task tiếp theo
+  M01-06 đã được giao brief, AUTHORIZED TO START ngay.
+- **M01-06 IN_REVIEW (bản đầu, commit SHA trong git log — 26/11/2026):**
+  nghiên cứu 5 website phụ tùng thật (Quang Vũ, RockAuto, PartsGeek,
+  AutoZone, MAST) + phân tích theo loại trang (tìm theo xe, tìm kiếm, chi
+  tiết, admin) + Design System (màu ocean blue + vàng, Inter, scale
+  Tailwind, animation 150ms; tỷ lệ tương phản tính thật) + đề xuất phương
+  án (khuyến nghị Tailwind + shadcn/ui; D-07 font tự host chỉ là đề xuất,
+  chờ Henry/ChatGPT). Tự đánh giá 12/12 AC + AC-13 PASS. Đã báo cáo
+  ChatGPT trong chat mới của Project, đang chờ review. ChatGPT review
+  bản đầu ngày 26/11/2026: 11/12 AC PASS, AC-12 FAIL, AC-11/AC-13 PASS*
+  — NOT ACCEPTED, yêu cầu Revision 02 (FIX-01 tách R-A5/R-A6, FIX-02
+  chú thích D-08/D-09, FIX-03 bảng phân loại mức độ quan sát). Revision
+  02 (commit 58a3e81) đã sửa đủ FIX-01 → FIX-03, đã báo cáo lại ChatGPT
+  trong chat mới "Review M01-06 Revision 02". ChatGPT review Revision
+  02 ngày 26/11/2026: 11/12 AC PASS, AC-01 FAIL, AC-13 PASS* — FIX-01
+  + FIX-02 PASS, FIX-03 chưa đạt (nhãn "Không có" cho MAST suy diễn quá
+  mức từ trang chủ) — NOT ACCEPTED, yêu cầu Revision 03 với phạm vi hẹp
+  (chỉ sửa phân loại MAST + kết luận). Revision 03 (commit 8200e05) đã
+  sửa đúng yêu cầu, đã báo cáo lại ChatGPT trong chat mới "Review M01-06
+  Revision 03". ChatGPT review Revision 03 ngày 26/11/2026: 11/12 AC
+  PASS, AC-01 FAIL, AC-13 PASS* — FIX-03 vẫn chưa đạt (bảng §1.3 còn 7
+  ô "Không" cho MAST, §1.1/§2.5 chưa đồng bộ) — NOT ACCEPTED, yêu cầu
+  Revision 04 với FIX-04 (đồng bộ toàn UI_RESEARCH.md). Revision 04
+  (commit a6db48b) đã sửa đúng yêu cầu, đã báo cáo lại ChatGPT trong
+  chat mới "Review M01-06 Revision 04". ChatGPT review Revision 04 ngày
+  26/11/2026: 11/12 AC PASS, AC-01 FAIL, AC-13 PASS* — chỉ L14 chưa
+  đạt (vẫn suy diễn "không bán được hàng online" cho toàn website) —
+  NOT ACCEPTED, yêu cầu Revision 05 với FIX-05 (sửa L14, tách quan sát
+  và bài học). Revision 05 đã sửa đúng yêu cầu (commit SHA trong git
+  log), đã báo cáo lại ChatGPT trong chat mới "Review M01-06 Revision
+  05". ChatGPT review Revision 05 ngày 26/11/2026: AC-01 → AC-12 PASS
+  12/12, AC-13 FAIL — chỉ Task Brief chưa đồng bộ với commit Revision
+  05 (dòng Trạng thái đầu file + §9.13) — NOT ACCEPTED, yêu cầu
+  Revision 06 với FIX-06 (đồng bộ Task Brief). Revision 06 đã sửa đúng
+  yêu cầu (commit SHA trong git log), đã báo cáo lại ChatGPT trong chat
+  mới "Review M01-06 Revision 06". ChatGPT review Revision 06 ngày
+  26/11/2026: AC-01 → AC-12 PASS (kế thừa Revision 05), AC-13 FAIL —
+  chỉ §9.18 ghi sai số lượng file ("5 file" trong khi diff thực tế 4
+  file, +45/−11 dòng) — NOT ACCEPTED, yêu cầu Revision 07 với FIX-07
+  (sửa bằng chứng số lượng file trong §9.18). Revision 07 đã sửa đúng
+  yêu cầu (commit SHA trong git log), đã báo cáo lại ChatGPT trong chat
+  mới "Review M01-06 Revision 07". ChatGPT review Revision 07 ngày
+  26/11/2026: AC-01 → AC-12 PASS (kế thừa Revision 05), AC-13 FAIL —
+  FIX-07 chưa xuất hiện trong Task Brief tại commit 6470920 (phần sửa
+  áp nhầm vào gạch đầu dòng của §9.16, §9.19 đặt sai vị trí trước
+  §9.17) — NOT ACCEPTED, yêu cầu Revision 08 với FIX-08 (sửa đúng
+  §9.18 + chuyển §9.19 về đúng vị trí). Revision 08 đã sửa đúng yêu
+  cầu (commit SHA trong git log), đã báo cáo lại ChatGPT trong chat
+  mới "Review M01-06 Revision 08". ChatGPT ACCEPT M01-06 ngày
+  26/11/2026: AC-01 → AC-12 PASS 12/12, AC-13 PASS, FIX-08 PASS —
+  commit được chấp nhận 5d12ce1. Không yêu cầu Revision 09. **M01-06
+  DONE.** M01-07 (Backlog và chia Sprint) đã được ChatGPT đề xuất kế
+  hoạch; Henry đã duyệt kế hoạch ngày 26/11/2026 ~20:36; M01-07 đã
+  bắt đầu (branch feature/M01-07-backlog-sprint).
+- **M01-07 DONE (ChatGPT ACCEPT Revision 06 ngày 26/11/2026 —
+  11/11 AC PASS, không yêu cầu Revision 07):** PRODUCT_BACKLOG.md
+  (89 mã task M00-01 → M09-10, priority/dependency/trạng thái) +
+  SPRINT_PLAN.md (10 Sprint × 2 tuần, tuần 1–20) + Task Brief
+  M01-07.md (11 AC). Kiểm tra thật bằng script: 89 mã, không
+  trùng/thiếu; 48 dependency đều tồn tại, không vòng lặp; 88 task
+  trong Sprint + M07-05 BLOCKED_BY_D-04 ngoài Sprint; gates §13:
+  21 hàng / 22 task. **ISSUE-01 ĐÃ QUYẾT ĐỊNH: tổng 89** (phương án
+  (a)). Commit được chấp nhận 5b6a67f (parent 507dc07, 5 file
+  +101/−22); ChatGPT xác minh trực tiếp trên GitHub. **Milestone
+  M01 hoàn thành về mặt nghiệm thu: M01-01 → M01-07 đều đã được
+  chấp nhận.** Housekeeping sau nghiệm thu (commit SHA trong git
+  log): Task Brief (§11 "Kết quả nghiệm thu"), CURRENT_STATE,
+  TASK_BOARD, CHANGELOG.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 
