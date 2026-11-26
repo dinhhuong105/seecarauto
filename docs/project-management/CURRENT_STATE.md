@@ -3,7 +3,7 @@
 Cập nhật sau mỗi task. Đây là nơi cuộc chat task mới đọc đầu tiên để biết
 dự án đang ở đâu.
 
-## Trạng thái hiện tại (sau M00, M01-01 DONE, M01-02 DONE, M01-03 IN_REVIEW — 26/11/2026)
+## Trạng thái hiện tại (sau M00, M01-01 DONE, M01-02 DONE, M01-03 DONE — 26/11/2026)
 
 - **Milestone đang làm:** M01 — Architecture & UI/UX.
 - **Trạng thái M00:** DONE (7/7 task, nghiệm thu đầy đủ 26/11/2026:
@@ -50,7 +50,7 @@ dự án đang ở đâu.
   `docs/database/DATA_DICTIONARY.md`,
   `docs/project-management/tasks/M01-02.md`. Chỉ làm tài liệu thiết kế
   — không Prisma schema/migration, không code, không seed data.
-- **Trạng thái M01-03 (API Specification):** IN_REVIEW — Revision 02 đã
+- **Trạng thái M01-03 (API Specification):** DONE — Revision 02 đã
   hoàn thành ngày 26/11/2026 (commit b491055 trên nhánh
   `feature/M01-03-api-spec`, remote HEAD đã kiểm chứng khớp local HEAD)
   và đã báo cáo ChatGPT review trong chat "Review M01-03 API Specification".
@@ -93,18 +93,15 @@ dự án đang ở đâu.
   remote HEAD khớp, đã báo cáo ChatGPT ~15:15); ChatGPT kiểm tra lại AC-15
   ~15:16: vẫn FAIL — checklist Git còn ghi b593e98, CHANGELOG chưa ghi
   Revision 05 hoàn thành, checklist Handbook chưa xác nhận trạng thái sau
-  Revision 05, ngày báo cáo chưa ghi Revision 05. Revision 06 hoàn thành,
-  đã cập nhật các điểm này ở cả 4 file; đang chờ ChatGPT kiểm tra lại
-  AC-15. M01-03 chỉ chuyển DONE khi ChatGPT ACCEPT (15 tiêu chí
-  AC-01 → AC-15).
-- **Việc kế tiếp:** chờ ChatGPT kiểm tra lại AC-15 sau bản ghi này
-  (Revision 06 cập nhật ngày báo cáo Revision 05, checklist Handbook/Git
-  và trạng thái Revision 05 ở cả 4 file Handbook — tài liệu đã commit mô
-  tả revision của chính nó ở thì hoàn thành, vì lúc đọc thì nó đã hoàn
-  thành; không mô tả là "đang làm"). Nếu ACCEPT thì làm housekeeping chốt
-  M01-03 DONE rồi nhờ ChatGPT giao brief M01-04 (Sitemap và Wireframe).
-  M02 (Prisma schema/migration) chưa được phép bắt đầu cho tới khi các
-  điều kiện và nhiệm vụ phụ thuộc được chấp nhận.
+  Revision 05, ngày báo cáo chưa ghi Revision 05. Revision 06 hoàn thành, đã cập nhật các điểm này ở cả 4 file. ChatGPT
+  ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
+  PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
+  chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
+- **Việc kế tiếp:** báo cáo housekeeping cho ChatGPT trong cùng chat
+  review để ChatGPT xác minh commit, rồi nhờ ChatGPT giao brief M01-04
+  (Sitemap và Wireframe). M01-04 chưa bắt đầu — chỉ bắt đầu sau khi
+  ChatGPT giao brief. M02 (Prisma schema/migration) chưa được phép bắt đầu
+  cho tới khi các điều kiện và nhiệm vụ phụ thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
@@ -161,7 +158,7 @@ dự án đang ở đâu.
   M01-02 chốt DONE theo quyết định của Henry 26/11/2026 ~11:55 (chỉ
   cần ChatGPT đồng ý là đủ). PD-01 → PD-09 giữ nguyên, chờ Henry
   quyết định.
-- M01-03 (API Specification) IN_REVIEW: bản đầu commit 5cfcd3f đã push lên GitHub
+- M01-03 (API Specification) DONE: bản đầu commit 5cfcd3f đã push lên GitHub
   (branch feature/M01-03-api-spec, remote HEAD đã kiểm chứng); ChatGPT review
   trực tiếp trên GitHub ngày 26/11/2026 ~14:38 sau khi Henry cấp quyền truy cập
   GitHub cho ChatGPT (chỉ repo seecarauto): 11/15 tiêu chí PASS (AC-11, AC-12
@@ -182,8 +179,10 @@ dự án đang ở đâu.
   Git còn ghi b593e98, CHANGELOG chưa ghi Revision 05 hoàn thành và
   checklist Handbook chưa xác nhận trạng thái sau Revision 05. M01-03 đang
   chờ ChatGPT kiểm tra lại AC-15 sau bản ghi này (Revision 06 cập nhật các
-  điểm trên); M01-04 chưa bắt đầu — chỉ bắt đầu M01-04 sau khi ChatGPT
-  ACCEPT M01-03.
+  điểm trên). ChatGPT ACCEPT M01-03 ngày 26/11/2026 ~15:22 (15/15 AC đạt,
+  commit được chấp nhận b625015). M01-03 chốt DONE (housekeeping commit —
+  xem git log); M01-04 chưa bắt đầu — chỉ bắt đầu sau khi ChatGPT giao
+  brief.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

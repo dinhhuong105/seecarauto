@@ -2,12 +2,28 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-03 DONE (ChatGPT ACCEPT 15/15, commit b625015)
+
+- ChatGPT ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí nghiệm thu
+  đạt (AC-01 → AC-14 đạt, AC-11 và AC-12 PASS* có điều kiện; AC-15 PASS
+  sau Revision 06). Commit được chấp nhận: b625015 (Revision 06).
+  M01-03 chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là
+  đủ, Henry không cần click duyệt từng task).
+- Housekeeping (commit này): trạng thái M01-03 thành DONE trong Task
+  Brief, CURRENT_STATE và TASK_BOARD; hiệu chỉnh giờ báo cáo Revision 06
+  từ ~15:23 (ước tính lúc commit) thành ~15:21 (giờ đăng thực tế theo
+  ChatGPT); checklist Git ghi commit mới nhất là housekeeping này (SHA
+  trong git log). Không sửa nội dung API đã nghiệm thu, không sửa
+  PRD/SRS/ERD, không tạo Prisma schema/migration.
+- M01-04 (Sitemap và Wireframe) là task tiếp theo, chưa bắt đầu — chỉ bắt
+  đầu sau khi ChatGPT giao Task Brief.
+
 ## 26/11/2026 — M01-03 IN_REVIEW (Revision 06 hoàn thành — cập nhật AC-15; chờ kiểm tra lại)
 
 - Revision 06 hoàn thành (commit — SHA trong git log, không ghi SHA của
   chính commit này vào file): cập nhật 6 điểm AC-15 ở cả 4 file Handbook —
   Task Brief bổ sung ngày báo cáo Revision 05 (~15:15) và Revision 06
-  (~15:23), checklist Handbook xác nhận cả 4 file đã đồng bộ trạng thái
+  (~15:21 — hiệu chỉnh từ ~15:23 ước tính lúc commit), checklist Handbook xác nhận cả 4 file đã đồng bộ trạng thái
   Revision 05, checklist Git ghi commit mới nhất là Revision 06; CHANGELOG
   thêm mục Revision 05 hoàn thành; TASK_BOARD và CURRENT_STATE ghi nhận
   Revision 05 hoàn thành (commit 6a7301b, đã push, remote HEAD khớp).
