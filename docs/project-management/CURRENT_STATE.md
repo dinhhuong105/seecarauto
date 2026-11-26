@@ -97,11 +97,10 @@ dự án đang ở đâu.
   ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
-- **Việc kế tiếp:** báo cáo Revision 02 của M01-04 cho ChatGPT trong
-  cùng chat review để ChatGPT kiểm tra lại AC-12 (15 AC). M01-05 (Admin
-  Dashboard) là task tiếp theo sau khi M01-04 được ACCEPT. M02 (Prisma
-  schema/migration) chưa được phép bắt đầu cho tới khi các điều kiện và
-  nhiệm vụ phụ thuộc được chấp nhận.
+- **Việc kế tiếp:** bắt đầu M01-05 (Admin Dashboard) — ChatGPT đã giao
+  brief và AUTHORIZED TO START ngay (26/11/2026). M01-06 chưa bắt đầu.
+  M02 (Prisma schema/migration) chưa được phép bắt đầu cho tới khi các
+  điều kiện và nhiệm vụ phụ thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
@@ -204,7 +203,11 @@ dự án đang ở đâu.
   (bổ sung wireframe Mobile cho 13b + nhãn Desktop cho 13b; cập nhật bằng
   chứng §9.4/§9.8/AC-12: 14 khối Desktop + 14 khối Mobile; kiểm tra lại
   toàn bộ 15 AC — 15/15 PASS), đã báo cáo lại ChatGPT trong cùng chat
-  review, đang chờ kiểm tra lại.
+  review. ChatGPT ACCEPT Revision 02 ngày 26/11/2026 — 15/15 AC PASS —
+  M01-04 DONE (commit được chấp nhận fcd4db7; không yêu cầu Revision 03).
+  Housekeeping commit này đã cập nhật trạng thái M01-04 thành DONE; không
+  sửa deliverables đã nghiệm thu. Task tiếp theo M01-05 đã được giao
+  brief, AUTHORIZED TO START ngay.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

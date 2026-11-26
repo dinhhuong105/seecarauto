@@ -2,6 +2,18 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-04 DONE (ACCEPT Revision 02, 15/15 AC)
+
+- ChatGPT ACCEPT Revision 02 (commit fcd4db7) ngày 26/11/2026 — 15/15 AC
+  PASS — M01-04 DONE; không yêu cầu Revision 03. AC-12 được kiểm tra lại
+  trực tiếp (mẫu 13b có Desktop + Mobile, 14 khối Desktop + 14 khối
+  Mobile); các AC khác giữ nguyên PASS từ review bản đầu.
+- Housekeeping commit này (SHA trong git log) đã cập nhật trạng thái
+  M01-04 thành DONE trong Project Handbook (Task Brief §12, CURRENT_STATE,
+  TASK_BOARD, CHANGELOG); không sửa deliverables đã nghiệm thu.
+- Task tiếp theo: M01-05 (Admin Dashboard) — ChatGPT giao brief cùng ngày
+  nghiệm thu, AUTHORIZED TO START ngay. M01-06 và M02 chưa bắt đầu.
+
 ## 26/11/2026 — M01-04 Revision 02 (sửa AC-12: wireframe Mobile cho trang 404)
 
 - ChatGPT review bản đầu M01-04 (commit 7a121e3) ngày 26/11/2026 ~16:15:
