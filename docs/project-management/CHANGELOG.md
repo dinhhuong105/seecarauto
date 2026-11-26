@@ -2,6 +2,22 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-06 DONE (ChatGPT ACCEPT Revision 08)
+
+- ChatGPT ACCEPT M01-06 ngày 26/11/2026 (verdict Revision 08, chat
+  "Review M01-06 Revision 08"): AC-01 → AC-12 PASS 12/12 (kế thừa
+  Revision 05), AC-13 PASS, FIX-08 PASS. Không yêu cầu Revision 09.
+  Commit được chấp nhận: 5d12ce1 (đầy đủ
+  5d12ce11ed634457813d90024a396716d0bfc640). ChatGPT đã đọc trực tiếp
+  commit trên GitHub và đối chiếu diff Revision 07 → Revision 08
+  (4 file, +61/−19).
+- Housekeeping sau nghiệm thu: commit này (SHA trong git log) chỉ cập
+  nhật Handbook để ghi DONE (Task Brief + §11 "Kết quả nghiệm thu",
+  CURRENT_STATE, TASK_BOARD, CHANGELOG). Không sửa tài liệu thiết kế.
+- Nhiệm vụ tiếp theo: M01-07 — Backlog và chia Sprint. ChatGPT đã đề
+  xuất kế hoạch M01-07 và đang chờ Henry xác nhận trước khi Muse thực
+  hiện.
+
 ## 26/11/2026 — M01-06 Revision 08 (FIX-08 — sửa đúng §9.18 + chuyển §9.19 về đúng vị trí)
 
 - ChatGPT review Revision 07 (commit 6470920) ngày 26/11/2026: AC-01 →
