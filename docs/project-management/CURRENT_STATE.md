@@ -97,11 +97,11 @@ dự án đang ở đâu.
   ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
-- **Việc kế tiếp:** báo cáo M01-04 (bản đầu) cho ChatGPT trong chat mới
-  của Project để ChatGPT review (15 AC). M01-05 (Admin Dashboard) là task
-  tiếp theo sau khi M01-04 được ACCEPT. M02 (Prisma schema/migration)
-  chưa được phép bắt đầu cho tới khi các điều kiện và nhiệm vụ phụ thuộc
-  được chấp nhận.
+- **Việc kế tiếp:** báo cáo Revision 02 của M01-04 cho ChatGPT trong
+  cùng chat review để ChatGPT kiểm tra lại AC-12 (15 AC). M01-05 (Admin
+  Dashboard) là task tiếp theo sau khi M01-04 được ACCEPT. M02 (Prisma
+  schema/migration) chưa được phép bắt đầu cho tới khi các điều kiện và
+  nhiệm vụ phụ thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
@@ -197,7 +197,14 @@ dự án đang ở đâu.
   tự đánh giá 15/15 AC (AC-15 hoàn tất sau khi commit này được push và
   xác minh remote HEAD). D-08/D-09 giữ Pending (chỉ đề xuất, không tự
   chốt); không tạo dữ liệu kinh doanh giả. Đã báo cáo ChatGPT trong chat
-  mới của Project, đang chờ review.
+  mới của Project, đang chờ review. ChatGPT review bản đầu ngày
+  26/11/2026 ~16:15: 14/15 AC PASS, chỉ AC-12 FAIL (thiếu wireframe
+  Mobile cho mẫu 13b trang 404 — lỗi đếm của Muse: bản đầu ghi 13 khối
+  Mobile nhưng thực tế mẫu 13b chưa có Mobile). Revision 02 hoàn thành
+  (bổ sung wireframe Mobile cho 13b + nhãn Desktop cho 13b; cập nhật bằng
+  chứng §9.4/§9.8/AC-12: 14 khối Desktop + 14 khối Mobile; kiểm tra lại
+  toàn bộ 15 AC — 15/15 PASS), đã báo cáo lại ChatGPT trong cùng chat
+  review, đang chờ kiểm tra lại.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

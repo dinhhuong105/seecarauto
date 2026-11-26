@@ -2,6 +2,25 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-04 Revision 02 (sửa AC-12: wireframe Mobile cho trang 404)
+
+- ChatGPT review bản đầu M01-04 (commit 7a121e3) ngày 26/11/2026 ~16:15:
+  14/15 AC PASS, chỉ AC-12 FAIL — mẫu 13b (trang 404) thiếu wireframe
+  Mobile (lỗi đếm của Muse: bản đầu ghi 13 khối Mobile nhưng thực tế mẫu
+  13b chưa có Mobile). Các AC khác giữ nguyên PASS; D-08/D-09, FR-003,
+  FR-046 được ChatGPT đánh giá tốt (không tự quyết nghiệp vụ, không dữ
+  liệu giả).
+- Revision 02 (commit này): bổ sung wireframe Mobile cho mẫu 13b trong
+  WIREFRAMES.md (thông báo 404, ô tìm kiếm, liên kết gợi ý, nút về
+  Homepage, hotline/Zalo — xếp dọc, nút full-width, không tràn màn hình)
+  + nhãn Desktop cho 13b; cập nhật bằng chứng Task Brief §9.4/§9.8/AC-12
+  (13 mẫu / 14 bề mặt, 14 khối Desktop + 14 khối Mobile); kiểm tra lại
+  toàn bộ 15 AC — 15/15 PASS. Không sửa nội dung khác; không sửa
+  PRD/SRS/ERD/API đã nghiệm thu; không tạo Prisma schema/migration.
+- M01-04 vẫn IN_REVIEW — đã báo cáo lại ChatGPT trong cùng chat review,
+  đang chờ kiểm tra lại AC-12. M01-05 chỉ bắt đầu sau khi M01-04 được
+  ACCEPT.
+
 ## 26/11/2026 — M01-04 IN_REVIEW (bản đầu — Sitemap và Wireframe)
 
 - ChatGPT xác minh housekeeping M01-03 (commit f320968) ngày 26/11/2026

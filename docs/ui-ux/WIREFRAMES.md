@@ -600,6 +600,8 @@
 
 **Mục đích (FR-048):** báo rõ trang không tồn tại và dẫn khách quay lại.
 
+**Desktop:**
+
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │ HEADER (dùng chung)                                              │
@@ -615,6 +617,34 @@
 └──────────────────────────────────────────────────────────────────┘
 ```
 
+**Mobile:**
+
+```
+┌──────────────────────────────┐
+│ HEADER (thu gọn — logo, ô    │
+│ tìm kiếm, giỏ, menu ☰)       │
+├──────────────────────────────┤
+│ [404 — Không tìm thấy trang] │
+│ [Mô tả ngắn: Trang bạn tìm   │
+│  kiếm không tồn tại hoặc đã  │
+│  được chuyển.]               │
+│ [Ô tìm kiếm (full-width)]    │
+│ [Gợi ý — xếp dọc, nút lớn:   │
+│  Danh mục phụ tùng → /parts] │
+│ [Thương hiệu → /brands]      │
+│ [Tìm theo xe → /vehicles]    │
+│ [Về trang chủ → /] (nút      │
+│  chính, full-width)          │
+│ [Liên hệ Zalo/hotline        │
+│  0886706338 — nút gọi/Zalo   │
+│  full-width, dễ bấm]         │
+├──────────────────────────────┤
+│ FOOTER (thu gọn)             │
+└──────────────────────────────┘
+```
+
+**Bố cục Mobile (ghi chú):** mọi thành phần xếp dọc theo chiều rộng màn hình; các nút và liên kết gợi ý dùng kích thước chạm đủ lớn (full-width hoặc gần full-width), không tràn ngang, không cần cuộn ngang; ô tìm kiếm full-width; nút "Về trang chủ" và nút liên hệ Zalo/hotline là hai CTA chính, đặt cuối khối nội dung để dễ bấm bằng một tay.
+
 **Áp dụng khi:** URL sản phẩm/danh mục/thương hiệu/bài viết đã ẩn/xóa; URL gõ sai; liên kết cũ đã đổi (khi chưa có redirect 301).
 
 **Trạng thái lỗi chung (500 / lỗi tải dữ liệu):** thông báo lỗi rõ ràng + nút thử lại + liên hệ hỗ trợ khi lỗi kéo dài (UI_UX_STANDARDS mục 1.5); không hiển thị trang trắng.
@@ -623,7 +653,7 @@
 
 ## Ghi chú cuối
 
-- **Đếm mẫu trang:** 13 mẫu (mẫu 13 gồm 2 bề mặt hệ thống/liên hệ: Contact và 404) — đủ 13 mẫu theo brief M01-04 §2.6 AC-12; mọi trang trong SITEMAP.md mục 2 đều có wireframe tương ứng (trang 404 và trạng thái lỗi chung nằm trong mẫu 13b).
+- **Đếm mẫu trang:** 13 mẫu, 14 bề mặt (mẫu 13 gồm 2 bề mặt: 13a Contact và 13b 404); mỗi bề mặt có bố cục Desktop + Mobile — tổng 14 khối Desktop + 14 khối Mobile. Đủ 13 mẫu theo brief M01-04 §2.6 AC-12; mọi trang trong SITEMAP.md mục 2 đều có wireframe tương ứng (trang 404 và trạng thái lỗi chung nằm trong mẫu 13b).
 - **Chưa phải thiết kế đồ họa:** màu sắc, font, hình ảnh thật và chi tiết visual thuộc M01-06 (nghiên cứu UI/UX, trình Henry duyệt trước khi triển khai — UI_UX_STANDARDS mục 3).
 - **Không triển khai frontend trong task này:** wireframe chỉ là tài liệu thiết kế; code frontend thuộc các milestone sau.
 - **Lịch sử revision:** v0.1 (bản đầu) 26/11/2026 — IN_REVIEW, chờ ChatGPT review.
