@@ -1,0 +1,4972 @@
+openapi: 3.1.0
+info:
+  title: SeeCar Auto API
+  description: |
+    API đặc tả cho website thương mại điện tử phụ tùng ô tô SeeCar Auto.
+    Tài liệu chính: docs/api/API_SPEC.md (M01-03). Tài liệu này phải khớp
+    API_SPEC.md — kiểm chứng bằng script đối chiếu (Test 2, API_SPEC mục 23).
+    Mọi ví dụ trong file này là ví dụ minh họa, không phải dữ liệu thật.
+  version: 1.0.0
+  contact:
+    name: SeeCar Auto
+    url: https://www.facebook.com/profile.php?id=61597072672914
+  license:
+    name: Proprietary — internal project, not open source
+    identifier: LicenseRef-Proprietary
+servers:
+  - url: http://localhost:3002/api/v1
+    description: Development (backend NestJS, port 3002)
+  - url: https://api.seecarauto.example/api/v1
+    description: Production placeholder — domain thật theo D-01 (chưa chốt)
+tags:
+  - name: Products
+    description: Sản phẩm public và admin (FR-007 đến FR-012, FR-042 đến FR-049)
+  - name: Categories
+    description: Danh mục (FR-015 đến FR-020)
+  - name: Brands
+    description: Thương hiệu (FR-016)
+  - name: Vehicles
+    description: Hãng/dòng/thế hệ/phiên bản xe (FR-021 đến FR-026)
+  - name: Fitments
+    description: Tương thích xe hai chiều (FR-027 đến FR-033)
+  - name: Search
+    description: Tìm kiếm và tra cứu mã (FR-034 đến FR-041)
+  - name: Cart
+    description: Giỏ hàng (FR-050, FR-051)
+  - name: Orders
+    description: Đơn hàng public và admin (FR-052 đến FR-066)
+  - name: Contact
+    description: Form liên hệ (FR-088, FR-089)
+  - name: Articles
+    description: Bài viết và SEO (FR-067 đến FR-074)
+  - name: Auth
+    description: Xác thực admin (FR-090, FR-091)
+  - name: Admin
+    description: Dashboard và redirect (FR-018, FR-075 đến FR-079)
+  - name: RBAC
+    description: Vai trò, phân quyền, audit log (FR-080 đến FR-086)
+components:
+  securitySchemes:
+    AdminAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "JWT access token của tài khoản admin (header Authorization: Bearer <token>)"
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    ProductIdParam:
+      name: productId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    SlugParam:
+      name: slug
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+  schemas:
+    Error:
+      type: object
+      required: [statusCode, message, error]
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        message:
+          type: string
+          description: Thông báo tiếng Việt, thân thiện, không lộ chi tiết nội bộ
+          example: Không tìm thấy sản phẩm.
+        error:
+          type: string
+          description: Error code ổn định, xem docs/api/API_ERROR_CATALOG.md
+          example: PRODUCT_NOT_FOUND
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        retryAfter:
+          type: integer
+          description: Số giây cần chờ (chỉ cho 423 ACCOUNT_LOCKED và 429 RATE_LIMITED)
+    ErrorDetail:
+      type: object
+      required: [field, code, message]
+      properties:
+        field:
+          type: string
+          example: quantity
+        code:
+          type: string
+          example: MIN_VALUE
+        message:
+          type: string
+          example: Số lượng phải từ 1 trở lên.
+    PaginationMeta:
+      type: object
+      required: [page, limit, total, totalPages]
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 137
+        totalPages:
+          type: integer
+          example: 7
+        notice:
+          type: string
+          description: "Thông báo kèm theo danh sách (vd: NO_FITMENT_FOR_VEHICLE khi xe đã chọn không có sản phẩm tương thích)"
+          example: NO_FITMENT_FOR_VEHICLE
+    BrandSummary:
+      type: object
+      required: [id, name, slug]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Aisin
+        slug:
+          type: string
+          example: aisin
+    CategorySummary:
+      type: object
+      required: [id, name, slug]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Động cơ
+        slug:
+          type: string
+          example: engine
+    CategoryTree:
+      type: object
+      required: [id, name, slug]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Động cơ
+        slug:
+          type: string
+          example: engine
+        displayOrder:
+          type: integer
+          example: 1
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryTree'
+    ProductIdentifier:
+      type: object
+      required: [id, productId, identifierType, identifierValue, normalizedValue]
+      properties:
+        id:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        identifierType:
+          type: string
+          enum: [PART_NUMBER, OEM_NUMBER, MANUFACTURER_PART_NUMBER, ALTERNATE_NUMBER]
+        identifierValue:
+          type: string
+          description: Giá trị gốc (giữ nguyên như nhập)
+          example: 16100-0Y010
+        normalizedValue:
+          type: string
+          description: Giá trị chuẩn hóa (uppercase, bỏ phân cách) — dùng để tìm kiếm chính xác
+          example: 161000Y010
+        issuingMakeId:
+          type: [string, "null"]
+          format: uuid
+          description: Hãng xe phát hành (chỉ OEM_NUMBER bắt buộc có, các loại khác phải null — ma trận FIX-01 M01-02)
+        issuingBrandId:
+          type: [string, "null"]
+          format: uuid
+          description: Thương hiệu phát hành (chỉ MANUFACTURER_PART_NUMBER bắt buộc có)
+        isPrimary:
+          type: boolean
+          example: true
+    ProductImage:
+      type: object
+      required: [id, imageUrl]
+      properties:
+        id:
+          type: string
+          format: uuid
+        imageUrl:
+          type: string
+          format: uri
+          description: URL tuyệt đối (S3/R2)
+        altText:
+          type: [string, "null"]
+        displayOrder:
+          type: integer
+          example: 1
+    ProductSpecification:
+      type: object
+      properties:
+        specKey:
+          type: string
+          example: material
+        specValue:
+          type: string
+          example: aluminum
+    ProductSummary:
+      type: object
+      required: [id, sku, name, slug, price, availabilityStatus]
+      properties:
+        id:
+          type: string
+          format: uuid
+        sku:
+          type: string
+          description: SKU nội bộ, duy nhất
+          example: SCA-000123
+        name:
+          type: string
+          example: Bơm nước làm mát
+        slug:
+          type: string
+          example: water-pump-aisin
+        brand:
+          $ref: '#/components/schemas/BrandSummary'
+        category:
+          $ref: '#/components/schemas/CategorySummary'
+        price:
+          type: integer
+          minimum: 0
+          description: Giá VND (số nguyên đồng)
+          example: 550000
+        availabilityStatus:
+          type: string
+          enum: [IN_STOCK, OUT_OF_STOCK]
+        imageUrl:
+          type: [string, "null"]
+          format: uri
+          description: Ảnh chính (ảnh đầu tiên theo displayOrder)
+        matchType:
+          type: string
+          enum: [SKU_EXACT, OEM_EXACT, MPN_EXACT, NAME, BRAND, FUZZY]
+          description: Chỉ có trong kết quả /search — loại khớp theo thứ tự ưu tiên ADR-010
+    VehicleApplicationSummary:
+      type: object
+      required: [id, makeId, modelId]
+      properties:
+        id:
+          type: string
+          format: uuid
+        makeId:
+          type: string
+          format: uuid
+        makeName:
+          type: string
+          example: Toyota
+        makeSlug:
+          type: string
+          example: toyota
+        modelId:
+          type: string
+          format: uuid
+        modelName:
+          type: string
+          example: Vios
+        modelSlug:
+          type: string
+          example: vios
+        generationId:
+          type: [string, "null"]
+          format: uuid
+        generationName:
+          type: [string, "null"]
+        variantId:
+          type: [string, "null"]
+          format: uuid
+        variantName:
+          type: [string, "null"]
+        year:
+          type: [integer, "null"]
+          minimum: 1900
+          maximum: 2100
+    Fitment:
+      type: object
+      required: [id, productId, vehicleApplicationId]
+      properties:
+        id:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        vehicleApplicationId:
+          type: string
+          format: uuid
+        vehicleApplication:
+          $ref: '#/components/schemas/VehicleApplicationSummary'
+        fitmentNote:
+          type: [string, "null"]
+          description: "Ghi chú áp dụng (vd: chỉ bản số tự động — ví dụ minh họa)"
+    ProductDetail:
+      type: object
+      required: [id, sku, name, slug, price, availabilityStatus, status]
+      properties:
+        id:
+          type: string
+          format: uuid
+        sku:
+          type: string
+          example: SCA-000123
+        name:
+          type: string
+          example: Bơm nước làm mát
+        slug:
+          type: string
+          example: water-pump-aisin
+        brand:
+          $ref: '#/components/schemas/BrandSummary'
+        category:
+          $ref: '#/components/schemas/CategorySummary'
+        price:
+          type: integer
+          minimum: 0
+          example: 550000
+        availabilityStatus:
+          type: string
+          enum: [IN_STOCK, OUT_OF_STOCK]
+        status:
+          type: string
+          enum: [DRAFT, PUBLISHED, HIDDEN]
+        description:
+          type: [string, "null"]
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductImage'
+        specifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductSpecification'
+        identifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductIdentifier'
+        fitments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Fitment'
+        fitmentNotice:
+          type: [string, "null"]
+          description: NO_FITMENT_INFO khi sản phẩm chưa có dữ liệu fitment (FR-031)
+        seo:
+          $ref: '#/components/schemas/SeoMeta'
+    SeoMeta:
+      type: object
+      properties:
+        title:
+          type: [string, "null"]
+        description:
+          type: [string, "null"]
+        canonical:
+          type: [string, "null"]
+          format: uri
+    VehicleMake:
+      type: object
+      required: [id, name, slug]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Toyota
+        slug:
+          type: string
+          example: toyota
+        logoUrl:
+          type: [string, "null"]
+          format: uri
+        isVisible:
+          type: boolean
+          example: true
+    VehicleModel:
+      type: object
+      required: [id, makeId, name, slug]
+      properties:
+        id:
+          type: string
+          format: uuid
+        makeId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Vios
+        slug:
+          type: string
+          example: vios
+        isVisible:
+          type: boolean
+          example: true
+    VehicleGeneration:
+      type: object
+      required: [id, modelId, name, slug]
+      properties:
+        id:
+          type: string
+          format: uuid
+        modelId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Thế hệ thứ 4
+        slug:
+          type: string
+          example: gen-4
+        yearFrom:
+          type: integer
+          minimum: 1900
+          maximum: 2100
+          example: 2018
+        yearTo:
+          type: [integer, "null"]
+          minimum: 1900
+          maximum: 2100
+          description: null = thế hệ còn sản xuất
+        isVisible:
+          type: boolean
+          example: true
+    VehicleVariant:
+      type: object
+      required: [id, generationId, name, slug]
+      properties:
+        id:
+          type: string
+          format: uuid
+        generationId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: 1.5G CVT
+        slug:
+          type: string
+          example: 1-5g-cvt
+        isVisible:
+          type: boolean
+          example: true
+    CartItem:
+      type: object
+      required: [itemId, productId, productName, sku, price, quantity, lineTotal]
+      properties:
+        itemId:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        productName:
+          type: string
+          example: Bơm nước làm mát
+        sku:
+          type: string
+          example: SCA-000123
+        price:
+          type: integer
+          minimum: 0
+          description: Giá catalogue hiện tại (không phải giá lúc thêm)
+          example: 550000
+        quantity:
+          type: integer
+          minimum: 1
+          example: 2
+        lineTotal:
+          type: integer
+          example: 1100000
+        imageUrl:
+          type: [string, "null"]
+          format: uri
+        availabilityStatus:
+          type: string
+          enum: [IN_STOCK, OUT_OF_STOCK]
+        unavailable:
+          type: boolean
+          description: true khi sản phẩm bị ẩn/xóa sau khi đã trong giỏ
+        availabilityWarning:
+          type: [string, "null"]
+          example: OUT_OF_STOCK
+        fitmentWarning:
+          type: [string, "null"]
+          description: Cảnh báo khi sản phẩm không tương thích với xe đã chọn (FR-029)
+    Cart:
+      type: object
+      required: [cartToken, items, subtotal, itemCount]
+      properties:
+        cartToken:
+          type: string
+          format: uuid
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        subtotal:
+          type: integer
+          description: Tổng tiền (chỉ tính item còn khả dụng)
+          example: 1100000
+        itemCount:
+          type: integer
+          example: 2
+        warnings:
+          type: array
+          items:
+            type: string
+    OrderItemSnapshot:
+      type: object
+      required: [productNameSnapshot, skuSnapshot, unitPriceSnapshot, quantity, lineTotal]
+      properties:
+        productId:
+          type: string
+          format: uuid
+          description: Tham chiếu tới sản phẩm (RESTRICT) — chỉ để tham chiếu, hiển thị dùng snapshot
+        productNameSnapshot:
+          type: string
+          example: Bơm nước làm mát
+        skuSnapshot:
+          type: string
+          example: SCA-000123
+        unitPriceSnapshot:
+          type: integer
+          example: 550000
+        quantity:
+          type: integer
+          minimum: 1
+          example: 2
+        lineTotal:
+          type: integer
+          example: 1100000
+    Order:
+      type: object
+      required: [orderId, orderCode, status, paymentMethod, totalAmount, items]
+      properties:
+        orderId:
+          type: string
+          format: uuid
+        orderCode:
+          type: string
+          description: Mã đơn không đoán được, không liên tục (FR-058)
+          example: SCA-7K9Q2M4X
+        status:
+          type: string
+          enum: [PENDING, CONFIRMED, SHIPPING, COMPLETED, CANCELLED, REFUNDED]
+          description: Khung P0 — tên trạng thái cuối do M05 chốt (PD-08)
+        paymentMethod:
+          type: string
+          enum: [COD, BANK_TRANSFER]
+        totalAmount:
+          type: integer
+          example: 1100000
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemSnapshot'
+        customerName:
+          type: string
+          example: Nguyễn Văn A
+        customerPhone:
+          type: string
+          example: "0901234567"
+        shippingAddress:
+          type: string
+          example: 123 Đường Lê Lợi, Quận 1, TP. Hồ Chí Minh
+        bankTransferInfo:
+          type: [object, "null"]
+          description: Chỉ khi paymentMethod = BANK_TRANSFER — thông tin chuyển khoản thật do Henry cung cấp khi triển khai
+          properties:
+            bankName:
+              type: string
+            accountNumber:
+              type: string
+            accountName:
+              type: string
+            transferContent:
+              type: string
+              description: Nội dung chuyển khoản chứa mã đơn
+        createdAt:
+          type: string
+          format: date-time
+    OrderSummary:
+      type: object
+      required: [orderId, orderCode, status, paymentMethod, totalAmount]
+      properties:
+        orderId:
+          type: string
+          format: uuid
+        orderCode:
+          type: string
+          example: SCA-7K9Q2M4X
+        status:
+          type: string
+          enum: [PENDING, CONFIRMED, SHIPPING, COMPLETED, CANCELLED, REFUNDED]
+        paymentMethod:
+          type: string
+          enum: [COD, BANK_TRANSFER]
+        totalAmount:
+          type: integer
+          example: 1100000
+        customerName:
+          type: string
+          example: Nguyễn Văn A
+        customerPhone:
+          type: string
+          example: "0901234567"
+        createdAt:
+          type: string
+          format: date-time
+    OrderLookupResult:
+      type: object
+      required: [orderCode, status, paymentMethod, totalAmount]
+      properties:
+        orderCode:
+          type: string
+          example: SCA-7K9Q2M4X
+        status:
+          type: string
+          enum: [PENDING, CONFIRMED, SHIPPING, COMPLETED, CANCELLED, REFUNDED]
+        paymentMethod:
+          type: string
+          enum: [COD, BANK_TRANSFER]
+        totalAmount:
+          type: integer
+          example: 1100000
+        createdAt:
+          type: string
+          format: date-time
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemSnapshot'
+        shippingArea:
+          type: [string, "null"]
+          description: Khu vực giao hàng đã che (chỉ quận/huyện + tỉnh/thành, không hiện số nhà chi tiết và SĐT đầy đủ)
+    ArticleSummary:
+      type: object
+      required: [id, title, slug]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: Cách chọn dầu động cơ đúng cho xe của bạn
+        slug:
+          type: string
+          example: how-to-choose-engine-oil
+        excerpt:
+          type: [string, "null"]
+        coverImageUrl:
+          type: [string, "null"]
+          format: uri
+        publishedAt:
+          type: [string, "null"]
+          format: date-time
+    Article:
+      type: object
+      required: [id, title, slug, status]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: Cách chọn dầu động cơ đúng cho xe của bạn
+        slug:
+          type: string
+          example: how-to-choose-engine-oil
+        content:
+          type: string
+        status:
+          type: string
+          enum: [DRAFT, PUBLISHED]
+        publishedAt:
+          type: [string, "null"]
+          format: date-time
+        seo:
+          $ref: '#/components/schemas/SeoMeta'
+    ArticleSeo:
+      type: object
+      properties:
+        seoTitle:
+          type: [string, "null"]
+        metaDescription:
+          type: [string, "null"]
+        focusKeyword:
+          type: [string, "null"]
+        secondaryKeywords:
+          type: array
+          items:
+            type: string
+        searchIntent:
+          type: [string, "null"]
+        manualOverride:
+          type: array
+          items:
+            type: string
+          description: Danh sách trường đã sửa tay (không bao giờ bị Generate ghi đè — BR-004)
+    Role:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Product Manager
+        description:
+          type: [string, "null"]
+    PermissionEntry:
+      type: object
+      required: [module, action, granted]
+      properties:
+        module:
+          type: string
+          example: products
+        action:
+          type: string
+          example: create
+        granted:
+          type: boolean
+          example: true
+    AuditLog:
+      type: object
+      required: [id, actorId, action, entityType, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        actorId:
+          type: string
+          format: uuid
+        action:
+          type: string
+          example: UPDATE_ROLE_PERMISSIONS
+        entityType:
+          type: string
+          example: ROLE
+        entityId:
+          type: [string, "null"]
+          format: uuid
+        before:
+          type: [object, "null"]
+        after:
+          type: [object, "null"]
+        createdAt:
+          type: string
+          format: date-time
+    Redirect:
+      type: object
+      required: [id, entityType, oldSlug, newSlug]
+      properties:
+        id:
+          type: string
+          format: uuid
+        entityType:
+          type: string
+          enum: [CATEGORY, BRAND, PRODUCT]
+        entityId:
+          type: [string, "null"]
+          format: uuid
+        oldSlug:
+          type: string
+          example: engine-old
+        newSlug:
+          type: string
+          example: engine
+    DashboardSummary:
+      type: object
+      properties:
+        pendingOrders:
+          type: [integer, "null"]
+          description: null + hiddenByPermission khi tài khoản không có orders.view (FR-077)
+        todayOrders:
+          type: integer
+          example: 5
+        publishedProducts:
+          type: integer
+          example: 120
+        draftProducts:
+          type: integer
+          example: 8
+        publishedArticles:
+          type: integer
+          example: 12
+        ordersByStatus:
+          type: object
+          additionalProperties:
+            type: integer
+        hiddenByPermission:
+          type: boolean
+          example: false
+        empty:
+          type: boolean
+          description: true khi chưa có dữ liệu thật (không hiển thị số mẫu — BR-013)
+    AuthTokens:
+      type: object
+      required: [accessToken, refreshToken, tokenType, expiresIn]
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        tokenType:
+          type: string
+          example: Bearer
+        expiresIn:
+          type: integer
+          description: Thời gian sống của access token (giây)
+          example: 900
+        admin:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            username:
+              type: string
+              example: admin
+            roles:
+              type: array
+              items:
+                $ref: '#/components/schemas/Role'
+    AdminMe:
+      type: object
+      required: [id, username, roles, permissions]
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+          example: admin
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+        permissions:
+          type: array
+          items:
+            type: string
+          example: [products.view, products.create, orders.view]
+    FitmentChangeLog:
+      type: object
+      required: [id, productId, vehicleApplicationId, action, changedByAdminId, changedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        vehicleApplicationId:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum: [ATTACH, DETACH]
+        changedByAdminId:
+          type: string
+          format: uuid
+        changedAt:
+          type: string
+          format: date-time
+    ImportStatus:
+      type: object
+      required: [importId, status]
+      properties:
+        importId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [PROCESSING, COMPLETED, FAILED]
+        totalRows:
+          type: integer
+          example: 100
+        successRows:
+          type: integer
+          example: 98
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              row:
+                type: integer
+              message:
+                type: string
+    SuggestItem:
+      type: object
+      required: [type, id, name, slug]
+      properties:
+        type:
+          type: string
+          enum: [PRODUCT, BRAND, CATEGORY]
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Bơm nước làm mát
+        slug:
+          type: string
+          example: water-pump-aisin
+paths:
+  /products:
+    get:
+      operationId: listProducts
+      tags: [Products]
+      summary: Danh sách sản phẩm (lọc, sắp xếp, phân trang)
+      x-required-permission: null
+      security: []
+      parameters:
+        - name: categorySlug
+          in: query
+          schema: { type: string }
+        - name: brandSlug
+          in: query
+          schema: { type: string }
+        - name: minPrice
+          in: query
+          schema: { type: integer, minimum: 0 }
+        - name: maxPrice
+          in: query
+          schema: { type: integer, minimum: 0 }
+        - name: availabilityStatus
+          in: query
+          schema: { type: string, enum: [IN_STOCK, OUT_OF_STOCK] }
+        - name: vehicleApplicationId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: q
+          in: query
+          schema: { type: string }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [newest, price_asc, price_desc, name_asc], default: newest }
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Danh sách sản phẩm
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/ProductSummary' }
+                  meta: { $ref: '#/components/schemas/PaginationMeta' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      operationId: createProduct
+      tags: [Products]
+      summary: Tạo sản phẩm (admin)
+      x-required-permission: products.create
+      security: [{ AdminAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, sku, categoryId, brandId, price, availabilityStatus]
+              properties:
+                name: { type: string, minLength: 1 }
+                sku: { type: string, minLength: 1 }
+                categoryId: { type: string, format: uuid }
+                brandId: { type: string, format: uuid }
+                price: { type: integer, minimum: 0 }
+                availabilityStatus: { type: string, enum: [IN_STOCK, OUT_OF_STOCK] }
+                status: { type: string, enum: [DRAFT, PUBLISHED, HIDDEN], default: DRAFT }
+                description: { type: ["string", "null"] }
+                identifiers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type: { type: string, enum: [PART_NUMBER, OEM_NUMBER, MANUFACTURER_PART_NUMBER, ALTERNATE_NUMBER] }
+                      value: { type: string }
+                      issuingMakeId: { type: ["string", "null"], format: uuid }
+                      issuingBrandId: { type: ["string", "null"], format: uuid }
+      responses:
+        '201':
+          description: Sản phẩm đã tạo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/ProductDetail' }
+        '400':
+          description: "Input không hợp lệ (vd: issuer sai ma trận CHECK)"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền products.create
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: SKU trùng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /products/{productId}:
+    get:
+      operationId: getProduct
+      tags: [Products]
+      summary: Chi tiết sản phẩm (kèm 4 loại mã, hình ảnh, thông số, fitment, SEO)
+      x-required-permission: null
+      security: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema: { type: string }
+          description: UUID hoặc slug (server thử UUID trước, không khớp thì tra theo slug)
+      responses:
+        '200':
+          description: Chi tiết sản phẩm
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/ProductDetail' }
+        '404':
+          description: Sản phẩm không tồn tại, đã ẩn hoặc đã xóa
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    patch:
+      operationId: updateProduct
+      tags: [Products]
+      summary: Sửa sản phẩm (admin)
+      x-required-permission: products.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, minLength: 1 }
+                categoryId: { type: string, format: uuid }
+                brandId: { type: string, format: uuid }
+                price: { type: integer, minimum: 0 }
+                availabilityStatus: { type: string, enum: [IN_STOCK, OUT_OF_STOCK] }
+                status: { type: string, enum: [DRAFT, PUBLISHED, HIDDEN] }
+                description: { type: ["string", "null"] }
+      responses:
+        '200':
+          description: Sản phẩm sau khi sửa
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/ProductDetail' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền products.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Sản phẩm không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    delete:
+      operationId: deleteProduct
+      tags: [Products]
+      summary: Xóa sản phẩm — soft delete (admin); chặn khi đã có trong đơn hàng
+      x-required-permission: products.delete
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+      responses:
+        '204':
+          description: Đã xóa (soft delete)
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền products.delete
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Sản phẩm không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Sản phẩm đã có trong đơn hàng (chỉ được ẩn, không xóa)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /products/{productId}/fitments:
+    get:
+      operationId: listProductFitments
+      tags: [Fitments]
+      summary: Danh sách xe tương thích của một sản phẩm
+      x-required-permission: null
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Danh sách xe tương thích
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Fitment' }
+                  meta: { $ref: '#/components/schemas/PaginationMeta' }
+        '404':
+          description: Sản phẩm không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      operationId: attachFitment
+      tags: [Fitments]
+      summary: Gắn fitment cho sản phẩm (admin)
+      x-required-permission: fitments.create
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [vehicleApplicationId]
+              properties:
+                vehicleApplicationId: { type: string, format: uuid }
+                fitmentNote: { type: ["string", "null"] }
+      responses:
+        '201':
+          description: Fitment đã tạo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Fitment' }
+        '400':
+          description: Vehicle application không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền fitments.create
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Sản phẩm không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Fitment đã tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /products/{productId}/fitments/{fitmentId}:
+    delete:
+      operationId: detachFitment
+      tags: [Fitments]
+      summary: Bỏ gắn fitment (admin)
+      x-required-permission: fitments.delete
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+        - name: fitmentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204':
+          description: Đã bỏ gắn (ghi log DETACH)
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền fitments.delete
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Sản phẩm hoặc fitment không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /products/{productId}/related:
+    get:
+      operationId: listRelatedProducts
+      tags: [Products]
+      summary: Sản phẩm liên quan / thay thế
+      x-required-permission: null
+      security: []
+      x-status: provisional
+      x-blocked-by: M01-04/M03 (tiêu chí liên quan do M01-04/M03 chốt, Henry duyệt)
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+      responses:
+        '200':
+          description: Danh sách sản phẩm liên quan (tối đa 8; chưa có tiêu chí thì trả rỗng)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/ProductSummary' }
+        '404':
+          description: Sản phẩm không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /products/{productId}/images:
+    post:
+      operationId: addProductImage
+      tags: [Products]
+      summary: Thêm hình ảnh sản phẩm — upload S3/R2 (admin)
+      x-required-permission: products.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Ảnh jpg/png/webp, tối đa 5 MB
+                altText: { type: string }
+                displayOrder: { type: integer, minimum: 0 }
+      responses:
+        '201':
+          description: Hình ảnh đã thêm
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/ProductImage' }
+        '400':
+          description: File không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền products.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Sản phẩm không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '413':
+          description: File quá lớn
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '415':
+          description: Sai Content-Type
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /products/{productId}/images/{imageId}:
+    delete:
+      operationId: deleteProductImage
+      tags: [Products]
+      summary: Xóa hình ảnh sản phẩm (admin)
+      x-required-permission: products.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+        - name: imageId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204':
+          description: Đã xóa hình ảnh
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền products.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Sản phẩm hoặc hình ảnh không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /products/{productId}/identifiers:
+    post:
+      operationId: addProductIdentifier
+      tags: [Products]
+      summary: Thêm mã định danh cho sản phẩm (admin) — kèm ma trận issuer CHECK
+      x-required-permission: products.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, value]
+              properties:
+                type: { type: string, enum: [PART_NUMBER, OEM_NUMBER, MANUFACTURER_PART_NUMBER, ALTERNATE_NUMBER] }
+                value: { type: string, minLength: 1 }
+                issuingMakeId: { type: ["string", "null"], format: uuid }
+                issuingBrandId: { type: ["string", "null"], format: uuid }
+                isPrimary: { type: boolean, default: false }
+      responses:
+        '201':
+          description: Mã định danh đã thêm
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/ProductIdentifier' }
+        '400':
+          description: Issuer sai ma trận CHECK hoặc mã không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền products.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Sản phẩm không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /products/{productId}/identifiers/{identifierId}:
+    delete:
+      operationId: deleteProductIdentifier
+      tags: [Products]
+      summary: Xóa mã định danh (admin)
+      x-required-permission: products.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+        - name: identifierId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204':
+          description: Đã xóa mã định danh
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền products.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Sản phẩm hoặc mã định danh không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [Categories]
+      summary: Cây danh mục (chỉ danh mục hiển thị)
+      x-required-permission: null
+      security: []
+      responses:
+        '200':
+          description: Cây danh mục
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/CategoryTree' }
+    post:
+      operationId: createCategory
+      tags: [Categories]
+      summary: Tạo danh mục (admin)
+      x-required-permission: categories.create
+      security: [{ AdminAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, minLength: 1 }
+                slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+                parentId: { type: ["string", "null"], format: uuid }
+                displayOrder: { type: integer, minimum: 0, default: 0 }
+                isVisible: { type: boolean, default: true }
+      responses:
+        '201':
+          description: Danh mục đã tạo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/CategoryTree' }
+        '400':
+          description: "Input không hợp lệ (vd: chu trình cây danh mục)"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền categories.create
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Slug trùng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /categories/{slug}:
+    patch:
+      operationId: updateCategory
+      tags: [Categories]
+      summary: Sửa danh mục (admin)
+      x-required-permission: categories.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+          description: Slug (public GET) hoặc UUID (admin PATCH/DELETE) — server phân biệt theo định dạng UUID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, minLength: 1 }
+                slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+                parentId: { type: ["string", "null"], format: uuid }
+                displayOrder: { type: integer, minimum: 0 }
+                isVisible: { type: boolean }
+      responses:
+        '200':
+          description: Danh mục sau khi sửa
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/CategoryTree' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền categories.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Danh mục không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Slug trùng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    delete:
+      operationId: deleteCategory
+      tags: [Categories]
+      summary: Xóa danh mục (admin) — chặn khi còn sản phẩm
+      x-required-permission: categories.delete
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+          description: Slug (public GET) hoặc UUID (admin PATCH/DELETE) — server phân biệt theo định dạng UUID
+      responses:
+        '204':
+          description: Đã xóa danh mục
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền categories.delete
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Danh mục không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Danh mục còn sản phẩm
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    get:
+      operationId: getCategory
+      tags: [Categories]
+      summary: Chi tiết danh mục theo slug
+      x-required-permission: null
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/SlugParam'
+      responses:
+        '200':
+          description: Chi tiết danh mục
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/CategoryTree' }
+        '404':
+          description: Danh mục không tồn tại hoặc đã ẩn
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /categories/{slug}/products:
+    get:
+      operationId: listCategoryProducts
+      tags: [Categories]
+      summary: Danh sách sản phẩm của một danh mục
+      x-required-permission: null
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/SlugParam'
+        - name: brandSlug
+          in: query
+          schema: { type: string }
+        - name: minPrice
+          in: query
+          schema: { type: integer, minimum: 0 }
+        - name: maxPrice
+          in: query
+          schema: { type: integer, minimum: 0 }
+        - name: availabilityStatus
+          in: query
+          schema: { type: string, enum: [IN_STOCK, OUT_OF_STOCK] }
+        - name: vehicleApplicationId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [newest, price_asc, price_desc, name_asc], default: newest }
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Danh sách sản phẩm của danh mục
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/ProductSummary' }
+                  meta: { $ref: '#/components/schemas/PaginationMeta' }
+        '404':
+          description: Danh mục không tồn tại hoặc đã ẩn
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /brands:
+    get:
+      operationId: listBrands
+      tags: [Brands]
+      summary: Danh sách thương hiệu (chỉ thương hiệu hiển thị)
+      x-required-permission: null
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Danh sách thương hiệu
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/BrandSummary' }
+                  meta: { $ref: '#/components/schemas/PaginationMeta' }
+    post:
+      operationId: createBrand
+      tags: [Brands]
+      summary: Tạo thương hiệu (admin)
+      x-required-permission: brands.create
+      security: [{ AdminAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, minLength: 1 }
+                slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+                logoUrl: { type: ["string", "null"], format: uri }
+                description: { type: ["string", "null"] }
+                isVisible: { type: boolean, default: true }
+      responses:
+        '201':
+          description: Thương hiệu đã tạo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/BrandSummary' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền brands.create
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Slug trùng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /brands/{slug}:
+    patch:
+      operationId: updateBrand
+      tags: [Brands]
+      summary: Sửa thương hiệu (admin)
+      x-required-permission: brands.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+          description: Slug (public GET) hoặc UUID (admin PATCH/DELETE) — server phân biệt theo định dạng UUID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, minLength: 1 }
+                slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+                logoUrl: { type: ["string", "null"], format: uri }
+                description: { type: ["string", "null"] }
+                isVisible: { type: boolean }
+      responses:
+        '200':
+          description: Thương hiệu sau khi sửa
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/BrandSummary' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền brands.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Thương hiệu không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Slug trùng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    delete:
+      operationId: deleteBrand
+      tags: [Brands]
+      summary: Xóa thương hiệu (admin) — chặn khi còn sản phẩm
+      x-required-permission: brands.delete
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+          description: Slug (public GET) hoặc UUID (admin PATCH/DELETE) — server phân biệt theo định dạng UUID
+      responses:
+        '204':
+          description: Đã xóa thương hiệu
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền brands.delete
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Thương hiệu không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Thương hiệu còn sản phẩm
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+
+    get:
+      operationId: getBrand
+      tags: [Brands]
+      summary: Chi tiết thương hiệu theo slug
+      x-required-permission: null
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/SlugParam'
+      responses:
+        '200':
+          description: Chi tiết thương hiệu
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/BrandSummary' }
+        '404':
+          description: Thương hiệu không tồn tại hoặc đã ẩn
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /brands/{slug}/products:
+    get:
+      operationId: listBrandProducts
+      tags: [Brands]
+      summary: Danh sách sản phẩm của một thương hiệu
+      x-required-permission: null
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/SlugParam'
+        - name: categorySlug
+          in: query
+          schema: { type: string }
+        - name: minPrice
+          in: query
+          schema: { type: integer, minimum: 0 }
+        - name: maxPrice
+          in: query
+          schema: { type: integer, minimum: 0 }
+        - name: availabilityStatus
+          in: query
+          schema: { type: string, enum: [IN_STOCK, OUT_OF_STOCK] }
+        - name: vehicleApplicationId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [newest, price_asc, price_desc, name_asc], default: newest }
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Danh sách sản phẩm của thương hiệu
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/ProductSummary' }
+                  meta: { $ref: '#/components/schemas/PaginationMeta' }
+        '404':
+          description: Thương hiệu không tồn tại hoặc đã ẩn
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vehicles/makes:
+    get:
+      operationId: listVehicleMakes
+      tags: [Vehicles]
+      summary: Danh sách hãng xe (chỉ hãng hiển thị)
+      x-required-permission: null
+      security: []
+      responses:
+        '200':
+          description: Danh sách hãng xe
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/VehicleMake' }
+    post:
+      operationId: createVehicleMake
+      tags: [Vehicles]
+      summary: Tạo hãng xe (admin)
+      x-required-permission: vehicles.create
+      security: [{ AdminAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, minLength: 1 }
+                slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+                logoUrl: { type: ["string", "null"], format: uri }
+                isVisible: { type: boolean, default: true }
+      responses:
+        '201':
+          description: Hãng xe đã tạo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/VehicleMake' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền vehicles.create
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Slug trùng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vehicles/makes/{slug}:
+    patch:
+      operationId: updateVehicleMake
+      tags: [Vehicles]
+      summary: Sửa hãng xe (admin)
+      x-required-permission: vehicles.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+          description: Slug (public GET) hoặc UUID (admin PATCH/DELETE) — server phân biệt theo định dạng UUID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, minLength: 1 }
+                slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+                logoUrl: { type: ["string", "null"], format: uri }
+                isVisible: { type: boolean }
+      responses:
+        '200':
+          description: Hãng xe sau khi sửa
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/VehicleMake' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền vehicles.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Hãng xe không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Slug trùng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    delete:
+      operationId: deleteVehicleMake
+      tags: [Vehicles]
+      summary: Xóa hãng xe (admin) — chặn khi còn model/fitment
+      x-required-permission: vehicles.delete
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+          description: Slug (public GET) hoặc UUID (admin PATCH/DELETE) — server phân biệt theo định dạng UUID
+      responses:
+        '204':
+          description: Đã xóa hãng xe
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền vehicles.delete
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Hãng xe không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Hãng xe còn dữ liệu liên quan
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    get:
+      operationId: getVehicleMake
+      tags: [Vehicles]
+      summary: Chi tiết hãng xe theo slug
+      x-required-permission: null
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/SlugParam'
+      responses:
+        '200':
+          description: Chi tiết hãng xe
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/VehicleMake' }
+        '404':
+          description: Hãng xe không tồn tại hoặc đã ẩn
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vehicles/makes/{slug}/models:
+    get:
+      operationId: listVehicleModelsOfMake
+      tags: [Vehicles]
+      summary: Danh sách dòng xe của một hãng
+      x-required-permission: null
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/SlugParam'
+      responses:
+        '200':
+          description: Danh sách dòng xe
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/VehicleModel' }
+        '404':
+          description: Hãng xe không tồn tại hoặc đã ẩn
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vehicles/models:
+    post:
+      operationId: createVehicleModel
+      tags: [Vehicles]
+      summary: Tạo dòng xe thuộc một hãng (admin)
+      x-required-permission: vehicles.create
+      security: [{ AdminAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [makeId, name]
+              properties:
+                makeId: { type: string, format: uuid }
+                name: { type: string, minLength: 1 }
+                slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+                isVisible: { type: boolean, default: true }
+      responses:
+        '201':
+          description: Dòng xe đã tạo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/VehicleModel' }
+        '400':
+          description: Hãng xe không tồn tại hoặc input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền vehicles.create
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Slug trùng trong hãng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vehicles/models/{slug}:
+    patch:
+      operationId: updateVehicleModel
+      tags: [Vehicles]
+      summary: Sửa dòng xe (admin)
+      x-required-permission: vehicles.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+          description: Slug (public GET) hoặc UUID (admin PATCH/DELETE) — server phân biệt theo định dạng UUID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, minLength: 1 }
+                slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+                isVisible: { type: boolean }
+      responses:
+        '200':
+          description: Dòng xe sau khi sửa
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/VehicleModel' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền vehicles.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Dòng xe không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Slug trùng trong hãng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    delete:
+      operationId: deleteVehicleModel
+      tags: [Vehicles]
+      summary: Xóa dòng xe (admin) — chặn khi còn generation/fitment
+      x-required-permission: vehicles.delete
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+          description: Slug (public GET) hoặc UUID (admin PATCH/DELETE) — server phân biệt theo định dạng UUID
+      responses:
+        '204':
+          description: Đã xóa dòng xe
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền vehicles.delete
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Dòng xe không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Dòng xe còn dữ liệu liên quan
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    get:
+      operationId: getVehicleModel
+      tags: [Vehicles]
+      summary: Chi tiết dòng xe theo slug (kèm hãng)
+      x-required-permission: null
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/SlugParam'
+      responses:
+        '200':
+          description: Chi tiết dòng xe
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/VehicleModel' }
+        '404':
+          description: Dòng xe không tồn tại hoặc đã ẩn
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vehicles/models/{slug}/generations:
+    get:
+      operationId: listVehicleGenerations
+      tags: [Vehicles]
+      summary: Danh sách thế hệ của một dòng xe
+      x-required-permission: null
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/SlugParam'
+      responses:
+        '200':
+          description: Danh sách thế hệ
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/VehicleGeneration' }
+        '404':
+          description: Dòng xe không tồn tại hoặc đã ẩn
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vehicles/generations:
+    post:
+      operationId: createVehicleGeneration
+      tags: [Vehicles]
+      summary: Tạo thế hệ thuộc một dòng xe (admin)
+      x-required-permission: vehicles.create
+      security: [{ AdminAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [modelId, name]
+              properties:
+                modelId: { type: string, format: uuid }
+                name: { type: string, minLength: 1 }
+                slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+                yearFrom: { type: integer, minimum: 1900, maximum: 2100 }
+                yearTo: { type: ["integer", "null"], minimum: 1900, maximum: 2100 }
+                isVisible: { type: boolean, default: true }
+      responses:
+        '201':
+          description: Thế hệ đã tạo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/VehicleGeneration' }
+        '400':
+          description: Dòng xe không tồn tại, năm không hợp lệ (yearTo < yearFrom) hoặc input sai
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền vehicles.create
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Slug trùng trong dòng xe
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vehicles/generations/{generationId}/variants:
+    get:
+      operationId: listVehicleVariants
+      tags: [Vehicles]
+      summary: Danh sách phiên bản của một thế hệ
+      x-required-permission: null
+      security: []
+      parameters:
+        - name: generationId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Danh sách phiên bản
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/VehicleVariant' }
+        '404':
+          description: Thế hệ không tồn tại hoặc đã ẩn
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vehicles/variants:
+    post:
+      operationId: createVehicleVariant
+      tags: [Vehicles]
+      summary: Tạo phiên bản thuộc một thế hệ (admin)
+      x-required-permission: vehicles.create
+      security: [{ AdminAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [generationId, name]
+              properties:
+                generationId: { type: string, format: uuid }
+                name: { type: string, minLength: 1 }
+                slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+                isVisible: { type: boolean, default: true }
+      responses:
+        '201':
+          description: Phiên bản đã tạo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/VehicleVariant' }
+        '400':
+          description: Thế hệ không tồn tại hoặc input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền vehicles.create
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Slug trùng trong thế hệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vehicles/{makeSlug}/{modelSlug}:
+    get:
+      operationId: getVehiclePage
+      tags: [Vehicles]
+      summary: Trang xe — thông tin xe + danh sách phụ tùng tương thích
+      x-required-permission: null
+      security: []
+      parameters:
+        - name: makeSlug
+          in: path
+          required: true
+          schema: { type: string }
+        - name: modelSlug
+          in: path
+          required: true
+          schema: { type: string }
+        - name: generationId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: variantId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: year
+          in: query
+          schema: { type: integer, minimum: 1900, maximum: 2100 }
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Trang xe
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      make: { $ref: '#/components/schemas/VehicleMake' }
+                      model: { $ref: '#/components/schemas/VehicleModel' }
+                      generations:
+                        type: array
+                        items: { $ref: '#/components/schemas/VehicleGeneration' }
+                      products:
+                        type: array
+                        items: { $ref: '#/components/schemas/ProductSummary' }
+                  meta: { $ref: '#/components/schemas/PaginationMeta' }
+        '404':
+          description: Hãng hoặc dòng xe không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vehicles/generations/{generationId}:
+    patch:
+      operationId: updateVehicleGeneration
+      tags: [Vehicles]
+      summary: Sửa thế hệ (admin)
+      x-required-permission: vehicles.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: generationId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, minLength: 1 }
+                slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+                yearFrom: { type: integer, minimum: 1900, maximum: 2100 }
+                yearTo: { type: ["integer", "null"], minimum: 1900, maximum: 2100 }
+                isVisible: { type: boolean }
+      responses:
+        '200':
+          description: Thế hệ sau khi sửa
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/VehicleGeneration' }
+        '400':
+          description: "Input không hợp lệ (vd: yearTo < yearFrom)"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền vehicles.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Thế hệ không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Slug trùng trong dòng xe
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    delete:
+      operationId: deleteVehicleGeneration
+      tags: [Vehicles]
+      summary: Xóa thế hệ (admin) — chặn khi còn variant/fitment
+      x-required-permission: vehicles.delete
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: generationId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204':
+          description: Đã xóa thế hệ
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền vehicles.delete
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Thế hệ không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Thế hệ còn dữ liệu liên quan
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vehicles/variants/{variantId}:
+    patch:
+      operationId: updateVehicleVariant
+      tags: [Vehicles]
+      summary: Sửa phiên bản (admin)
+      x-required-permission: vehicles.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: variantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, minLength: 1 }
+                slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+                isVisible: { type: boolean }
+      responses:
+        '200':
+          description: Phiên bản sau khi sửa
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/VehicleVariant' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền vehicles.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Phiên bản không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Slug trùng trong thế hệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    delete:
+      operationId: deleteVehicleVariant
+      tags: [Vehicles]
+      summary: Xóa phiên bản (admin) — chặn khi còn fitment
+      x-required-permission: vehicles.delete
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: variantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204':
+          description: Đã xóa phiên bản
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền vehicles.delete
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Phiên bản không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Phiên bản còn fitment liên quan
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vehicles/import:
+    post:
+      operationId: importVehicles
+      tags: [Vehicles]
+      summary: Nhập dữ liệu xe hàng loạt bằng Excel (admin) — định dạng file do M04 chốt
+      x-required-permission: vehicles.create
+      x-status: provisional
+      x-blocked-by: M04 (định dạng file Excel do M04 chốt)
+      security: [{ AdminAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File .xlsx, tối đa 10 MB
+      responses:
+        '202':
+          description: Đã nhận file, đang xử lý bất đồng bộ
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/ImportStatus' }
+        '400':
+          description: File không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền vehicles.create
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '413':
+          description: File quá lớn
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vehicles/import/{importId}:
+    get:
+      operationId: getVehicleImportStatus
+      tags: [Vehicles]
+      summary: Theo dõi tiến độ nhập dữ liệu xe (admin)
+      x-required-permission: vehicles.view
+      x-status: provisional
+      x-blocked-by: M04 (định dạng file Excel do M04 chốt)
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: importId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+          description: ID của lần import (trả về từ POST /vehicles/import)
+      responses:
+        '200':
+          description: Tiến độ import
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/ImportStatus' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền vehicles.view
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Import không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /vehicle-applications/{applicationId}/products:
+    get:
+      operationId: listProductsByVehicleApplication
+      tags: [Fitments]
+      summary: Tra cứu ngược — toàn bộ phụ tùng tương thích với một vehicle application
+      x-required-permission: null
+      security: []
+      parameters:
+        - name: applicationId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Danh sách phụ tùng tương thích
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/ProductSummary' }
+                  meta: { $ref: '#/components/schemas/PaginationMeta' }
+        '404':
+          description: Vehicle application không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /fitment/check:
+    get:
+      operationId: checkFitment
+      tags: [Fitments]
+      summary: Kiểm tra một sản phẩm có tương thích với một vehicle application không
+      x-required-permission: null
+      security: []
+      parameters:
+        - name: productId
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+        - name: vehicleApplicationId
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Kết quả kiểm tra tương thích
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [compatible]
+                    properties:
+                      compatible: { type: boolean }
+                      fitmentNote: { type: ["string", "null"] }
+                      fitmentNotice:
+                        type: ["string", "null"]
+                        description: "NO_FITMENT_INFO khi sản phẩm chưa có dữ liệu fitment (FR-031)"
+                      vehicleApplication: { $ref: '#/components/schemas/VehicleApplicationSummary' }
+        '400':
+          description: Thiếu tham số hoặc UUID sai định dạng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Sản phẩm hoặc vehicle application không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /fitments:
+    get:
+      operationId: listFitments
+      tags: [Fitments]
+      summary: Danh sách fitment (lọc theo productId hoặc vehicleApplicationId)
+      x-required-permission: null
+      security: []
+      parameters:
+        - name: productId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: vehicleApplicationId
+          in: query
+          schema: { type: string, format: uuid }
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Danh sách fitment
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Fitment' }
+                  meta: { $ref: '#/components/schemas/PaginationMeta' }
+        '400':
+          description: Thiếu cả productId và vehicleApplicationId
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /fitments/import:
+    post:
+      operationId: importFitments
+      tags: [Fitments]
+      summary: Nhập fitment hàng loạt bằng Excel (admin) — định dạng file do M04 chốt
+      x-required-permission: fitments.create
+      x-status: provisional
+      x-blocked-by: M04 (định dạng file Excel do M04 chốt)
+      security: [{ AdminAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File .xlsx, tối đa 10 MB
+      responses:
+        '202':
+          description: Đã nhận file, đang xử lý bất đồng bộ
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/ImportStatus' }
+        '400':
+          description: File không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền fitments.create
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '413':
+          description: File quá lớn
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /fitments/import/{importId}:
+    get:
+      operationId: getFitmentImportStatus
+      tags: [Fitments]
+      summary: Theo dõi tiến độ nhập fitment (admin)
+      x-required-permission: fitments.view
+      x-status: provisional
+      x-blocked-by: M04 (định dạng file Excel do M04 chốt)
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: importId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+          description: ID của lần import (trả về từ POST /fitments/import)
+      responses:
+        '200':
+          description: Tiến độ import
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/ImportStatus' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền fitments.view
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Import không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /fitments/change-logs:
+    get:
+      operationId: listFitmentChangeLogs
+      tags: [Fitments]
+      summary: Nhật ký thay đổi fitment (admin)
+      x-required-permission: fitments.view
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: productId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: changedByAdminId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: from
+          in: query
+          schema: { type: string, format: date-time }
+        - name: to
+          in: query
+          schema: { type: string, format: date-time }
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Nhật ký thay đổi fitment
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/FitmentChangeLog' }
+                  meta: { $ref: '#/components/schemas/PaginationMeta' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền fitments.view
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /search:
+    get:
+      operationId: searchProducts
+      tags: [Search]
+      summary: Tìm kiếm toàn website (Meilisearch, thứ tự ưu tiên ADR-010)
+      x-required-permission: null
+      security: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string, minLength: 2, maxLength: 100 }
+        - name: categorySlug
+          in: query
+          schema: { type: string }
+        - name: brandSlug
+          in: query
+          schema: { type: string }
+        - name: vehicleApplicationId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [relevance, price_asc, price_desc, newest], default: relevance }
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Kết quả tìm kiếm
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/ProductSummary' }
+                  meta: { $ref: '#/components/schemas/PaginationMeta' }
+                  suggestions:
+                    type: array
+                    items: { type: string }
+                    description: Gợi ý khi không có kết quả (kiểm tra lại mã, thử tìm theo tên, liên hệ Zalo/hotline)
+        '400':
+          description: Từ khóa quá ngắn/dài hoặc thiếu
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '429':
+          description: Vượt rate limit tìm kiếm
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '503':
+          description: Meilisearch tạm thời không khả dụng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /search/suggest:
+    get:
+      operationId: suggestSearch
+      tags: [Search]
+      summary: Gợi ý khi gõ (autocomplete, < 1s)
+      x-required-permission: null
+      security: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string, minLength: 2, maxLength: 50 }
+      responses:
+        '200':
+          description: Tối đa 8 gợi ý
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/SuggestItem' }
+        '400':
+          description: Từ khóa quá ngắn/dài hoặc thiếu
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '429':
+          description: Vượt rate limit tìm kiếm
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /identifiers/lookup:
+    get:
+      operationId: lookupIdentifier
+      tags: [Search]
+      summary: Tra cứu chính xác theo mã (SKU/OEM/MPN/Part Number/Alternate) — không fuzzy
+      x-required-permission: null
+      security: []
+      parameters:
+        - name: type
+          in: query
+          required: true
+          schema: { type: string, enum: [SKU, OEM_NUMBER, MANUFACTURER_PART_NUMBER, PART_NUMBER, ALTERNATE_NUMBER] }
+        - name: code
+          in: query
+          required: true
+          schema: { type: string, minLength: 1 }
+      responses:
+        '200':
+          description: Sản phẩm khớp mã chính xác (nhiều sản phẩm khi 1 OEM map nhiều sản phẩm — PD-03)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/ProductSummary' }
+        '400':
+          description: Thiếu type/code hoặc mã không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /cart:
+    get:
+      operationId: getCart
+      tags: [Cart]
+      summary: Lấy giỏ hàng hiện tại (theo cart token)
+      x-required-permission: null
+      security: []
+      x-status: provisional
+      x-blocked-by: M02 (bảng lưu trữ giỏ do M02 quyết — xem API_SPEC mục 11.1)
+      parameters:
+        - name: X-Cart-Token
+          in: header
+          required: false
+          schema: { type: string, format: uuid }
+          description: Cart token (hoặc cookie seecarauto_cart); chưa có token thì server cấp giỏ trống mới
+      responses:
+        '200':
+          description: Giỏ hàng hiện tại
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Cart' }
+        '400':
+          description: Cart token sai định dạng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    delete:
+      operationId: clearCart
+      tags: [Cart]
+      summary: Xóa toàn bộ giỏ
+      x-required-permission: null
+      security: []
+      x-status: provisional
+      x-blocked-by: M02 (bảng lưu trữ giỏ do M02 quyết — xem API_SPEC mục 11.1)
+      parameters:
+        - name: X-Cart-Token
+          in: header
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204':
+          description: Đã xóa toàn bộ giỏ
+        '400':
+          description: Thiếu cart token
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /cart/items:
+    post:
+      operationId: addCartItem
+      tags: [Cart]
+      summary: Thêm món vào giỏ (kèm kiểm tra tương thích — cảnh báo, không chặn)
+      x-required-permission: null
+      security: []
+      x-status: provisional
+      x-blocked-by: M02 (bảng lưu trữ giỏ do M02 quyết — xem API_SPEC mục 11.1)
+      parameters:
+        - name: X-Cart-Token
+          in: header
+          required: false
+          schema: { type: string, format: uuid }
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [productId, quantity]
+              properties:
+                productId: { type: string, format: uuid }
+                quantity: { type: integer, minimum: 1 }
+                vehicleApplicationId: { type: ["string", "null"], format: uuid }
+      responses:
+        '201':
+          description: Giỏ hàng sau khi thêm
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Cart' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Sản phẩm không tồn tại, chưa xuất bản hoặc đã xóa
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /cart/items/{itemId}:
+    patch:
+      operationId: updateCartItem
+      tags: [Cart]
+      summary: Sửa số lượng một món trong giỏ
+      x-required-permission: null
+      security: []
+      x-status: provisional
+      x-blocked-by: M02 (bảng lưu trữ giỏ do M02 quyết — xem API_SPEC mục 11.1)
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: X-Cart-Token
+          in: header
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quantity]
+              properties:
+                quantity: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: Giỏ hàng sau khi sửa
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Cart' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Món không có trong giỏ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '422':
+          description: Sản phẩm đã bị ẩn/xóa (không tính vào tổng tiền)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    delete:
+      operationId: removeCartItem
+      tags: [Cart]
+      summary: Xóa một món khỏi giỏ
+      x-required-permission: null
+      security: []
+      x-status: provisional
+      x-blocked-by: M02 (bảng lưu trữ giỏ do M02 quyết — xem API_SPEC mục 11.1)
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: X-Cart-Token
+          in: header
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Giỏ hàng sau khi xóa (trả 200 thay vì 204 để frontend có tổng tiền mới ngay)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Cart' }
+        '404':
+          description: Món không có trong giỏ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /orders:
+    post:
+      operationId: createOrder
+      tags: [Orders]
+      summary: Tạo đơn hàng từ giỏ (COD/chuyển khoản, snapshot, mã đơn không đoán được)
+      x-required-permission: null
+      security: []
+      x-status: provisional
+      x-blocked-by: D-08 (trường bắt buộc checkout chi tiết do M01-04 trình Henry duyệt)
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: { type: string, format: uuid }
+          description: Bắt buộc — chống tạo trùng đơn
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [cartToken, customerName, customerPhone, shippingAddress, paymentMethod]
+              properties:
+                cartToken: { type: string, format: uuid }
+                customerName: { type: string, minLength: 1 }
+                customerPhone: { type: string, pattern: '^0[0-9]{9}$' }
+                shippingAddress: { type: string, minLength: 1 }
+                paymentMethod: { type: string, enum: [COD, BANK_TRANSFER] }
+                note: { type: ["string", "null"] }
+                confirmPriceChange: { type: boolean, default: false }
+      responses:
+        '201':
+          description: Đơn hàng đã tạo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Order' }
+        '400':
+          description: Input không hợp lệ (thiếu trường, sai phương thức, thiếu Idempotency-Key, giỏ trống)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Sản phẩm trong giỏ đổi giá/tình trạng (CART_CHANGED) hoặc đơn đã tạo từ giỏ này (DUPLICATE_ORDER)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    get:
+      operationId: listOrders
+      tags: [Orders]
+      summary: Danh sách đơn hàng (admin) — lọc trạng thái, tìm mã đơn/tên/SĐT khách
+      x-required-permission: orders.view
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [PENDING, CONFIRMED, SHIPPING, COMPLETED, CANCELLED, REFUNDED] }
+        - name: q
+          in: query
+          schema: { type: string }
+        - name: from
+          in: query
+          schema: { type: string, format: date-time }
+        - name: to
+          in: query
+          schema: { type: string, format: date-time }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [created_desc, created_asc, total_desc, total_asc], default: created_desc }
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Danh sách đơn hàng
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/OrderSummary' }
+                  meta: { $ref: '#/components/schemas/PaginationMeta' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền orders.view
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /orders/lookup:
+    get:
+      operationId: lookupOrder
+      tags: [Orders]
+      summary: Tra cứu trạng thái đơn bằng mã đơn công khai (không đăng nhập, rate limit)
+      x-required-permission: null
+      security: []
+      x-status: provisional
+      x-blocked-by: D-09 (phương thức xác minh bổ sung do Henry quyết định)
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema: { type: string, minLength: 1 }
+      responses:
+        '200':
+          description: Trạng thái + tóm tắt đơn (không SĐT đầy đủ, không địa chỉ chi tiết)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/OrderLookupResult' }
+        '400':
+          description: Thiếu mã đơn
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Mã đơn sai hoặc đơn không tồn tại (message chung)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '429':
+          description: Tra cứu liên tiếp bất thường
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /orders/{orderId}:
+    get:
+      operationId: getOrder
+      tags: [Orders]
+      summary: Chi tiết đơn (admin) — snapshot + lịch sử trạng thái
+      x-required-permission: orders.view
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Chi tiết đơn
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Order' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền orders.view
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Đơn không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /orders/{orderId}/status:
+    patch:
+      operationId: updateOrderStatus
+      tags: [Orders]
+      summary: Cập nhật trạng thái đơn theo vòng đời (admin)
+      x-required-permission: orders.update
+      x-status: provisional
+      x-blocked-by: PD-08 (tên trạng thái cuối do M05 chốt)
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: If-Match
+          in: header
+          required: false
+          schema: { type: string }
+          description: ETag (optimistic concurrency) — khuyến nghị gửi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [PENDING, CONFIRMED, SHIPPING, COMPLETED, CANCELLED, REFUNDED] }
+                note: { type: ["string", "null"] }
+      responses:
+        '200':
+          description: Đơn sau khi cập nhật trạng thái
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Order' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền orders.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Đơn không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Chuyển trạng thái sai thứ tự hoặc đơn đã hủy
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '412':
+          description: ETag không khớp (dữ liệu đã bị sửa bởi người khác)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '422':
+          description: Đơn chuyển khoản chưa xác nhận đã nhận tiền (PAYMENT_NOT_CONFIRMED)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /orders/{orderId}/confirm-payment:
+    post:
+      operationId: confirmOrderPayment
+      tags: [Orders]
+      summary: Admin xác nhận đã nhận tiền (đơn chuyển khoản)
+      x-required-permission: orders.confirm
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note: { type: ["string", "null"] }
+      responses:
+        '200':
+          description: Đơn sau khi xác nhận tiền
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Order' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền orders.confirm
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Đơn không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Đơn COD hoặc đơn đã hủy/không ở trạng thái chờ xác nhận tiền
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /orders/{orderId}/cancel:
+    post:
+      operationId: cancelOrder
+      tags: [Orders]
+      summary: Hủy đơn (admin) — xác nhận + lý do
+      x-required-permission: orders.cancel
+      x-status: provisional
+      x-blocked-by: M05 (danh mục lý do hủy do Henry duyệt ở M05)
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string, minLength: 1 }
+                note: { type: ["string", "null"] }
+      responses:
+        '200':
+          description: Đơn sau khi hủy
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Order' }
+        '400':
+          description: Thiếu lý do hủy
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền orders.cancel
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Đơn không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Đơn đã giao hoặc đã hủy
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /orders/{orderId}/shipping:
+    patch:
+      operationId: updateOrderShipping
+      tags: [Orders]
+      summary: Sửa thông tin giao hàng của đơn chưa giao (admin)
+      x-required-permission: orders.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customerName: { type: string, minLength: 1 }
+                customerPhone: { type: string, pattern: '^0[0-9]{9}$' }
+                shippingAddress: { type: string, minLength: 1 }
+                note: { type: ["string", "null"] }
+      responses:
+        '200':
+          description: Đơn sau khi sửa thông tin giao hàng
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Order' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền orders.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Đơn không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Đơn đã giao hoặc đã hủy
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /contact:
+    post:
+      operationId: submitContact
+      tags: [Contact]
+      summary: Gửi form liên hệ
+      x-required-permission: null
+      security: []
+      x-status: provisional
+      x-blocked-by: M01-04/M05 (đích nhận form do M01-04/M05 chốt theo Henry duyệt)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, phone, message]
+              properties:
+                name: { type: string, minLength: 1 }
+                phone: { type: string, pattern: '^0[0-9]{9}$' }
+                email: { type: ["string", "null"], format: email }
+                subject: { type: ["string", "null"] }
+                message: { type: string, minLength: 10, maxLength: 2000 }
+                orderCode: { type: ["string", "null"] }
+      responses:
+        '201':
+          description: Đã nhận liên hệ
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [contactId]
+                    properties:
+                      contactId: { type: string, format: uuid }
+                      message: { type: string, example: Đã nhận liên hệ của bạn. }
+        '400':
+          description: Form không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '429':
+          description: Gửi form quá nhiều (5 lần/giờ/IP)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /articles:
+    get:
+      operationId: listArticles
+      tags: [Articles]
+      summary: Danh sách bài viết đã xuất bản
+      x-required-permission: null
+      security: []
+      parameters:
+        - name: categoryId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [newest, oldest], default: newest }
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Danh sách bài viết
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/ArticleSummary' }
+                  meta: { $ref: '#/components/schemas/PaginationMeta' }
+        '400':
+          description: categoryId sai định dạng UUID
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      operationId: createArticle
+      tags: [Articles]
+      summary: Tạo bài viết (admin)
+      x-required-permission: articles.create
+      security: [{ AdminAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, content]
+              properties:
+                title: { type: string, minLength: 1 }
+                slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+                content: { type: string, minLength: 1 }
+                categoryId: { type: ["string", "null"], format: uuid }
+                status: { type: string, enum: [DRAFT, PUBLISHED], default: DRAFT }
+      responses:
+        '201':
+          description: Bài viết đã tạo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Article' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền articles.create
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Slug trùng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /articles/{slug}:
+    patch:
+      operationId: updateArticle
+      tags: [Articles]
+      summary: Sửa bài viết (admin) — đổi tiêu đề không đổi slug
+      x-required-permission: articles.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+          description: Slug (public GET) hoặc UUID (admin PATCH/DELETE) — server phân biệt theo định dạng UUID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string, minLength: 1 }
+                content: { type: string, minLength: 1 }
+                categoryId: { type: ["string", "null"], format: uuid }
+                status: { type: string, enum: [DRAFT, PUBLISHED] }
+      responses:
+        '200':
+          description: Bài viết sau khi sửa
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Article' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền articles.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Bài viết không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    delete:
+      operationId: deleteArticle
+      tags: [Articles]
+      summary: Xóa bài viết (admin)
+      x-required-permission: articles.delete
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+          description: Slug (public GET) hoặc UUID (admin PATCH/DELETE) — server phân biệt theo định dạng UUID
+      responses:
+        '204':
+          description: Đã xóa bài viết
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền articles.delete
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Bài viết không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    get:
+      operationId: getArticle
+      tags: [Articles]
+      summary: Chi tiết bài viết theo slug (kèm SEO metadata)
+      x-required-permission: null
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/SlugParam'
+      responses:
+        '200':
+          description: Chi tiết bài viết
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Article' }
+        '404':
+          description: Bài viết không tồn tại hoặc đang nháp
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /articles/{slug}/seo/generate:
+    post:
+      operationId: generateArticleSeo
+      tags: [Articles]
+      summary: Generate SEO — Lớp 1 Rule Engine + Lớp 2 AI (khi có nhà cung cấp)
+      x-required-permission: articles.update
+      x-status: provisional
+      x-blocked-by: D-04 (Lớp 2 AI chưa chốt nhà cung cấp — khi chưa cấu hình, trả Lớp 1 + aiStatus NOT_CONFIGURED)
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+          description: Slug (public GET) hoặc UUID (admin PATCH/DELETE) — server phân biệt theo định dạng UUID
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Kết quả Generate SEO (trường sửa tay không bị ghi đè)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [seo, aiStatus]
+                    properties:
+                      seo: { $ref: '#/components/schemas/ArticleSeo' }
+                      warnings:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            field: { type: string }
+                            code: { type: string }
+                            message: { type: string }
+                      aiStatus: { type: string, enum: [OK, NOT_CONFIGURED] }
+                      overriddenFields:
+                        type: array
+                        items: { type: string }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền articles.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Bài viết không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /articles/{slug}/seo:
+    patch:
+      operationId: updateArticleSeo
+      tags: [Articles]
+      summary: Sửa tay SEO (manual override — không bao giờ bị ghi đè)
+      x-required-permission: articles.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+          description: Slug (public GET) hoặc UUID (admin PATCH/DELETE) — server phân biệt theo định dạng UUID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                seoTitle: { type: ["string", "null"] }
+                metaDescription: { type: ["string", "null"] }
+                focusKeyword: { type: ["string", "null"] }
+                secondaryKeywords:
+                  type: array
+                  items: { type: string }
+                searchIntent: { type: ["string", "null"] }
+                clearOverride:
+                  type: array
+                  items: { type: string }
+                  description: Bỏ manual override của các trường liệt kê để hệ thống đề xuất lại (FR-072)
+      responses:
+        '200':
+          description: SEO sau khi sửa tay
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/ArticleSeo' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền articles.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Bài viết không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /auth/admin/login:
+    post:
+      operationId: adminLogin
+      tags: [Auth]
+      summary: Admin đăng nhập (tài khoản + mật khẩu)
+      x-required-permission: null
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username: { type: string, minLength: 1 }
+                password: { type: string, minLength: 1 }
+      responses:
+        '200':
+          description: Đăng nhập thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/AuthTokens' }
+        '400':
+          description: Thiếu tài khoản hoặc mật khẩu
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Sai tài khoản hoặc mật khẩu (message chung)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '423':
+          description: Tài khoản tạm thời bị khóa do đăng nhập sai nhiều lần
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '429':
+          description: Vượt rate limit đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /auth/admin/refresh:
+    post:
+      operationId: adminRefreshToken
+      tags: [Auth]
+      summary: Đổi refresh token lấy access token mới (xoay vòng refresh token)
+      x-required-permission: null
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken: { type: string, minLength: 1 }
+      responses:
+        '200':
+          description: Token mới (access + refresh mới)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/AuthTokens' }
+        '400':
+          description: Thiếu refresh token
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Refresh token không hợp lệ, đã thu hồi hoặc bị dùng lại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /auth/admin/logout:
+    post:
+      operationId: adminLogout
+      tags: [Auth]
+      summary: Đăng xuất — thu hồi access token + refresh token
+      x-required-permission: "*"
+      security: [{ AdminAuth: [] }]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken: { type: ["string", "null"] }
+      responses:
+        '204':
+          description: Đã đăng xuất
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /auth/admin/me:
+    get:
+      operationId: getAdminMe
+      tags: [Auth]
+      summary: Thông tin tài khoản admin hiện tại + danh sách quyền của mình
+      x-required-permission: "*"
+      security: [{ AdminAuth: [] }]
+      responses:
+        '200':
+          description: Thông tin tài khoản
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/AdminMe' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /admin/dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [Admin]
+      summary: Tổng quan admin — chỉ số liệu thật, hiển thị theo quyền
+      x-required-permission: dashboard.view
+      security: [{ AdminAuth: [] }]
+      responses:
+        '200':
+          description: Tổng quan admin
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/DashboardSummary' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền dashboard.view
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /redirects:
+    get:
+      operationId: listRedirects
+      tags: [Admin]
+      summary: Danh sách redirect 301 đã cấu hình (admin)
+      x-required-permission: redirects.view
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Danh sách redirect
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Redirect' }
+                  meta: { $ref: '#/components/schemas/PaginationMeta' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền redirects.view
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      operationId: createRedirect
+      tags: [Admin]
+      summary: Tạo redirect 301 (admin)
+      x-required-permission: redirects.create
+      security: [{ AdminAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [entityType, oldSlug, newSlug]
+              properties:
+                entityType: { type: string, enum: [CATEGORY, BRAND, PRODUCT] }
+                entityId: { type: ["string", "null"], format: uuid }
+                oldSlug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+                newSlug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+      responses:
+        '201':
+          description: Redirect đã tạo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Redirect' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền redirects.create
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Redirect đã tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /redirects/{redirectId}:
+    delete:
+      operationId: deleteRedirect
+      tags: [Admin]
+      summary: Xóa redirect (admin)
+      x-required-permission: redirects.delete
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: redirectId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204':
+          description: Đã xóa redirect
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền redirects.delete
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Redirect không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /roles:
+    get:
+      operationId: listRoles
+      tags: [RBAC]
+      summary: Danh sách vai trò (admin)
+      x-required-permission: roles.view
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Danh sách vai trò
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Role' }
+                  meta: { $ref: '#/components/schemas/PaginationMeta' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền roles.view
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      operationId: createRole
+      tags: [RBAC]
+      summary: Tạo vai trò (admin)
+      x-required-permission: roles.create
+      security: [{ AdminAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, minLength: 1 }
+                description: { type: ["string", "null"] }
+      responses:
+        '201':
+          description: Vai trò đã tạo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Role' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền roles.create
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Tên vai trò trùng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /roles/{roleId}:
+    patch:
+      operationId: updateRole
+      tags: [RBAC]
+      summary: Sửa vai trò (admin)
+      x-required-permission: roles.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: roleId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, minLength: 1 }
+                description: { type: ["string", "null"] }
+      responses:
+        '200':
+          description: Vai trò sau khi sửa
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Role' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền roles.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Vai trò không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Tên vai trò trùng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    delete:
+      operationId: deleteRole
+      tags: [RBAC]
+      summary: Xóa vai trò (admin) — chặn khi là vai trò của Super Admin cuối cùng
+      x-required-permission: roles.delete
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: roleId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204':
+          description: Đã xóa vai trò
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền roles.delete hoặc là vai trò của Super Admin cuối cùng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Vai trò không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /roles/{roleId}/permissions:
+    get:
+      operationId: getRolePermissions
+      tags: [RBAC]
+      summary: Ma trận quyền của một vai trò (admin)
+      x-required-permission: roles.view
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: roleId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Ma trận quyền của vai trò
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [roleId, permissions]
+                    properties:
+                      roleId: { type: string, format: uuid }
+                      permissions:
+                        type: array
+                        items: { $ref: '#/components/schemas/PermissionEntry' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền roles.view
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Vai trò không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    put:
+      operationId: updateRolePermissions
+      tags: [RBAC]
+      summary: Cập nhật ma trận quyền của một vai trò (admin)
+      x-required-permission: roles.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: roleId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: If-Match
+          in: header
+          required: false
+          schema: { type: string }
+          description: ETag (optimistic concurrency) — khuyến nghị gửi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [permissions]
+              properties:
+                permissions:
+                  type: array
+                  items: { $ref: '#/components/schemas/PermissionEntry' }
+      responses:
+        '200':
+          description: Ma trận quyền sau khi cập nhật
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [roleId, permissions]
+                    properties:
+                      roleId: { type: string, format: uuid }
+                      permissions:
+                        type: array
+                        items: { $ref: '#/components/schemas/PermissionEntry' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền roles.update hoặc thao tác khiến Super Admin cuối cùng mất quyền
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Vai trò không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '412':
+          description: ETag không khớp
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /permissions:
+    get:
+      operationId: listPermissions
+      tags: [RBAC]
+      summary: Danh sách toàn bộ permission code theo module (admin)
+      x-required-permission: roles.view
+      security: [{ AdminAuth: [] }]
+      responses:
+        '200':
+          description: Danh sách permission code
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/PermissionEntry' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền roles.view
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /users/{userId}/roles:
+    post:
+      operationId: assignRoleToUser
+      tags: [RBAC]
+      summary: Gán vai trò cho tài khoản admin
+      x-required-permission: users.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [roleId]
+              properties:
+                roleId: { type: string, format: uuid }
+      responses:
+        '201':
+          description: Vai trò đã gán
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [userId, roleId]
+                    properties:
+                      userId: { type: string, format: uuid }
+                      roleId: { type: string, format: uuid }
+        '400':
+          description: Vai trò không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền users.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Tài khoản không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /users/{userId}/roles/{roleId}:
+    delete:
+      operationId: removeRoleFromUser
+      tags: [RBAC]
+      summary: Bỏ gán vai trò khỏi tài khoản admin
+      x-required-permission: users.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: roleId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204':
+          description: Đã bỏ gán vai trò
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền users.update hoặc thao tác khiến Super Admin cuối cùng mất quyền
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Tài khoản hoặc vai trò không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /users/{userId}/permissions:
+    get:
+      operationId: getUserPermissionOverrides
+      tags: [RBAC]
+      summary: Ngoại lệ quyền theo tài khoản (admin)
+      x-required-permission: users.view
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Ngoại lệ quyền của tài khoản
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [userId, permissions]
+                    properties:
+                      userId: { type: string, format: uuid }
+                      permissions:
+                        type: array
+                        items: { $ref: '#/components/schemas/PermissionEntry' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền users.view
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Tài khoản không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    put:
+      operationId: updateUserPermissionOverrides
+      tags: [RBAC]
+      summary: Cập nhật ngoại lệ quyền theo tài khoản (admin)
+      x-required-permission: users.update
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [permissions]
+              properties:
+                permissions:
+                  type: array
+                  items:
+                    type: object
+                    required: [module, action]
+                    properties:
+                      module: { type: string }
+                      action: { type: string }
+                      granted: { type: ["boolean", "null"] }
+      responses:
+        '200':
+          description: Ngoại lệ quyền sau khi cập nhật
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [userId, permissions]
+                    properties:
+                      userId: { type: string, format: uuid }
+                      permissions:
+                        type: array
+                        items: { $ref: '#/components/schemas/PermissionEntry' }
+        '400':
+          description: Input không hợp lệ
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền users.update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Tài khoản không tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /audit-logs:
+    get:
+      operationId: listAuditLogs
+      tags: [RBAC]
+      summary: Nhật ký audit (admin)
+      x-required-permission: audit.view
+      security: [{ AdminAuth: [] }]
+      parameters:
+        - name: actorId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: entityType
+          in: query
+          schema: { type: string, enum: [ROLE, ORDER, FITMENT, PRODUCT, CATEGORY, BRAND, VEHICLE, ARTICLE, USER] }
+        - name: entityId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: from
+          in: query
+          schema: { type: string, format: date-time }
+        - name: to
+          in: query
+          schema: { type: string, format: date-time }
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Nhật ký audit
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/AuditLog' }
+                  meta: { $ref: '#/components/schemas/PaginationMeta' }
+        '401':
+          description: Chưa đăng nhập
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Không có quyền audit.view
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }

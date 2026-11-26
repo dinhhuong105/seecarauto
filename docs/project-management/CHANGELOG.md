@@ -2,6 +2,40 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-03 IN_REVIEW (bản đầu, chờ ChatGPT review)
+
+- ChatGPT giao M01-03 (API Specification) ngày 26/11/2026 ~12:54 trong
+  chat "Review M01-02 Revision 02" (AUTHORIZED TO START, không cần chờ
+  Henry duyệt lại kế hoạch; 15 tiêu chí nghiệm thu AC-01 → AC-15; 6
+  deliverables; tuyệt đối cấm Prisma schema/migration, backend/frontend
+  thật, seed data, tự quyết Pending Decisions).
+- Bản đầu soạn xong cùng ngày trên nhánh `feature/M01-03-api-spec`
+  (từ main cecd37e): `docs/api/API_SPEC.md` (24 mục, 96 endpoint: 80 P0
+  + 16 P0-PROVISIONAL), `docs/api/openapi.yaml` (OpenAPI 3.1.0, 68
+  paths, 96 operations, 37 schemas), `docs/api/API_ERROR_CATALOG.md`
+  (9 nhóm lỗi), `docs/api/API_SCENARIOS.md` (S-01 → S-17),
+  `docs/api/API_SECURITY.md`, `docs/project-management/tasks/M01-03.md`.
+- Kiểm thử thực tế: Redocly CLI 2.83.0 lint 0 errors (4 warnings đã ghi
+  rõ lý do chấp nhận — URL localhost là dev server thật, 3 GET danh sách
+  không tham số không có lỗi 4xx); script đối chiếu liên tài liệu
+  `/tmp/m0103_check.py` ALL CHECKS PASS (96 endpoint §10 khớp 96
+  operation OpenAPI; 96 operationId duy nhất — 61 admin, 35 public;
+  41 $ref đều resolve; 121 requirement ID trong §20 đều tồn tại trong
+  PRD/SRS; 9/9 PD được tham chiếu, không PD nào bị tự quyết; 176 field
+  schema đối chiếu Data Dictionary; 88/88 FR P0 đều được map); scenario
+  walkthrough S-01 → S-17 PASS; preview OpenAPI render bằng Redocly
+  build-docs (96/96 operationId hiển thị); `git diff --check` sạch,
+  secret scan sạch, không sửa PRD/SRS/ERD. Hai lỗi thiết kế phát hiện
+  qua kiểm thử đã sửa ngay trong bản đầu: `GET /vehicles/import/{importId}`
+  và `GET /fitments/import/{importId}` (theo dõi import bất đồng bộ —
+  thiếu trong §10 và OpenAPI, đã bổ sung cả hai nơi + Error Catalog
+  `IMPORT_NOT_FOUND`); `x-required-permission` của logout/me sửa từ
+  null thành `*` (mọi admin đã đăng nhập — khớp bảng §10 và mục 6).
+- PD-01 → PD-09 và D-01 → D-09 giữ nguyên, chờ Henry quyết định.
+  M01-03 chỉ chuyển DONE khi ChatGPT ACCEPT (15 tiêu chí).
+- Báo cáo trong chat mới của project; trạng thái IN_REVIEW (không tự DONE).
+- commit bản đầu (SHA trong git log — không ghi SHA của chính commit này vào file để tránh vòng lặp amend)
+
 ## 26/11/2026 — M01-02 DONE (ChatGPT ACCEPT Revision 02, 12/12)
 
 - ChatGPT re-review Revision 02 (commit ad95bd8, chat "Review M01-02
