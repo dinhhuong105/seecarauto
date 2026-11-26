@@ -2,6 +2,22 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-02 DONE (ChatGPT ACCEPT Revision 02, 12/12)
+
+- ChatGPT re-review Revision 02 (commit ad95bd8, chat "Review M01-02
+  Revision 02"): ACCEPT lúc ~12:50 ngày 26/11/2026, 12/12 tiêu chí
+  nghiệm thu PASS; ChatGPT tự mở commit trên GitHub để đối chiếu
+  (parent 10611a1, 8 files, +120/-24, FIX-01 → FIX-04 đúng trong
+  diff). Không yêu cầu Revision 03. M01-02 chốt DONE theo quyết định
+  của Henry 26/11/2026 ~11:55 (chỉ cần ChatGPT đồng ý là đủ).
+- PD-01 → PD-09 giữ nguyên, chờ Henry quyết định (chấp nhận kỹ thuật
+  không thay quyết định nghiệp vụ của Henry).
+- Việc kế tiếp: nhờ ChatGPT giao brief M01-03 (API Specification); sau
+  khi có brief thì bắt đầu M01-03, báo cáo trong chat mới của project.
+  M02 (Prisma schema/migration) chưa được phép bắt đầu cho tới khi các
+  điều kiện và nhiệm vụ phụ thuộc được chấp nhận.
+- commit housekeeping chốt DONE (SHA trong git log — không ghi SHA của chính commit này vào file để tránh vòng lặp amend)
+
 ## 26/11/2026 — M01-02 Revision 02 (theo review của ChatGPT, IN_REVIEW)
 
 - ChatGPT review bản đầu (commit 10611a1, chat "Review M01-02 ERD"):

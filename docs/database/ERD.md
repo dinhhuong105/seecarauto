@@ -4,7 +4,7 @@
 | --- | --- |
 | Task | M01-02 — ERD (Product, SKU, OEM, Vehicle Fitment) |
 | Milestone | M01 — Architecture & UI/UX |
-| Trạng thái tài liệu | IN_REVIEW (đã báo cáo ChatGPT review lần 1 ngày 26/11/2026, đang làm Revision 02 theo 4 điểm FIX-01 → FIX-04) |
+| Trạng thái tài liệu | DONE (ChatGPT ACCEPT Revision 02 ngày 26/11/2026 ~12:50, commit ad95bd8, 12/12 tiêu chí PASS; chốt DONE theo quyết định của Henry 26/11/2026 ~11:55) |
 | Ngày | 26/11/2026 |
 | Product Owner | Henry |
 | Project Manager / Reviewer | ChatGPT |

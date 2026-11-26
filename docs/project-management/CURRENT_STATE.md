@@ -3,7 +3,7 @@
 Cập nhật sau mỗi task. Đây là nơi cuộc chat task mới đọc đầu tiên để biết
 dự án đang ở đâu.
 
-## Trạng thái hiện tại (sau M00, M01-01 DONE, M01-02 đang làm — 26/11/2026)
+## Trạng thái hiện tại (sau M00, M01-01 DONE, M01-02 DONE — 26/11/2026)
 
 - **Milestone đang làm:** M01 — Architecture & UI/UX.
 - **Trạng thái M00:** DONE (7/7 task, nghiệm thu đầy đủ 26/11/2026:
@@ -37,20 +37,23 @@ dự án đang ở đâu.
   (Task Brief đầy đủ, 12 tiêu chí nghiệm thu) — M01-02 đang làm.
   Tài liệu: `docs/product/PRD.md`, `docs/product/SRS.md`,
   `docs/project-management/tasks/M01-01.md`.
-- **Trạng thái M01-02 (ERD):** IN_REVIEW — bản đầu đã commit 10611a1 và
-  push lên GitHub ngày 26/11/2026 ~12:14 (remote HEAD
-  10611a19c1e2f17427dc60a51d0a138f32b35a3f đã kiểm chứng, parent 4a86da0,
-  7 files, +1269/-11). ChatGPT review lần 1 ngày 26/11/2026 ~12:23:
-  NOT ACCEPTED, yêu cầu Revision 02 (FIX-01 → FIX-04) — Revision 02
-  đang thực hiện, vẫn IN_REVIEW, chờ ChatGPT review lại + ACCEPT.
-  M01-01 giữ nguyên DONE. Tài liệu: `docs/database/ERD.md`,
+- **Trạng thái M01-02 (ERD):** DONE — Revision 02 đã commit ad95bd8 và
+  push lên GitHub ngày 26/11/2026 ~12:42 (remote HEAD
+  ad95bd81ec532f598dfe37fbd5c198e540e2ab59 đã kiểm chứng, parent
+  10611a1, 8 files, +120/-24). ChatGPT re-review Revision 02 ngày
+  26/11/2026 ~12:50: ACCEPT, 12/12 tiêu chí nghiệm thu PASS, không yêu
+  cầu Revision 03. M01-02 chốt DONE theo quyết định của Henry
+  26/11/2026 ~11:55 (chỉ cần ChatGPT đồng ý là đủ). 9 Pending Decisions
+  PD-01 → PD-09 giữ nguyên, chờ Henry quyết định. Tài liệu:
+  `docs/database/ERD.md`,
   `docs/database/diagrams/product-fitment-erd.mmd`,
   `docs/database/DATA_DICTIONARY.md`,
   `docs/project-management/tasks/M01-02.md`. Chỉ làm tài liệu thiết kế
   — không Prisma schema/migration, không code, không seed data.
-- **Việc kế tiếp:** hoàn thành M01-02, báo cáo ChatGPT review trong
-  chat mới của project; sau khi ChatGPT ACCEPT M01-02 thì sang M01-03
-  (API Specification).
+- **Việc kế tiếp:** M01-02 DONE. Đang nhờ ChatGPT giao brief M01-03
+  (API Specification); sau khi có brief thì bắt đầu M01-03. M02 (Prisma
+  schema/migration) chưa được phép bắt đầu cho tới khi các điều kiện và
+  nhiệm vụ phụ thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
@@ -100,13 +103,12 @@ dự án đang ở đâu.
 
 ## Đang làm
 
-- M01-02 (ERD) IN_REVIEW: bản đầu đã commit 10611a1 và push lên GitHub
-  (remote HEAD 10611a19c1e2f17427dc60a51d0a138f32b35a3f đã kiểm chứng).
-  ChatGPT review lần 1: NOT ACCEPTED, yêu cầu Revision 02 (FIX-01 →
-  FIX-04). Revision 02 đang thực hiện theo 4 điểm của ChatGPT; vẫn
-  IN_REVIEW — chờ ChatGPT review lại + ACCEPT. Parent sẽ kiểm tra,
-  commit và push Revision 02, rồi báo cáo ChatGPT trong chat mới của
-  project.
+- M01-02 (ERD) DONE: Revision 02 đã commit ad95bd8 và push lên GitHub
+  (remote HEAD ad95bd81ec532f598dfe37fbd5c198e540e2ab59 đã kiểm chứng).
+  ChatGPT ACCEPT Revision 02 ngày 26/11/2026 ~12:50 (12/12 tiêu chí);
+  M01-02 chốt DONE theo quyết định của Henry 26/11/2026 ~11:55 (chỉ
+  cần ChatGPT đồng ý là đủ). PD-01 → PD-09 giữ nguyên, chờ Henry
+  quyết định. Đang nhờ ChatGPT giao brief M01-03 (API Specification).
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 
