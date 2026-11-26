@@ -2,6 +2,27 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-01 Revision 01 (theo review của ChatGPT, IN_REVIEW)
+
+- ChatGPT review bản đầu (commit 0ecabf0) chưa chấp nhận; yêu cầu Revision
+  01 rồi review lại, sau đó Henry nghiệm thu mới sang M01-02. Vẫn chỉ làm
+  tài liệu, không code tính năng.
+- 6 điểm sửa: (1) bổ sung tiêu chí kiểm thử cụ thể cho FR-013, FR-014,
+  FR-059, FR-079, FR-093, INT-006; FR-094 chuyển sang P1 làm tra cứu đơn
+  trong tài khoản; (2) bảng truy vết tách P0/P1, thêm AC-14 → AC-18,
+  INT-003/INT-006 và từng BR có liên kết riêng tới FR/AC; (3) thống nhất
+  P0 = trạng thái còn hàng, P1 = tồn kho theo số lượng; tra cứu đơn công
+  khai P0 (FR-058), xem đơn trong tài khoản P1 (FR-094); (4) FR-058 thêm
+  yêu cầu bảo mật tra cứu đơn (mã không đoán được, rate limit, không lộ
+  thông tin người khác), phương thức xác minh bổ sung là quyết định mới
+  D-09 chờ Henry; (5) FR-011 sửa tham chiếu sang NFR-002, AC-01 thêm
+  trạng thái loading/empty/error, AC-04 thêm nhập Excel dữ liệu xe,
+  AC-13 thêm kiểm tra form liên hệ; (6) đồng bộ Handbook: CURRENT_STATE
+  và CHANGELOG sửa các câu cũ nói M01-01 chưa commit/push.
+- Vẫn 94 FR, mã duy nhất, không yêu cầu nào bị mất; M00 DONE và Docker
+  runtime UNVERIFIED không đổi; M01-01 vẫn IN_REVIEW.
+- commit Revision 01 (SHA trong git log — không ghi SHA của chính commit này vào file để tránh vòng lặp amend)
+
 ## 26/11/2026 — M01-01 PRD/SRS đã soạn xong, IN_REVIEW
 
 - Henry duyệt làm M01-01 lúc ~08:59 ("DUYỆT M01-01, làm luôn"); ChatGPT
@@ -21,7 +42,10 @@ Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nh
   SUCCESS 1m22s cho commit feea4d4 theo kiểm tra của ChatGPT ngày
   26/11/2026 (Muse chưa tự kiểm chứng độc lập). Docker runtime vẫn
   UNVERIFIED trên máy dev của Muse.
-- Chưa commit/push M01-01 — parent sẽ kiểm tra, commit và push.
+- M01-01 đã commit 0ecabf0 và push lên GitHub ngày 26/11/2026 ~09:37
+  (remote HEAD 0ecabf015ea57b3191354afefd4d63f04c01d441 đã kiểm chứng).
+  Revision 01 đang thực hiện theo review của ChatGPT (xem mục mới nhất
+  ở đầu file).
 
 ## 26/11/2026 — Sửa lỗi lint backend M00 (trước khi nghiệm thu)
 

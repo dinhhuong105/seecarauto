@@ -11,14 +11,20 @@ dự án đang ở đâu.
   5/5, `docker compose config --quiet` exit 0). Commit feea4d4 đã push
   lên GitHub; CI #1 chạy SUCCESS 1m22s (theo kiểm tra của ChatGPT ngày
   26/11/2026 — Muse chưa tự kiểm chứng độc lập).
-- **Trạng thái M01-01 (PRD/SRS):** đã soạn xong, IN_REVIEW — chờ ChatGPT
-  review + Henry nghiệm thu (tiêu chí nghiệm thu số 9 của task). Tài liệu:
-  `docs/product/PRD.md`, `docs/product/SRS.md`,
+- **Trạng thái M01-01 (PRD/SRS):** bản đầu đã commit 0ecabf0 và push lên
+  GitHub ngày 26/11/2026 ~09:37 (remote HEAD
+  0ecabf015ea57b3191354afefd4d63f04c01d441 đã kiểm chứng). ChatGPT review
+  yêu cầu Revision 01 (6 điểm: tiêu chí kiểm thử FR/INT, bảng truy vết,
+  thống nhất P0/P1, bảo mật tra cứu đơn, sửa tham chiếu NFR/AC, đồng bộ
+  Handbook) — Revision 01 đang thực hiện, vẫn IN_REVIEW, chờ ChatGPT
+  review lại + Henry nghiệm thu (tiêu chí nghiệm thu số 9 của task).
+  Tài liệu: `docs/product/PRD.md`, `docs/product/SRS.md`,
   `docs/project-management/tasks/M01-01.md`.
 - **Việc kế tiếp:** sau khi M01-01 được nghiệm thu, sang M01-02 (ERD chi
   tiết).
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
-  (nhánh `main`, commit M00 đã push — xem `git log`).
+  (nhánh `main`; commit M00 feea4d4 và commit M01-01 0ecabf0 đã push —
+  xem `git log`).
 - **Môi trường chạy:** frontend http://localhost:3000, admin
   http://localhost:3001, backend http://localhost:3002
   (`GET /api/v1/health`, Swagger tại `/api/docs`).
@@ -48,15 +54,21 @@ dự án đang ở đâu.
   Docker runtime vẫn UNVERIFIED (xem "Vấn đề chưa giải quyết" 1).
 - M01-01 (PRD/SRS) đã soạn xong 26/11/2026, IN_REVIEW: `docs/product/
   PRD.md` (13 module, luồng nghiệp vụ + ngoại lệ, quyết định mở D-01 →
-  D-08), `docs/product/SRS.md` (94 FR, 20 NFR, 16 BR, 7 INT, AC-01 →
-  AC-13, bảng truy vết), Task Brief `tasks/M01-01.md`. Chỉ làm tài
+  D-09), `docs/product/SRS.md` (94 FR, 20 NFR, 16 BR, 7 INT, AC-01 →
+  AC-18, bảng truy vết tách P0/P1), Task Brief `tasks/M01-01.md`. Commit
+  0ecabf0 đã push lên GitHub ngày 26/11/2026 ~09:37 (remote HEAD đã kiểm
+  chứng). Revision 01 đang thực hiện theo review của ChatGPT. Chỉ làm tài
   liệu — không code tính năng, không Prisma schema/migration, không dữ
   liệu giả. Henry duyệt làm lúc ~08:59 ngày 26/11/2026.
 
 ## Đang làm
 
-- M01-01 (PRD/SRS): đã soạn xong, IN_REVIEW — chờ ChatGPT review +
-  Henry nghiệm thu. Chưa commit/push (parent sẽ kiểm tra, commit, push).
+- M01-01 (PRD/SRS) Revision 01: bản đầu đã commit 0ecabf0 và push lên
+  GitHub ngày 26/11/2026 ~09:37 (remote HEAD
+  0ecabf015ea57b3191354afefd4d63f04c01d441 đã kiểm chứng). Revision 01
+  đang thực hiện theo 6 điểm review của ChatGPT; vẫn IN_REVIEW — chờ
+  ChatGPT review lại + Henry nghiệm thu. Parent sẽ kiểm tra, commit và
+  push Revision 01.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

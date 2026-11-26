@@ -27,7 +27,7 @@
 
 ### 1.1 Sản phẩm là gì
 
-SeeCar Auto là website thương mại điện tử chuyên ngành phụ tùng ô tô của thương hiệu **SeeCar Auto** — "Phụ tùng ô tô Chính Hãng - Giá Tốt", chuyên phụ tùng nhiều hãng. Website giúp khách hàng tìm đúng phụ tùng cho đúng xe của mình, đặt hàng và liên hệ mua hàng; giúp quản trị viên quản lý sản phẩm, đơn hàng, kho (ở mức P0 theo mục 4), nội dung và phân quyền động mà không cần sửa code (Charter mục 1).
+SeeCar Auto là website thương mại điện tử chuyên ngành phụ tùng ô tô của thương hiệu **SeeCar Auto** — "Phụ tùng ô tô Chính Hãng - Giá Tốt", chuyên phụ tùng nhiều hãng. Website giúp khách hàng tìm đúng phụ tùng cho đúng xe của mình, đặt hàng và liên hệ mua hàng; giúp quản trị viên quản lý sản phẩm, đơn hàng, trạng thái còn hàng (P0 — chỉ trạng thái còn/hết hàng hiển thị cho khách, không phải tồn kho theo số lượng; tồn kho theo số lượng là P1, xem mục 4.9), nội dung và phân quyền động mà không cần sửa code (Charter mục 1).
 
 Website tham khảo: phutungotoquangvu.com — chỉ tham khảo giao diện/danh mục/trải nghiệm, **không sao chép giao diện** (ADR-001).
 
@@ -58,7 +58,7 @@ P1: tài khoản khách hàng đầy đủ (Customer), giá sỉ nhiều cấp (
 | Nhóm | Ai | Nhu cầu chính | Ghi chú |
 | --- | --- | --- | --- |
 | Khách lẻ (guest) | Người dùng xe ô tô cần mua 1 phụ tùng | Tìm nhanh theo xe hoặc theo mã; xem giá và tình trạng; đặt hàng không cần đăng ký; liên hệ Zalo/hotline khi cần tư vấn | Nhóm chính của bản đầu. Đặt hàng không bắt buộc tạo tài khoản (quy trình chi tiết xem mục 6.3 và quyết định đang chờ ở mục 7). |
-| Khách lẻ (đã đăng ký) | Khách mua lặp lại | Lưu thông tin giao hàng, xem lại đơn đã đặt | Tài khoản khách hàng đầy đủ là P1 (Charter mục 2, module Customer). Ở P0, tài khoản chỉ ở mức tối thiểu phục vụ đặt hàng và tra cứu đơn (xem FR-090 → FR-094 trong SRS; phạm vi chi tiết do M01-02/M01-03 chốt). |
+| Khách lẻ (đã đăng ký) | Khách mua lặp lại | Lưu thông tin giao hàng, xem lại đơn đã đặt | Tài khoản khách hàng đầy đủ là P1 (Charter mục 2, module Customer — SRS FR-093, FR-094). Ở P0, khách đặt hàng không cần tài khoản (FR-092) và tra cứu đơn bằng mã đơn công khai (FR-058); xem đơn trong tài khoản là P1 (FR-094). Phạm vi chi tiết do M01-02/M01-03 chốt. |
 | Gara / thợ sửa xe | Mua nhiều, mua lặp lại theo xe khách | Tìm theo mã OEM nhanh, tra cứu ngược phụ tùng → xe tương thích, đặt nhiều món một lần | Giá sỉ nhiều cấp là P1 (Wholesale). Ở P0, gara dùng chung luồng khách lẻ, chưa có bảng giá riêng. |
 | Quản trị viên (Admin) | Nhân viên SeeCar Auto | Quản lý sản phẩm, danh mục, thương hiệu, xe, fitment, đơn hàng, bài viết, SEO; xem dashboard | Quyền theo vai trò, cấu hình động (ADR-005). Các vai trò cụ thể dưới đây là ví dụ minh họa, không phải danh sách vai trò cố định — vai trò thật do Super Admin tạo/sửa trong hệ thống. |
 | Super Admin | Người quản trị cao nhất | Toàn quyền, quản lý vai trò và phân quyền, quản lý tài khoản admin | Không cho tài khoản Super Admin cuối cùng tự khóa mình (ADR-005). |
@@ -77,7 +77,7 @@ Hành trình chuẩn của khách lẻ, từ lần đầu vào website tới khi
 6. **Thêm vào giỏ** — điều chỉnh số lượng, xem giỏ hàng (`/cart`).
 7. **Đặt hàng** (`/checkout`) — nhập thông tin người nhận và địa chỉ giao hàng, chọn phương thức thanh toán COD hoặc chuyển khoản, xác nhận đơn.
 8. **Hoàn tất** — nhận mã đơn hàng và hướng dẫn bước tiếp theo (với chuyển khoản: thông tin chuyển khoản; với COD: xác nhận chờ giao). Khách có thể liên hệ Zalo/hotline theo mã đơn để hỏi tiến độ.
-9. **Sau bán** — tra cứu trạng thái đơn; liên hệ hỗ trợ khi cần đổi/trả (chính sách đổi/trả cụ thể chưa có — xem quyết định đang chờ ở mục 7; không bịa chính sách trong tài liệu này).
+9. **Sau bán** — tra cứu trạng thái đơn bằng mã đơn công khai (P0, FR-058); liên hệ hỗ trợ khi cần đổi/trả (chính sách đổi/trả cụ thể chưa có — xem quyết định đang chờ ở mục 7; không bịa chính sách trong tài liệu này).
 
 Hành trình quản trị viên (song song): đăng nhập admin → dashboard tổng quan → quản lý sản phẩm/danh mục/thương hiệu/xe/fitment → xử lý đơn hàng mới → viết bài + cấu hình SEO → quản lý vai trò/quyền khi cần. Chi tiết từng bước ở mục 6.6–6.8.
 
@@ -173,7 +173,7 @@ Hành trình quản trị viên (song song): đăng nhập admin → dashboard t
 
 - **Mục đích:** khách cần tư vấn mua đúng phụ tùng luôn có đường liên hệ nhanh.
 - **Tính năng chính (P0):** số hotline/Zalo **0886706338** hiển thị ở header, footer, trang liên hệ và trang sản phẩm; trang liên hệ (`/contact`) với form liên hệ (form gửi về đâu — email hay lưu vào hệ thống — là chi tiết do M01-04/M05 chốt theo Henry duyệt; không tự chốt ở đây); liên kết fanpage https://www.facebook.com/profile.php?id=61597072672914.
-- **URL:** `/contact`, `/account` (tài khoản — xem mục 2).
+- **URL:** `/contact` (P0). Trang `/account` là trang tài khoản khách hàng (P1 — SRS FR-093, FR-094), không thuộc P0.
 
 ## 5. Phân loại P0 / P1 / P2 — bảng tổng hợp
 
@@ -249,6 +249,7 @@ Super Admin mở ma trận quyền → tick/bỏ tick checkbox theo vai trò × 
 | D-06 | Nhà cung cấp S3/R2 cụ thể? | Henry | M02 storage, M03 hình ảnh |
 | D-07 | Font: tự host Inter hay giữ font hệ thống? | Henry / ChatGPT (M01) | M01 UI/UX (ADR-011) |
 | D-08 | Quy trình checkout chi tiết (khách vãng lai/tài khoản, trường bắt buộc, định dạng mã đơn, bước đối soát chuyển khoản, chính sách đổi/trả) | Henry | M01-04 Wireframe, M05 E-commerce |
+| D-09 | Phương thức xác minh bổ sung khi tra cứu đơn công khai (số điện thoại, OTP hay phương thức khác) | Henry | M01-03 API, M05 E-commerce (FR-058) |
 
 ## 8. Ngoài phạm vi (Out of Scope — bản đầu)
 
@@ -260,7 +261,7 @@ Super Admin mở ma trận quyền → tick/bỏ tick checkbox theo vai trò × 
 
 ## 9. Đầu vào cho các task M01 tiếp theo
 
-- **M01-02 (ERD):** các thực thể chính từ PRD này: Product, SKU/Part Number/OEM, Category, Brand, Vehicle (Make/Model/Year), VehicleFitment, Order + OrderItem snapshot, Customer (tối thiểu P0), Article + ArticleSEO, User/Role/Permission (+ audit log). Chi tiết trường và quan hệ do M01-02 chốt.
+- **M01-02 (ERD):** các thực thể chính từ PRD này: Product, SKU/Part Number/OEM, Category, Brand, Vehicle (Make/Model/Year), VehicleFitment, Order + OrderItem snapshot, Customer (thông tin khách trên đơn hàng ở P0; tài khoản khách đầy đủ là P1), Article + ArticleSEO, User/Role/Permission (+ audit log). Chi tiết trường và quan hệ do M01-02 chốt.
 - **M01-03 (API Specification):** các endpoint theo module mục 4, prefix `/api/v1`, theo thứ tự ưu tiên tìm kiếm ADR-010 và ma trận quyền ADR-005.
 - **M01-04 (Sitemap & Wireframe):** sitemap theo URL mục 4; wireframe trình Henry duyệt, trong đó có đề xuất quy trình checkout chi tiết (D-08).
 - **M01-05 (Admin Dashboard):** cấu trúc dashboard theo mục 4.11 + ma trận RBAC mục 4.12.

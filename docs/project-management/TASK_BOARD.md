@@ -28,7 +28,7 @@ GitHub Actions CI cơ bản — CI file đã có, chạy trên GitHub sau khi pu
 
 | Task | Tên | Trạng thái |
 | --- | --- | --- |
-| M01-01 | PRD / SRS | IN_REVIEW | PRD + SRS đã soạn xong 26/11; chờ ChatGPT review + Henry nghiệm thu |
+| M01-01 | PRD / SRS | IN_REVIEW | PRD + SRS đã soạn xong 26/11, commit 0ecabf0 đã push; Revision 01 đang thực hiện theo review của ChatGPT, chờ review lại + Henry nghiệm thu |
 | M01-02 | ERD chi tiết (Product, SKU, OEM, Vehicle Fitment) | BACKLOG |
 | M01-03 | API Specification | BACKLOG |
 | M01-04 | Sitemap và Wireframe | BACKLOG |

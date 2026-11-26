@@ -15,7 +15,7 @@
 
 - Mỗi yêu cầu có mã duy nhất, mức ưu tiên (P0/P1/P2 theo PRD mục 5 — cơ sở: Charter mục 2) và tiêu chí kiểm thử. Yêu cầu không có tiêu chí kiểm thử được coi là chưa hoàn chỉnh.
 - **FR** = Functional Requirement (yêu cầu chức năng), **NFR** = Non-Functional Requirement, **BR** = Business Rule, **AC** = Acceptance Criteria.
-- **Đã duyệt / Chưa chốt:** phân biệt như PRD. Các quyết định đang chờ (D-01 → D-08, PRD mục 7) không được dùng làm yêu cầu kỹ thuật cho tới khi Henry chốt.
+- **Đã duyệt / Chưa chốt:** phân biệt như PRD. Các quyết định đang chờ (D-01 → D-09, PRD mục 7) không được dùng làm yêu cầu kỹ thuật cho tới khi Henry chốt.
 - **Không bịa dữ liệu:** mọi ví dụ cụ thể đều ghi chú **ví dụ minh họa, không phải dữ liệu thật**. Không có tên sản phẩm, giá, số liệu hay chính sách thật nào trong tài liệu này.
 - **Stack đã duyệt (ADR-002/ADR-003):** monorepo pnpm + Turborepo; frontend Next.js + TypeScript (port 3000); admin Next.js + TypeScript (port 3001); backend NestJS + TypeScript (port 3002, prefix `/api/v1`, Swagger `/api/docs`); PostgreSQL + Prisma; Redis (+ BullMQ); Meilisearch; S3/R2; JWT + Refresh Token, mật khẩu Argon2id; deploy Vercel (frontend/admin), backend chưa chốt (D-05).
 
@@ -44,10 +44,10 @@ SRS này đặc tả chi tiết các yêu cầu phần mềm cho bản đầu (P
 | FR-008 | Lọc sản phẩm theo danh mục, thương hiệu, khoảng giá, tình trạng còn hàng, tương thích với xe đã chọn; lọc kết hợp được nhiều điều kiện | P0 | Áp 2+ bộ lọc cùng lúc → kết quả thỏa tất cả điều kiện; bỏ lọc → kết quả trở lại đầy đủ |
 | FR-009 | Sắp xếp sản phẩm (mới nhất, giá tăng/giảm, tên A–Z — danh sách sắp xếp do M01-04 chốt) | P0 | Đổi kiểu sắp xếp → thứ tự danh sách đổi đúng; kiểm tra 2 trang liên tiếp không trùng/lặp sản phẩm |
 | FR-010 | Mỗi item danh sách hiển thị tên, mã (SKU), thương hiệu, giá, hình ảnh, tình trạng | P0 | Item thiếu ảnh → hiển thị ảnh placeholder theo design system, không vỡ layout |
-| FR-011 | Trang danh sách dùng được ở quy mô 2.000–10.000 SKU (phân trang server-side, không tải toàn bộ catalogue) | P0 | Kiểm thử với dữ liệu seed lớn ở M03: tải trang < ngưỡng NFR-001; không gọi API trả toàn bộ catalogue |
+| FR-011 | Trang danh sách dùng được ở quy mô 2.000–10.000 SKU (phân trang server-side, không tải toàn bộ catalogue) | P0 | Kiểm thử với dữ liệu seed lớn ở M03: tải trang đạt ngưỡng NFR-001 (LCP ≤ 2,5s); API danh sách đáp ứng NFR-002 (ngưỡng mili-giây cụ thể do M02/M03 đo và chốt — chưa có số ở đây); không gọi API trả toàn bộ catalogue |
 | FR-012 | Khi xe đã chọn không có sản phẩm tương thích, hiển thị thông báo rõ + gợi ý liên hệ, không hiển thị danh sách trống khó hiểu | P0 | Chọn xe chưa có fitment → thấy thông báo và số hotline/Zalo |
-| FR-013 | Lọc theo thông số kỹ thuật chi tiết của sản phẩm | P1 | (P1 — kiểm thử ở milestone tương ứng) |
-| FR-014 | Admin quản lý thứ tự hiển thị sản phẩm trong danh mục | P1 | (P1 — kiểm thử ở milestone tương ứng) |
+| FR-013 | Lọc theo thông số kỹ thuật chi tiết của sản phẩm | P1 | Kiểm thử ở milestone tương ứng (M03): với dữ liệu seed kiểm thử, lọc theo 1 thông số kỹ thuật → chỉ sản phẩm có đúng giá trị thông số đó; kết hợp với lọc danh mục → kết quả là giao của 2 điều kiện; sản phẩm chưa có thông số đó không xuất hiện trong kết quả lọc |
+| FR-014 | Admin quản lý thứ tự hiển thị sản phẩm trong danh mục | P1 | Kiểm thử ở milestone tương ứng (M03): admin đổi thứ tự 3 sản phẩm trong danh mục → frontend hiển thị đúng thứ tự mới; sản phẩm chưa được admin đặt thứ tự → xếp theo thứ tự mặc định (M01-04 chốt) |
 
 ### 2.3 Category & Brand (FR-015 → FR-020)
 
@@ -121,8 +121,8 @@ SRS này đặc tả chi tiết các yêu cầu phần mềm cho bản đầu (P
 | FR-055 | Trang xác nhận sau đặt hàng hiển thị mã đơn và bước tiếp theo; với chuyển khoản hiển thị thông tin chuyển khoản + nội dung chuyển khoản chứa mã đơn | P0 | Đặt đơn chuyển khoản → trang xác nhận có đủ thông tin chuyển khoản và mã đơn trong nội dung chuyển khoản |
 | FR-056 | Giỏ trống không cho vào checkout; chuyển thẳng tới `/cart` kèm thông báo | P0 | Vào `/checkout` khi giỏ trống → bị chuyển về `/cart` |
 | FR-057 | Sản phẩm trong giỏ bị admin ẩn/xóa hoặc đổi giá sau khi thêm: báo rõ trước khi xác nhận, khách xác nhận lại với giá/tình trạng mới | P0 | Thêm vào giỏ → admin đổi giá → checkout báo giá đã đổi, yêu cầu xác nhận lại |
-| FR-058 | Khách tra cứu trạng thái đơn bằng mã đơn (không cần đăng nhập) hoặc trong tài khoản (P1) | P0 | Nhập mã đơn đúng → thấy trạng thái đơn; nhập mã sai → báo không tìm thấy, không lộ thông tin đơn khác |
-| FR-059 | Thanh toán online (VNPay, MoMo), phí vận chuyển tự động, mã giảm giá | P1 | (P1 — kiểm thử ở milestone tương ứng) |
+| FR-058 | Khách tra cứu trạng thái đơn bằng mã đơn công khai (không cần đăng nhập); mã tra cứu không được đoán được và không phải số thứ tự liên tục; tra cứu bị giới hạn tần suất; tra cứu không lộ thông tin cá nhân hay chi tiết đơn của người khác (phương thức xác minh bổ sung — số điện thoại, OTP hay phương thức khác — là quyết định đang chờ D-09, do Henry quyết định) | P0 | Nhập mã đơn đúng → thấy trạng thái đơn của mình; nhập mã sai → báo không tìm thấy, không lộ thông tin đơn khác; thử mã đoán được (số thứ tự liên tục, mã đơn của đơn khác) → không truy cập được đơn nào; gửi nhiều lần tra cứu liên tiếp bất thường → bị chặn tạm thời (rate limit); kiểm tra mã đơn sinh ra không theo thứ tự đoán được |
+| FR-059 | Thanh toán online (VNPay, MoMo), phí vận chuyển tự động, mã giảm giá | P1 | Kiểm thử ở milestone tương ứng (M05): khi đã tích hợp theo quyết định Henry, đặt đơn bằng phương thức online → đơn ghi đúng phương thức và trạng thái thanh toán; nhập mã giảm giá hợp lệ → tổng tiền giảm đúng mức; nhập mã sai/hết hạn → báo lỗi, tổng tiền không đổi |
 
 ### 2.9 Order Management — Admin (FR-060 → FR-066)
 
@@ -157,7 +157,7 @@ SRS này đặc tả chi tiết các yêu cầu phần mềm cho bản đầu (P
 | FR-076 | Dashboard có lối tắt tới các module quản lý (sản phẩm, đơn hàng, bài viết, vai trò) | P0 | Bấm lối tắt → tới đúng module; module không có quyền → lối tắt bị ẩn (xem FR-081) |
 | FR-077 | Dashboard hiển thị theo quyền của tài khoản đăng nhập (không thấy module/số liệu mình không có quyền xem) | P0 | Đăng nhập tài khoản chỉ có quyền đơn hàng → dashboard không hiển thị số liệu sản phẩm |
 | FR-078 | Dashboard dùng chung component Modal/Toast/Tooltip và trạng thái loading/empty/error theo UI_UX_STANDARDS | P0 | Kiểm thử ở 3 chiều rộng (điện thoại hẹp, ~1024px, desktop rộng) theo UI_UX_STANDARDS mục 1.5 |
-| FR-079 | Analytics đầy đủ (biểu đồ doanh thu, sản phẩm bán chạy) | P1 | (P1 — kiểm thử ở milestone tương ứng) |
+| FR-079 | Analytics đầy đủ (biểu đồ doanh thu, sản phẩm bán chạy) | P1 | Kiểm thử ở milestone tương ứng (P1 Analytics): với dữ liệu seed kiểm thử, biểu đồ doanh thu hiển thị đúng tổng theo khoảng thời gian đã chọn; sản phẩm bán chạy xếp đúng thứ tự theo số lượng đã bán; chưa có dữ liệu → empty state, không hiển thị số mẫu |
 
 ### 2.12 Dynamic RBAC (FR-080 → FR-086)
 
@@ -179,15 +179,15 @@ SRS này đặc tả chi tiết các yêu cầu phần mềm cho bản đầu (P
 | FR-088 | Trang liên hệ (`/contact`) hiển thị thông tin liên hệ + liên kết fanpage https://www.facebook.com/profile.php?id=61597072672914 + form liên hệ | P0 | Mở `/contact` → đủ 3 thành phần; bấm fanpage → mở đúng fanpage |
 | FR-089 | Form liên hệ gửi về đâu (email hay lưu vào hệ thống) do M01-04/M05 chốt theo Henry duyệt; form phải báo thành công/thất bại bằng toast/popup, không dùng `alert()` | P0 | Gửi form trống → báo lỗi từng trường; gửi thành công → toast xác nhận (đích nhận theo quyết định M01-04/M05) |
 
-### 2.14 Tài khoản & xác thực (FR-090 → FR-094)
+### 2.14 Tài khoản & xác thực (FR-090 → FR-094; FR-090 → FR-092 là P0, FR-093 → FR-094 là P1)
 
 | Mã | Yêu cầu | Ưu tiên | Tiêu chí kiểm thử |
 | --- | --- | --- | --- |
 | FR-090 | Admin đăng nhập bằng tài khoản + mật khẩu (JWT + Refresh Token, mật khẩu Argon2id — ADR-003); đăng xuất thu hồi token | P0 | Đăng nhập sai mật khẩu → báo lỗi chung, không lộ tài khoản có tồn tại hay không; đăng xuất → token cũ không dùng được nữa |
 | FR-091 | Tài khoản admin bị khóa sau nhiều lần đăng nhập sai (ngưỡng do M02 chốt) | P0 | Đăng nhập sai liên tiếp tới ngưỡng → tài khoản bị khóa tạm + báo rõ |
 | FR-092 | Khách đặt hàng không bắt buộc tạo tài khoản ở P0 (khung — chi tiết D-08, M01-04 trình Henry duyệt) | P0 | Đặt hàng thành công mà không tạo tài khoản |
-| FR-093 | Tài khoản khách hàng đầy đủ: đăng ký/đăng nhập, lưu địa chỉ, xem lại đơn đã đặt | P1 | (P1 — module Customer, kiểm thử ở milestone tương ứng) |
-| FR-094 | Trang tài khoản (`/account`) ở P0 chỉ chứa các chức năng đã chốt ở M01-04; không tự thêm chức năng P1 vào P0 | P0 | Đối chiếu `/account` với M01-04 đã duyệt: không có chức năng ngoài phạm vi |
+| FR-093 | Tài khoản khách hàng: đăng ký/đăng nhập, lưu địa chỉ giao hàng (xem lại đơn đã đặt trong tài khoản: xem FR-094) | P1 | Kiểm thử ở milestone tương ứng (P1 Customer): đăng ký tài khoản mới → đăng nhập được; lưu 2 địa chỉ giao hàng → checkout hiển thị đúng 2 địa chỉ đã lưu để chọn; đăng nhập sai mật khẩu → báo lỗi chung, không lộ tài khoản có tồn tại hay không |
+| FR-094 | Khách đã đăng nhập tra cứu đơn đã đặt trong tài khoản (`/account`): xem danh sách đơn của mình và chi tiết từng đơn, chỉ thấy đơn thuộc tài khoản đó | P1 | Kiểm thử ở milestone tương ứng (P1 Customer): đăng nhập tài khoản A → chỉ thấy đơn của A, không thấy đơn của tài khoản B; mở chi tiết 1 đơn → đúng snapshot của đơn đó; chưa có đơn nào → empty state |
 
 ## 3. Non-Functional Requirements
 
@@ -244,56 +244,88 @@ SRS này đặc tả chi tiết các yêu cầu phần mềm cho bản đầu (P
 | INT-003 | API docs Swagger/OpenAPI tại `/api/docs`, cập nhật theo code thật | P0 | Mở `/api/docs` → đủ endpoint P0; thử gọi 1 endpoint từ Swagger |
 | INT-004 | Backend đồng bộ dữ liệu sang Meilisearch qua BullMQ trên Redis khi sản phẩm/danh mục/thương hiệu thay đổi | P0 | Sửa sản phẩm trong admin → tìm kiếm thấy nội dung mới trong vòng TTL/quy trình M03 chốt |
 | INT-005 | Ảnh sản phẩm lưu qua S3/R2 (nhà cung cấp cụ thể chờ D-06); URL ảnh tuyệt đối, không hard-code domain trong code | P0 | Đổi domain lưu trữ → URL ảnh đổi theo cấu hình, không cần sửa code |
-| INT-006 | Tích hợp VNPay, MoMo, GHN/GHTK/Viettel Post, Zalo OA, GA4/GTM/Search Console | P1 | (P1 — kiểm thử ở milestone tương ứng) |
+| INT-006 | Tích hợp VNPay, MoMo, GHN/GHTK/Viettel Post, Zalo OA, GA4/GTM/Search Console | P1 | Kiểm thử ở milestone tương ứng: mỗi tích hợp đã chốt được bật/tắt độc lập trong cấu hình; tích hợp chưa cấu hình → tính năng liên quan báo rõ "chưa cấu hình", không lỗi 500; gọi API tích hợp lỗi → hệ thống ghi log + báo lỗi rõ, không mất dữ liệu đơn hàng |
 | INT-007 | Response lỗi thống nhất `{ statusCode, message, error }`; phân trang `?page=&limit=`; sắp xếp `?sort=&order=` (CODING_STANDARDS mục 5) | P0 | Gọi API lỗi → đúng định dạng; gọi danh sách với `page/limit/sort` → đúng trang/thứ tự |
 
 ## 6. Acceptance Criteria (theo nhóm tính năng)
 
 | Nhóm | Mã AC | Tiêu chí nghiệm thu |
 | --- | --- | --- |
-| Homepage | AC-01 | Mở `/` thấy tìm kiếm, bộ chọn xe, danh mục, thương hiệu, bài viết, liên hệ; mọi liên kết đi đúng trang; đạt NFR-001, NFR-011, NFR-012 |
-| Catalogue | AC-02 | Lọc/sắp xếp/phân trang đúng ở quy mô lớn (FR-007 → FR-011); lọc kết hợp đúng; xe không có sản phẩm tương thích báo rõ (FR-012) |
+| Homepage | AC-01 | Mở `/` thấy tìm kiếm, bộ chọn xe, danh mục, thương hiệu, bài viết, liên hệ; mọi liên kết đi đúng trang; trạng thái loading (skeleton), empty và error đúng FR-006 (giả lập lỗi tải → error state + nút thử lại; không có dữ liệu → empty state); đạt NFR-001, NFR-011, NFR-012 |
+| Catalogue (P0) | AC-02 | Lọc/sắp xếp/phân trang đúng ở quy mô lớn (FR-007 → FR-012); lọc kết hợp đúng; xe không có sản phẩm tương thích báo rõ (FR-012) |
 | Category & Brand | AC-03 | CRUD danh mục/thương hiệu đúng; slug/redirect 301 đúng (FR-015 → FR-020) |
-| Vehicle | AC-04 | CRUD hãng/dòng/đời đúng; bộ chọn xe lọc đúng từng cấp; trang xe liệt kê đúng phụ tùng (FR-021 → FR-026) |
+| Vehicle | AC-04 | CRUD hãng/dòng/đời đúng; bộ chọn xe lọc đúng từng cấp; trang xe liệt kê đúng phụ tùng; nhập Excel dữ liệu xe đúng, dòng lỗi báo rõ từng dòng, không nhập nửa chừng (FR-021 → FR-026) |
 | Fitment | AC-05 | Gắn/bỏ gắn fitment đúng cả 2 chiều tra cứu; cảnh báo không tương thích; sản phẩm chưa có fitment báo rõ; import Excel có báo lỗi từng dòng (FR-027 → FR-033) |
 | Search | AC-06 | Thứ tự ưu tiên ADR-010 đúng; không fuzzy mạnh mã OEM; gợi ý < 1s; không có kết quả có hướng xử lý (FR-034 → FR-041) |
 | Product Detail | AC-07 | Đủ 4 loại mã có nhãn riêng; đủ thông tin mua hàng; 404 thân thiện cho sản phẩm đã ẩn; SEO metadata duy nhất (FR-042 → FR-049) |
-| Cart / Checkout | AC-08 | Giỏ tính đúng; checkout chỉ có COD + chuyển khoản; đơn tạo kèm snapshot + mã đơn; trang xác nhận đủ thông tin chuyển khoản; giỏ trống không vào được checkout (FR-050 → FR-058) |
+| Cart / Checkout (P0) | AC-08 | Giỏ tính đúng; checkout chỉ có COD + chuyển khoản; đơn tạo kèm snapshot + mã đơn; trang xác nhận đủ thông tin chuyển khoản; giỏ trống không vào được checkout; tra cứu đơn bằng mã công khai an toàn: mã sai/không đoán được không lộ đơn khác, tra cứu liên tiếp bất thường bị chặn (FR-050 → FR-058) |
 | Order Management | AC-09 | Lọc/tìm đơn đúng; chi tiết đơn khớp snapshot; vòng đời trạng thái đúng; đơn chuyển khoản phải xác nhận tiền; hủy đơn có xác nhận + lý do + log (FR-060 → FR-066) |
 | CMS / SEO | AC-10 | CRUD bài viết đúng; Rule Engine cảnh báo đúng; AI đề xuất đủ trường (khi có nhà cung cấp); manual override không bị ghi đè; preview đúng (FR-067 → FR-074) |
-| Admin Dashboard | AC-11 | Chỉ hiển thị số liệu thật theo quyền; lối tắt đúng; responsive 3 chiều rộng (FR-075 → FR-078) |
+| Admin Dashboard (P0) | AC-11 | Chỉ hiển thị số liệu thật theo quyền; lối tắt đúng; responsive 3 chiều rộng (FR-075 → FR-078) |
 | Dynamic RBAC | AC-12 | Ma trận checkbox đúng; quyền có hiệu lực sau invalidate; audit log đủ; chặn tự khóa Super Admin cuối cùng; backend kiểm tra quyền mọi request (FR-080 → FR-086) |
-| Liên hệ & Tài khoản | AC-13 | Hotline/Zalo đúng 0886706338 ở đủ vị trí; trang `/contact` đủ thành phần; đăng nhập admin đúng JWT/Argon2id; đặt hàng không bắt buộc tài khoản (FR-087 → FR-092, FR-094) |
+| Liên hệ & Tài khoản (P0) | AC-13 | Hotline/Zalo đúng 0886706338 ở đủ vị trí; trang `/contact` đủ thành phần; form liên hệ: gửi trống → báo lỗi từng trường, gửi thành công/thất bại → toast xác nhận hoặc thông báo lỗi rõ (FR-089); đăng nhập admin đúng JWT/Argon2id; đặt hàng không bắt buộc tài khoản (FR-087 → FR-092) |
+| Catalogue (P1) | AC-14 | Lọc theo thông số kỹ thuật đúng; admin đổi thứ tự hiển thị trong danh mục → frontend hiển thị đúng thứ tự mới (FR-013, FR-014) |
+| Thanh toán online & khuyến mãi (P1) | AC-15 | Đặt đơn bằng phương thức online đã tích hợp → đúng phương thức và trạng thái thanh toán; mã giảm giá hợp lệ giảm đúng mức, mã sai/hết hạn báo lỗi và không đổi tổng tiền (FR-059, INT-006) |
+| Analytics (P1) | AC-16 | Biểu đồ doanh thu đúng tổng theo khoảng thời gian đã chọn; sản phẩm bán chạy xếp đúng thứ tự; chưa có dữ liệu → empty state (FR-079) |
+| Tài khoản khách hàng (P1) | AC-17 | Đăng ký/đăng nhập đúng; lưu địa chỉ giao hàng và chọn được ở checkout; đăng nhập chỉ thấy đơn của tài khoản đó, chi tiết đơn đúng snapshot (FR-093, FR-094) |
+| Tích hợp hệ thống | AC-18 | Frontend/admin chỉ gọi backend qua REST `/api/v1`; Swagger tại `/api/docs` đủ endpoint P0 và gọi thử được; đồng bộ Meilisearch qua BullMQ khi dữ liệu đổi; URL ảnh tuyệt đối theo cấu hình S3/R2; response lỗi và phân trang/sắp xếp đúng định dạng thống nhất (INT-001 → INT-005, INT-007; INT-006 kiểm tra ở AC-15) |
 
 ## 7. Bảng truy vết (Traceability) — Yêu cầu → Tính năng/Module → Acceptance Criteria
 
+P0 và P1 được tách riêng: mỗi FR chỉ trỏ tới AC kiểm thử đúng phạm vi của nó. Khoảng FR (ví dụ FR-001 → FR-006) chỉ được dùng khi toàn bộ khoảng liên tục đó thuộc cùng một AC.
+
 | Yêu cầu | Tính năng / Module | Acceptance Criteria |
 | --- | --- | --- |
-| FR-001 → FR-006 | Homepage | AC-01 |
-| FR-007 → FR-014 | Product Catalog | AC-02 |
-| FR-015 → FR-020 | Category & Brand | AC-03 |
-| FR-021 → FR-026 | Vehicle (Make/Model/Year) | AC-04 |
-| FR-027 → FR-033 | Vehicle Fitment | AC-05 |
-| FR-034 → FR-041 | Search | AC-06 |
-| FR-042 → FR-049 | Product Detail | AC-07 |
-| FR-050 → FR-059 | Cart / Checkout | AC-08 |
-| FR-060 → FR-066 | Order Management | AC-09 |
-| FR-067 → FR-074 | CMS / SEO | AC-10 |
-| FR-075 → FR-079 | Admin Dashboard | AC-11 |
-| FR-080 → FR-086 | Dynamic RBAC | AC-12 |
-| FR-087 → FR-094 | Liên hệ hotline/Zalo, Tài khoản & xác thực | AC-13 |
+| FR-001 → FR-006 | Homepage (P0) | AC-01 |
+| FR-007 → FR-012 | Product Catalog (P0) | AC-02 |
+| FR-013, FR-014 | Product Catalog (P1) | AC-14 |
+| FR-015 → FR-020 | Category & Brand (P0) | AC-03 |
+| FR-021 → FR-026 | Vehicle (Make/Model/Year) (P0) | AC-04 |
+| FR-027 → FR-033 | Vehicle Fitment (P0) | AC-05 |
+| FR-034 → FR-041 | Search (P0) | AC-06 |
+| FR-042 → FR-049 | Product Detail (P0) | AC-07 |
+| FR-050 → FR-058 | Cart / Checkout (P0) | AC-08 |
+| FR-059 | Thanh toán online & khuyến mãi (P1) | AC-15 |
+| FR-060 → FR-066 | Order Management (P0) | AC-09 |
+| FR-067 → FR-074 | CMS / SEO (P0) | AC-10 |
+| FR-075 → FR-078 | Admin Dashboard (P0) | AC-11 |
+| FR-079 | Analytics (P1) | AC-16 |
+| FR-080 → FR-086 | Dynamic RBAC (P0) | AC-12 |
+| FR-087 → FR-092 | Liên hệ hotline/Zalo, Tài khoản & xác thực (P0) | AC-13 |
+| FR-093, FR-094 | Tài khoản khách hàng (P1) | AC-17 |
 | NFR-001 → NFR-003 | Hiệu năng (Core Web Vitals, API, gợi ý tìm kiếm) | AC-01, AC-02, AC-06, AC-07, AC-08 |
 | NFR-004, NFR-005 | Redis cache + TTL (ADR-006) | AC-02, AC-06, AC-07, AC-10, AC-12 |
-| NFR-006 → NFR-008 | Bảo mật, secret, xác thực | AC-12, AC-13 |
+| NFR-006 → NFR-008 | Bảo mật, secret, xác thực | AC-12, AC-13, AC-17 |
 | NFR-009, NFR-010 | SEO kỹ thuật, URL tiếng Anh | AC-01, AC-03, AC-07, AC-10 |
-| NFR-011 → NFR-014 | Responsive, accessibility, design system, trạng thái | AC-01 → AC-13 (toàn hệ thống) |
+| NFR-011 → NFR-014 | Responsive, accessibility, design system, trạng thái | AC-01 → AC-18 (toàn hệ thống) |
 | NFR-015 | Sao lưu / khôi phục | AC-09 (dữ liệu đơn hàng), AC-12 (audit log) |
 | NFR-016, NFR-017 | Docker + CI | Toàn hệ thống (kiểm tra ở M02/M09) |
 | NFR-018 | TypeScript strict, ESLint, Prettier | Toàn hệ thống |
-| NFR-019 | Không lưu thông tin thẻ | AC-08 |
+| NFR-019 | Không lưu thông tin thẻ | AC-08, AC-15 |
 | NFR-020 | Mở rộng P1/P2 không viết lại P0 | M01-03 (API Specification) |
-| BR-001 → BR-016 | Business Rules (áp dụng chéo) | AC tương ứng của từng module (xem cột "Tiêu chí kiểm thử" của từng BR) |
-| INT-001 → INT-007 | Tích hợp frontend/backend/admin/search/storage | AC-02, AC-06, AC-07, AC-11, AC-12 |
+| BR-001 | Phân biệt 4 loại mã | FR-043 → AC-07 |
+| BR-002 | Thứ tự ưu tiên tìm kiếm | FR-035, FR-036 → AC-06 |
+| BR-003 | Snapshot đơn hàng | FR-054, FR-061 → AC-08, AC-09 |
+| BR-004 | SEO sửa tay không bị ghi đè | FR-071 → AC-10 |
+| BR-005 | URL không đổi khi đổi tên; redirect 301 | FR-017, FR-018, FR-068 → AC-03, AC-10 |
+| BR-006 | Backend luôn kiểm tra quyền | FR-086 → AC-12 |
+| BR-007 | Không tự khóa Super Admin cuối cùng | FR-085 → AC-12 |
+| BR-008 | Quyền có hiệu lực qua cache invalidation; audit log | FR-081, FR-084 → AC-12 |
+| BR-009 | Giai đoạn đầu chỉ COD + chuyển khoản | FR-053 → AC-08 |
+| BR-010 | Đơn chuyển khoản chờ xác nhận tiền | FR-063 → AC-09 |
+| BR-011 | Fitment là dữ liệu có cấu trúc | FR-027, FR-031 → AC-05 |
+| BR-012 | Trạng thái còn hàng P0; tồn kho theo số lượng P1 | FR-008, FR-010 → AC-02 (phần P0); phần P1 kiểm thử ở milestone Inventory, chưa có AC trong tài liệu này |
+| BR-013 | Chỉ hiển thị số liệu thật | FR-075 → AC-11 |
+| BR-014 | AI không khẳng định lượng tìm kiếm | FR-070 → AC-10 |
+| BR-015 | Nội dung tiếng Việt; URL/slug/API tiếng Anh | NFR-010 → AC-01, AC-03, AC-07, AC-10 |
+| BR-016 | Không bịa dữ liệu | Toàn hệ thống (review tài liệu và dữ liệu seed) |
+| INT-001 | Frontend gọi backend qua REST `/api/v1` | AC-18 |
+| INT-002 | Admin gọi cùng backend `/api/v1` có phân quyền | AC-18 |
+| INT-003 | Swagger/OpenAPI tại `/api/docs` | AC-18 (mở `/api/docs`, gọi thử 1 endpoint từ Swagger) |
+| INT-004 | Đồng bộ Meilisearch qua BullMQ | AC-06, AC-18 |
+| INT-005 | Ảnh lưu qua S3/R2, URL tuyệt đối | AC-07, AC-18 |
+| INT-006 | Tích hợp VNPay/MoMo/GHN/GHTK/Viettel Post/Zalo OA/GA4/GTM/Search Console (P1) | AC-15 |
+| INT-007 | Response lỗi và phân trang/sắp xếp thống nhất | AC-18 |
 
 ## 8. Rủi ro và giả định (để M01-02 → M01-07 xử lý)
 
