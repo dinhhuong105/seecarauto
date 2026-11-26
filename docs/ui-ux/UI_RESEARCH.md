@@ -14,7 +14,7 @@
 | 2 | `rockauto.com` | Kho phụ tùng online | Mỹ | Chuẩn mực tra cứu theo xe (vehicle-first) |
 | 3 | `partsgeek.com` | Siêu thị phụ tùng online | Mỹ | Chuẩn mực tìm kiếm theo năm/hãng/dòng + danh mục A–Z |
 | 4 | `autozone.com` | Chuỗi bán lẻ phụ tùng | Mỹ | Chuẩn mực bán lẻ: khuyến mãi, dịch vụ miễn phí, nội dung hướng dẫn |
-| 5 | `mast.com.vn` | Nhà phân phối phụ tùng Hàn Quốc (B2B) | Việt Nam | Mẫu đối chứng: trang phân phối KHÔNG bán lẻ online |
+| 5 | `mast.com.vn` | Nhà phân phối phụ tùng Hàn Quốc (B2B) | Việt Nam | Mẫu đối chứng (B2B): những gì quan sát được trên trang chủ đã đọc không thể hiện là bán lẻ online (tin tức + "Liên hệ" thay vì mua online) — chưa xác minh trên toàn website |
 
 ### 1.2 Kết quả truy cập (26/11/2026)
 
@@ -28,18 +28,20 @@
 
 ### 1.3 Bảng so sánh nhanh
 
+> **Phạm vi của bảng này (FIX-04 — Revision 04):** các ô chỉ phản ánh những gì đọc được trên **trang chủ** (bản text crawl ngày 26/11/2026), trừ khi ghi rõ khác. Nhãn "Không thấy trên trang chủ đã đọc" không có nghĩa là website không có tính năng đó — chỉ là không thấy trên trang đã quan sát; chưa xác minh trên toàn website.
+
 | Tiêu chí | Quang Vũ | RockAuto | PartsGeek | AutoZone | MAST |
 | --- | --- | --- | --- | --- | --- |
-| Trang chủ = chọn xe ngay | Có (mục "Phụ tùng cho xe của bạn") | Có — toàn bộ trang chủ là danh sách hãng | Có — ô tìm theo năm/hãng/dòng ở đầu trang | Không rõ trong bản text (bộ chọn xe ở header, JS) | Không |
-| Tìm theo mã sản phẩm | Có (hero: "Tìm phụ tùng theo mã sản phẩm và dòng xe") | Có (ô Part Number Search) | Có (tìm theo từ khóa/mã) | Có (ô tìm kiếm header) | Không |
-| Danh mục theo hệ thống xe | Có — 40+ nhóm (động cơ, gầm, phanh, dầu nhớt…) | Có — cây danh mục theo xe | Có — Best Sellers + danh mục A–Z | Có — Featured Categories | Không |
-| Lưới sản phẩm ở trang chủ | Có — tab theo nhóm + thẻ sản phẩm | Không — trang chủ chỉ chọn xe | Có — Best Sellers | Có — deals + danh mục | Không |
-| Trạng thái kho | Có — "Hết hàng" trên thẻ | Có — theo từng món trong danh mục | Có | Có (theo cửa hàng) | Không |
-| Đã bán / đánh giá | Có — "Đã bán 215+", sao + số lượt | Có — đánh giá theo món | Có | Có | Không |
+| Trang chủ = chọn xe ngay | Có (mục "Phụ tùng cho xe của bạn") | Có — toàn bộ trang chủ là danh sách hãng | Có — ô tìm theo năm/hãng/dòng ở đầu trang | Không rõ trong bản text (bộ chọn xe ở header, JS) | Không thấy trên trang chủ đã đọc |
+| Tìm theo mã sản phẩm | Có (hero: "Tìm phụ tùng theo mã sản phẩm và dòng xe") | Có (ô Part Number Search) | Có (tìm theo từ khóa/mã) | Có (ô tìm kiếm header) | Không thấy trên trang chủ đã đọc |
+| Danh mục theo hệ thống xe | Có — 40+ nhóm (động cơ, gầm, phanh, dầu nhớt…) | Có — cây danh mục theo xe | Có — Best Sellers + danh mục A–Z | Có — Featured Categories | Không thấy trên trang chủ đã đọc |
+| Lưới sản phẩm ở trang chủ | Có — tab theo nhóm + thẻ sản phẩm | Không — trang chủ chỉ chọn xe | Có — Best Sellers | Có — deals + danh mục | Không thấy trên trang chủ đã đọc |
+| Trạng thái kho | Có — "Hết hàng" trên thẻ | Có — theo từng món trong danh mục | Có | Có (theo cửa hàng) | Không thấy trên trang chủ đã đọc |
+| Đã bán / đánh giá | Có — "Đã bán 215+", sao + số lượt | Có — đánh giá theo món | Có | Có | Không thấy trên trang chủ đã đọc |
 | Thương hiệu | Có — 14 logo (AISIN, KYB, GSP, Denso…) | Có — theo từng món | Có — theo từng món | Có — Popular Brands | Có — KIA/Hyundai/Mobis… |
 | Hotline / liên hệ nổi bật | Có — Hotline & Zalo 097 3333 217 ở footer | Không (chỉ email/form) | Có — "Call To Order" 1-800-541-9352 | Có — cửa hàng + dịch vụ | Có — 1800 1539 |
-| Giá công khai | Có — VND trên thẻ | Có — USD theo món | Có — USD theo món | Có — USD theo món | Không — "Liên hệ" |
-| Nội dung hướng dẫn/blog | Có — "Tin tức & thư viện" | Không | Không | Có — "Advice and How-To's" | Có — tin tức công ty |
+| Giá công khai | Có — VND trên thẻ | Có — USD theo món | Có — USD theo món | Có — USD theo món | Không thấy trên trang chủ đã đọc ("Liên hệ") |
+| Nội dung hướng dẫn/blog | Có — "Tin tức & thư viện" | Không thấy trên trang chủ đã đọc | Không thấy trên trang chủ đã đọc | Có — "Advice and How-To's" | Có — tin tức công ty |
 
 ### 1.4 Bảng phân loại mức độ quan sát (FIX-03 — Revision 02)
 
@@ -128,7 +130,7 @@ Bảng này phân biệt bằng chứng quan sát thực tế với suy luận v
 - **L12:** "Advice and How-To's" (blog hướng dẫn) là kênh SEO + tin cậy — SeeCar Auto đã có module bài viết + SEO (FR-067 → FR-074, AI SEO Layer 1); nên dùng blog để giải thích "món này dùng cho xe nào, dấu hiệu hỏng là gì".
 - **L13:** Popular Makes/Models là shortcut vào xe phổ biến — SeeCar Auto nên có "Xe phổ biến" trên trang chủ khi có dữ liệu thật (không bịa lượt xem).
 
-### 2.5 MAST — `mast.com.vn` (mẫu đối chứng — B2B; trang chủ đã đọc không có mua online)
+### 2.5 MAST — `mast.com.vn` (mẫu đối chứng — B2B; trên trang chủ đã đọc không thấy mua online — chưa xác minh trên toàn website)
 
 **Cấu trúc trang chủ (đọc thật 26/11/2026):**
 
@@ -222,7 +224,7 @@ Bảng này phân biệt bằng chứng quan sát thực tế với suy luận v
 | L11 | Hero P0 tập trung tìm phụ tùng (chưa có khuyến mãi ở P0) | AutoZone | UI_PROPOSAL §2 |
 | L12 | Blog hướng dẫn là kênh SEO + tin cậy | AutoZone, Quang Vũ | FR-067 → FR-074 |
 | L13 | "Xe phổ biến" là shortcut — chỉ khi có dữ liệu thật | AutoZone | UI_PROPOSAL §2 |
-| L14 | Trang chỉ có tin tức + "liên hệ báo giá" không bán được hàng online | MAST (đối chứng) | UI_PROPOSAL §2 |
+| L14 | Trang chủ chỉ có tin tức + "liên hệ báo giá" (không thấy mua online trên trang đã đọc) không bán được hàng online | MAST (đối chứng) | UI_PROPOSAL §2 |
 | L15 | Uy tín nhà phân phối đặt sau luồng mua hàng, không thay luồng mua | MAST | UI_PROPOSAL §2 |
 
 ## 5. Lịch sử revision

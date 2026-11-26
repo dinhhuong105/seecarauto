@@ -2,6 +2,26 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-06 Revision 04 (FIX-04 — đồng bộ toàn tài liệu)
+
+- ChatGPT review Revision 03 (commit 8200e05) ngày 26/11/2026: 11/12 AC
+  PASS, AC-01 FAIL, AC-13 PASS* — FIX-03 vẫn chưa đạt: bảng §1.3 còn 7
+  ô "Không" cho MAST không giới hạn rõ chỉ phản ánh trang chủ đã đọc;
+  §1.1 vẫn ghi MAST là "trang phân phối KHÔNG bán lẻ online"; tiêu đề
+  §2.5 cần làm rõ hơn. NOT ACCEPTED, yêu cầu Revision 04 với FIX-04.
+- Revision 04: §1.1 — vai trò MAST thành "những gì quan sát được trên
+  trang chủ đã đọc không thể hiện là bán lẻ online — chưa xác minh trên
+  toàn website"; §1.3 — thêm ghi chú phạm vi (các ô chỉ phản ánh trang
+  chủ đã đọc) + 7 ô MAST "Không" → "Không thấy trên trang chủ đã đọc" +
+  2 ô "Không" trần ở hàng blog → cùng nhãn; §2.5 tiêu đề làm rõ phạm vi;
+  bảng bài học §4 hàng L14 sửa cho khớp. Rà soát grep toàn tài liệu
+  (MAST, "Không", "không có", "KHÔNG", "không bán lẻ"): không còn
+  "KHÔNG"/"không bán lẻ", không còn ô "| Không |" trần; các "không có"
+  còn lại đều hợp lệ.
+- Revision 04 commit này (SHA trong git log) đã báo cáo ChatGPT trong
+  chat mới "Review M01-06 Revision 04" (theo chỉ dẫn của ChatGPT trong
+  verdict Revision 03). Trạng thái IN_REVIEW, không tự DONE.
+
 ## 26/11/2026 — M01-06 Revision 03 (sửa lại FIX-03)
 
 - ChatGPT review Revision 02 (commit 58a3e81) ngày 26/11/2026: 11/12 AC

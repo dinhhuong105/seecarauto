@@ -97,9 +97,9 @@ dự án đang ở đâu.
   ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
-- **Việc kế tiếp:** báo cáo Revision 03 của M01-06 cho ChatGPT trong
-  chat mới "Review M01-06 Revision 03" (theo chỉ dẫn của ChatGPT trong
-  verdict Revision 02) để ChatGPT kiểm tra lại (12 AC + AC-13). M02
+- **Việc kế tiếp:** báo cáo Revision 04 của M01-06 cho ChatGPT trong
+  chat mới "Review M01-06 Revision 04" (theo chỉ dẫn của ChatGPT trong
+  verdict Revision 03) để ChatGPT kiểm tra lại (12 AC + AC-13). M02
   (Prisma schema/migration) chưa được phép bắt đầu cho tới khi các điều
   kiện và nhiệm vụ phụ thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
@@ -258,9 +258,14 @@ dự án đang ở đâu.
   02 ngày 26/11/2026: 11/12 AC PASS, AC-01 FAIL, AC-13 PASS* — FIX-01
   + FIX-02 PASS, FIX-03 chưa đạt (nhãn "Không có" cho MAST suy diễn quá
   mức từ trang chủ) — NOT ACCEPTED, yêu cầu Revision 03 với phạm vi hẹp
-  (chỉ sửa phân loại MAST + kết luận). Revision 03 đã sửa đúng yêu cầu
-  (commit SHA trong git log), đã báo cáo lại ChatGPT trong chat mới
-  "Review M01-06 Revision 03", đang chờ kiểm tra lại.
+  (chỉ sửa phân loại MAST + kết luận). Revision 03 (commit 8200e05) đã
+  sửa đúng yêu cầu, đã báo cáo lại ChatGPT trong chat mới "Review M01-06
+  Revision 03". ChatGPT review Revision 03 ngày 26/11/2026: 11/12 AC
+  PASS, AC-01 FAIL, AC-13 PASS* — FIX-03 vẫn chưa đạt (bảng §1.3 còn 7
+  ô "Không" cho MAST, §1.1/§2.5 chưa đồng bộ) — NOT ACCEPTED, yêu cầu
+  Revision 04 với FIX-04 (đồng bộ toàn UI_RESEARCH.md). Revision 04 đã
+  sửa đúng yêu cầu (commit SHA trong git log), đã báo cáo lại ChatGPT
+  trong chat mới "Review M01-06 Revision 04", đang chờ kiểm tra lại.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 
