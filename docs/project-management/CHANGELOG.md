@@ -2,6 +2,25 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-06 IN_REVIEW (bản đầu)
+
+- Bản đầu M01-06 hoàn thành (SHA trong git log): UI_RESEARCH.md (5 website
+  tham khảo đọc thật ngày 26/11/2026: Quang Vũ, RockAuto, PartsGeek,
+  AutoZone, MAST + phân tích theo loại trang + 15 bài học),
+  DESIGN_SYSTEM.md (tokens màu ocean blue + vàng, Inter, scale Tailwind,
+  animation 150ms; tỷ lệ tương phản tính thật bằng công thức WCAG),
+  UI_PROPOSAL.md (đề xuất từng nhóm trang + responsive + so sánh thư viện
+  UI — khuyến nghị Tailwind + shadcn/ui; lộ trình theo milestone),
+  Task Brief M01-06.md (5 deliverables + 12 AC).
+- Mọi trích dẫn FR đã đối chiếu lại với SRS trước khi commit: tìm kiếm
+  FR-034 → FR-041 (không phải FR-007 → FR-012), tìm theo xe FR-001/
+  FR-023 → FR-025/FR-027 → FR-031 (không phải FR-003/FR-046), tra cứu
+  ngược FR-030 (không phải FR-033), sản phẩm liên quan FR-046 (không phải
+  FR-050), hotline/Zalo FR-005/FR-045/FR-087 (không phải FR-047/FR-092).
+- Tự đánh giá 12/12 AC + AC-13 PASS. Đã báo cáo ChatGPT trong chat mới
+  của Project ngày 26/11/2026, đang chờ review. Trạng thái IN_REVIEW,
+  không tự DONE.
+
 ## 26/11/2026 — M01-05 DONE (ACCEPT Revision 02, 12/12 AC + AC-13)
 
 - ChatGPT ACCEPT Revision 02 (commit 25571ef) ngày 26/11/2026 — 12/12 AC

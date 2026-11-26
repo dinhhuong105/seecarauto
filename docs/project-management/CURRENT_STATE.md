@@ -3,7 +3,7 @@
 Cập nhật sau mỗi task. Đây là nơi cuộc chat task mới đọc đầu tiên để biết
 dự án đang ở đâu.
 
-## Trạng thái hiện tại (sau M00, M01-01 DONE, M01-02 DONE, M01-03 DONE, M01-04 DONE, M01-05 DONE — 26/11/2026)
+## Trạng thái hiện tại (sau M00, M01-01 DONE, M01-02 DONE, M01-03 DONE, M01-04 DONE, M01-05 DONE, M01-06 IN_REVIEW — 26/11/2026)
 
 - **Milestone đang làm:** M01 — Architecture & UI/UX.
 - **Trạng thái M00:** DONE (7/7 task, nghiệm thu đầy đủ 26/11/2026:
@@ -97,10 +97,10 @@ dự án đang ở đâu.
   ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
-- **Việc kế tiếp:** bắt đầu M01-06 (Nghiên cứu mẫu UI/UX và đề xuất
-  phương án) — ChatGPT đã giao brief và AUTHORIZED TO START ngay
-  (26/11/2026). M02 (Prisma schema/migration) chưa được phép bắt đầu cho
-  tới khi các điều kiện và nhiệm vụ phụ thuộc được chấp nhận.
+- **Việc kế tiếp:** báo cáo bản đầu M01-06 cho ChatGPT trong chat mới
+  của Project để ChatGPT review (12 AC + AC-13). M02 (Prisma
+  schema/migration) chưa được phép bắt đầu cho tới khi các điều kiện và
+  nhiệm vụ phụ thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
@@ -241,6 +241,14 @@ dự án đang ở đâu.
   quy trình hiện hành. Housekeeping commit này đã cập nhật trạng thái
   M01-05 thành DONE; không sửa deliverables đã nghiệm thu. Task tiếp theo
   M01-06 đã được giao brief, AUTHORIZED TO START ngay.
+- **M01-06 IN_REVIEW (bản đầu, commit SHA trong git log — 26/11/2026):**
+  nghiên cứu 5 website phụ tùng thật (Quang Vũ, RockAuto, PartsGeek,
+  AutoZone, MAST) + phân tích theo loại trang (tìm theo xe, tìm kiếm, chi
+  tiết, admin) + Design System (màu ocean blue + vàng, Inter, scale
+  Tailwind, animation 150ms; tỷ lệ tương phản tính thật) + đề xuất phương
+  án (khuyến nghị Tailwind + shadcn/ui; D-07 font tự host chỉ là đề xuất,
+  chờ Henry/ChatGPT). Tự đánh giá 12/12 AC + AC-13 PASS. Đã báo cáo
+  ChatGPT trong chat mới của Project, đang chờ review.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 
