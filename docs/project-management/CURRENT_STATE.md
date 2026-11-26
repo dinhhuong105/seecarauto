@@ -26,17 +26,23 @@ dự án đang ở đâu.
   đạt, chưa chấp nhận, yêu cầu Revision 03 (2 điểm: đồng bộ
   CURRENT_STATE với commit Revision 02; traceability NFR-011 → NFR-014
   đổi AC-01 → AC-19 thành AC-01 → AC-18, AC-19 giữ truy vết qua
-  BR-012) — Revision 03 đang thực hiện, vẫn IN_REVIEW, chờ ChatGPT
-  quyết định ACCEPT cuối cùng + Henry nghiệm thu (tiêu chí nghiệm thu
-  số 9 của task). M01-02 chưa bắt đầu.
+  BR-012) — Revision 03 đã commit e82cd0e và push lên GitHub ngày
+  26/11/2026 ~10:19 (remote HEAD
+  e82cd0efb0f12413f6ef8cfdea51e9906788d8fd đã kiểm chứng, parent
+  4ca0a62, 3 files, +44/-14). ChatGPT final review Revision 03: 9/9
+  tiêu chí đạt, ChatGPT ACCEPT M01-01 lúc ~10:22 ngày 26/11/2026.
+  Henry quyết định lúc ~11:55 ngày 26/11/2026: chỉ cần ChatGPT đồng ý
+  là được, không cần Henry click duyệt từng task — M01-01 chốt DONE
+  theo quyết định này. M01-02 chưa bắt đầu, đang chờ ChatGPT giao
+  brief M01-02.
   Tài liệu: `docs/product/PRD.md`, `docs/product/SRS.md`,
   `docs/project-management/tasks/M01-01.md`.
-- **Việc kế tiếp:** sau khi M01-01 được nghiệm thu, sang M01-02 (ERD chi
-  tiết).
+- **Việc kế tiếp:** M01-01 DONE. Sang M01-02 (ERD chi tiết) sau khi
+  ChatGPT giao brief M01-02.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
-  Revision 01 9dab12d và commit Revision 02 4ca0a62 đã push — xem
-  `git log`).
+  Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
+  e82cd0e đã push — xem `git log`).
 - **Môi trường chạy:** frontend http://localhost:3000, admin
   http://localhost:3001, backend http://localhost:3002
   (`GET /api/v1/health`, Swagger tại `/api/docs`).
@@ -64,7 +70,7 @@ dự án đang ở đâu.
   `pnpm build` 5/5 (frontend/admin Next.js + backend NestJS);
   `docker compose config --quiet` exit 0 (6 services, healthcheck đủ).
   Docker runtime vẫn UNVERIFIED (xem "Vấn đề chưa giải quyết" 1).
-- M01-01 (PRD/SRS) đã soạn xong 26/11/2026, IN_REVIEW: `docs/product/
+- M01-01 (PRD/SRS) đã soạn xong 26/11/2026, DONE (ChatGPT ACCEPT 26/11/2026 ~10:22, commit e82cd0e đã push): `docs/product/
   PRD.md` (13 module, luồng nghiệp vụ + ngoại lệ, quyết định mở D-01 →
   D-09), `docs/product/SRS.md` (94 FR, 20 NFR, 16 BR, 7 INT, AC-01 →
   AC-19, bảng truy vết tách P0/P1), Task Brief `tasks/M01-01.md`. Commit
@@ -72,20 +78,21 @@ dự án đang ở đâu.
   chứng). Revision 01 đã commit 9dab12d và push lên GitHub (remote HEAD
   đã kiểm chứng); Revision 02 đã commit 4ca0a62 và push lên GitHub
   (remote HEAD 4ca0a6205d16b2b677af98b0c17a93f19a2ab950 đã kiểm chứng);
-  Revision 03 đang thực hiện theo final review của ChatGPT (2 điểm).
-  Chỉ làm tài liệu — không code tính năng, không Prisma
-  schema/migration, không dữ liệu giả. Henry duyệt làm lúc ~08:59 ngày
-  26/11/2026.
+  Revision 03 đã commit e82cd0e và push lên GitHub (remote HEAD
+  e82cd0efb0f12413f6ef8cfdea51e9906788d8fd đã kiểm chứng). ChatGPT final
+  review Revision 03: 9/9 tiêu chí đạt, ACCEPT M01-01 lúc ~10:22 ngày
+  26/11/2026; theo quyết định của Henry lúc ~11:55 cùng ngày (chỉ cần
+  ChatGPT đồng ý là đủ), M01-01 chốt DONE. Chỉ làm tài liệu — không
+  code tính năng, không Prisma schema/migration, không dữ liệu giả.
+  Henry duyệt làm lúc ~08:59 ngày 26/11/2026.
 
 ## Đang làm
 
-- M01-01 (PRD/SRS) Revision 03: Revision 02 đã commit 4ca0a62 và push
-  lên GitHub (remote HEAD 4ca0a6205d16b2b677af98b0c17a93f19a2ab950 đã kiểm
-  chứng). Revision 03 đang thực hiện theo 2 điểm final review của
-  ChatGPT (đồng bộ CURRENT_STATE với commit Revision 02, traceability
-  NFR-011 → NFR-014 đổi AC-01 → AC-19 thành AC-01 → AC-18);
-  vẫn IN_REVIEW — chờ ChatGPT quyết định ACCEPT cuối cùng + Henry
-  nghiệm thu. Parent sẽ kiểm tra, commit và push Revision 03.
+- M01-01 (PRD/SRS) DONE: Revision 03 đã commit e82cd0e và push lên
+  GitHub (remote HEAD e82cd0efb0f12413f6ef8cfdea51e9906788d8fd đã kiểm
+  chứng). ChatGPT ACCEPT 26/11/2026 ~10:22 (9/9 tiêu chí); M01-01 chốt
+  DONE theo quyết định của Henry 26/11/2026 ~11:55 (chỉ cần ChatGPT
+  đồng ý là đủ).
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

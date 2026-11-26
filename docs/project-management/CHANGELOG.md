@@ -2,6 +2,19 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-01 DONE (ChatGPT ACCEPT Revision 03; quyết định nghiệm thu của Henry)
+
+- ChatGPT final review Revision 03 (commit e82cd0e): 9/9 tiêu chí đạt,
+  ChatGPT ACCEPT M01-01 lúc ~10:22 ngày 26/11/2026. "Không còn yêu cầu
+  sửa PRD/SRS trước khi Henry nghiệm thu."
+- Henry quyết định lúc ~11:55 ngày 26/11/2026: chỉ cần ChatGPT đồng ý
+  là được, không cần Henry click duyệt từng task — áp dụng từ M01-01
+  trở đi (quyết định nghiệp vụ D-01 → D-09 vẫn do Henry chốt). M01-01
+  chốt DONE theo quyết định này; CURRENT_STATE, TASK_BOARD và
+  tasks/M01-01.md đã cập nhật DONE (commit e82cd0e).
+- Việc kế tiếp: chờ ChatGPT giao brief M01-02 (ERD: Product, SKU, OEM,
+  Vehicle Fitment) rồi mới bắt đầu M01-02.
+
 ## 26/11/2026 — M01-01 Revision 03 (theo final review của ChatGPT, IN_REVIEW)
 
 - ChatGPT final review Revision 02 (commit 4ca0a62): 8/9 tiêu chí đạt,
