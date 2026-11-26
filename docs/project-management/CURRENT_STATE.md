@@ -97,9 +97,9 @@ dự án đang ở đâu.
   ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
-- **Việc kế tiếp:** báo cáo Revision 06 của M01-06 cho ChatGPT trong
-  chat mới "Review M01-06 Revision 06" (theo chỉ dẫn của ChatGPT trong
-  verdict Revision 05) để ChatGPT kiểm tra lần cuối (12 AC + AC-13).
+- **Việc kế tiếp:** báo cáo Revision 07 của M01-06 cho ChatGPT trong
+  chat mới "Review M01-06 Revision 07" (theo chỉ dẫn của ChatGPT trong
+  verdict Revision 06) để ChatGPT kiểm tra lần cuối (12 AC + AC-13).
   M02 (Prisma schema/migration) chưa được phép bắt đầu cho tới khi các
   điều kiện và nhiệm vụ phụ thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
@@ -276,7 +276,13 @@ dự án đang ở đâu.
   05 (dòng Trạng thái đầu file + §9.13) — NOT ACCEPTED, yêu cầu
   Revision 06 với FIX-06 (đồng bộ Task Brief). Revision 06 đã sửa đúng
   yêu cầu (commit SHA trong git log), đã báo cáo lại ChatGPT trong chat
-  mới "Review M01-06 Revision 06", đang chờ kiểm tra lần cuối.
+  mới "Review M01-06 Revision 06". ChatGPT review Revision 06 ngày
+  26/11/2026: AC-01 → AC-12 PASS (kế thừa Revision 05), AC-13 FAIL —
+  chỉ §9.18 ghi sai số lượng file ("5 file" trong khi diff thực tế 4
+  file, +45/−11 dòng) — NOT ACCEPTED, yêu cầu Revision 07 với FIX-07
+  (sửa bằng chứng số lượng file trong §9.18). Revision 07 đã sửa đúng
+  yêu cầu (commit SHA trong git log), đã báo cáo lại ChatGPT trong chat
+  mới "Review M01-06 Revision 07", đang chờ kiểm tra lần cuối.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

@@ -2,6 +2,27 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-06 Revision 07 (FIX-07 — sửa bằng chứng số lượng file)
+
+- ChatGPT review Revision 06 (commit fb5deaa) ngày 26/11/2026: AC-01 →
+  AC-12 PASS (kế thừa Revision 05), AC-13 FAIL — §9.18 ghi sai số lượng
+  file: "Phạm vi đúng 5 file (Task Brief + CURRENT_STATE + TASK_BOARD +
+  CHANGELOG + không có file thiết kế)" trong khi unified diff thực tế
+  của commit Revision 06 chỉ có 4 file, +45/−11 dòng; chính báo cáo
+  Revision 06 của Muse cũng ghi 4 file. NOT ACCEPTED, yêu cầu Revision
+  07 với FIX-07. Lỗi gốc của Muse: chép mẫu "5 file" từ Revision 05
+  (đúng 5 file) sang Revision 06 (đúng 4 file) mà không đối chiếu với
+  diff thực tế.
+- Revision 07: §9.18 sửa thành "phạm vi đúng 4 file" với danh sách rõ
+  bốn file (Task Brief M01-06, CURRENT_STATE.md, TASK_BOARD.md,
+  CHANGELOG.md); ghi rõ UI_RESEARCH.md, DESIGN_SYSTEM.md, UI_PROPOSAL.md
+  không thay đổi. Chỉ sửa Task Brief + Handbook, không sửa tài liệu
+  thiết kế. Số lượng file của commit Revision 07 này được kiểm tra bằng
+  `git show --stat` sau khi commit (xem §9.19).
+- Revision 07 commit này (SHA trong git log) đã báo cáo ChatGPT trong
+  chat mới "Review M01-06 Revision 07" (theo chỉ dẫn của ChatGPT trong
+  verdict Revision 06). Trạng thái IN_REVIEW, không tự DONE.
+
 ## 26/11/2026 — M01-06 Revision 06 (FIX-06 — đồng bộ Task Brief)
 
 - ChatGPT review Revision 05 (commit 2581690) ngày 26/11/2026: AC-01 →
