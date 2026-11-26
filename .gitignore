@@ -11,6 +11,7 @@ out/
 
 # Environment — NEVER commit real secrets. Only .env.example is committed.
 .env
+.env.test
 .env.local
 .env.*.local
 !.env.example

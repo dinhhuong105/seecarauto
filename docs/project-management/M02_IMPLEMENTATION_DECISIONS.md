@@ -82,3 +82,13 @@ Không tự chốt:
 - D-09: phương thức xác minh order lookup.
 
 Các quyết định trên không chặn M02-01 nếu implementation không phụ thuộc chúng. Nếu phát sinh dependency trực tiếp, dừng đúng phần đó, không tự giả định.
+
+## 12. Ghi chú triển khai (M02-01, 26/11/2026)
+
+Các ghi chú dưới đây là chi tiết triển khai phát hiện khi làm M02-01 — không phải quyết định nghiệp vụ, không thay đổi PD-01 → PD-06 hay bất kỳ quyết định nào ở trên.
+
+- **Prisma 6.19.3 không hỗ trợ `@@check`**: ERD §12 ghi chú 4 viết "`@@check` (Prisma 6 hỗ trợ)" — đã kiểm chứng sai với 6.19.3 (`prisma validate` trả P1012 "Attribute not known: @check"). Mọi CHECK constraint nằm trong migration SQL dưới dạng raw SQL (xem `docs/database/PRISMA_MAPPING.md` §5). Nếu sau này nâng lên Prisma 7.x, có thể cân nhắc chuyển CHECK vào schema — quyết định riêng, không làm trong M02-01.
+- **`prisma migrate dev` (kèm generate) bị treo trên máy Muse**: lệnh apply migration xong nhưng không thoát sau 5 phút (schema-engine idle, không lỗi). Cách làm đã kiểm chứng: `migrate dev --skip-generate` (hoặc `migrate deploy` cho test DB) rồi chạy `prisma generate` riêng (396ms). Nguyên nhân treo chưa xác định.
+- **CHECK violation qua Prisma Client 6.19.3**: lỗi PostgreSQL 23514 hiện ra dưới dạng `PrismaClientUnknownRequestError` không có code (không phải P2004 như tài liệu Prisma mô tả chung) — test tự động assert theo tên constraint trong message.
+- **Engines trên máy Muse**: postinstall của `@prisma/engines` không tải được engine (proxy chặn fetch của Node). Engine đã có sẵn trong cache (`~/.cache/prisma/master/c2990dca.../debian-openssl-3.0.x/`); đã copy từ cache vào thư mục package của pnpm store để CLI chạy được. Sau `pnpm install` mới cần copy lại — xem `~/AGENTS.md`.
+- **Least privilege (brief §5)**: ở môi trường local hiện tại, cùng một role `seecarauto` làm cả migration owner lẫn runtime user (PostgreSQL cluster local, dev-only). Tách role migration/runtime là việc của M02-08 (môi trường) khi có staging/production — không ép tách ở local dev.

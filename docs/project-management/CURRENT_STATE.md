@@ -3,10 +3,10 @@
 Cập nhật sau mỗi task. Đây là nơi cuộc chat task mới đọc đầu tiên để biết
 dự án đang ở đâu.
 
-## Trạng thái hiện tại (sau M00, M01-01 → M01-07 DONE — Milestone M01 CLOSED; M02-01 IN_PROGRESS — 26/11/2026)
+## Trạng thái hiện tại (sau M00, M01-01 → M01-07 DONE — Milestone M01 CLOSED; M02-01 IN_REVIEW (bản đầu hoàn thành) — 26/11/2026)
 
 - **Milestone đã hoàn tất:** M01 — Architecture & UI/UX (7/7 ACCEPT, housekeeping CLOSED; đã tích hợp vào main tại commit 7d1041f).
-- **Milestone đang làm:** M02 — Infrastructure & Authentication; M02-01 IN_PROGRESS trên branch `feature/M02-01-postgres-prisma-schema`.
+- **Milestone đang làm:** M02 — Infrastructure & Authentication; M02-01 IN_REVIEW — bản đầu hoàn thành 26/11/2026 (Prisma 6.19.3, schema 27 bảng / 8 enum, migration 20261126152122_init, test e2e 26/26, chờ ChatGPT review) trên branch `feature/M02-01-postgres-prisma-schema`.
 - **Trạng thái M00:** DONE (7/7 task, nghiệm thu đầy đủ 26/11/2026:
   `pnpm typecheck` 9/9, `pnpm lint` 9/9, `pnpm test` 9/9, `pnpm build`
   5/5, `docker compose config --quiet` exit 0). Commit feea4d4 đã push
@@ -99,9 +99,11 @@ dự án đang ở đâu.
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
 - **Việc kế tiếp:** Milestone M01 DONE (nghiệm thu + hồ sơ quản lý
-  dự án). M02 (Prisma schema/migration) chưa được phép bắt đầu — việc
-  M01 hoàn tất không tự động đồng nghĩa Henry đã phê duyệt M02; M02
-  vẫn cần nhiệm vụ/điều kiện bắt đầu riêng.
+  dự án). M02-01 đã được ChatGPT giao theo ủy quyền toàn quyền của Henry
+  (26/11 ~22:02 — Henry giao ChatGPT toàn quyền điều phối, không cần Henry
+  duyệt từng bước) và bản đầu đã hoàn thành, IN_REVIEW — xem trạng thái
+  M02-01 ở đầu file. Câu "M02 chưa được phép bắt đầu" ở bản ghi M01-03
+  đã hết hiệu lực sau ủy quyền 22:02.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03

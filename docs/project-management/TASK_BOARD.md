@@ -41,7 +41,7 @@ GitHub Actions CI cơ bản — CI file đã có, chạy trên GitHub sau khi pu
 PostgreSQL + Prisma, Redis + BullMQ, Meilisearch, S3/R2, Auth JWT +
 Refresh Token, RBAC nền tảng, CI/CD, môi trường Dev/Staging/Production.
 
-- **M02-01 IN_PROGRESS** — Task Brief `tasks/M02-01.md`; implementation decisions `M02_IMPLEMENTATION_DECISIONS.md`; branch `feature/M02-01-postgres-prisma-schema` (base `7d1041f`).
+- **M02-01 IN_PROGRESS** (bản đầu hoàn thành, IN_REVIEW — chờ ChatGPT review) — Task Brief `tasks/M02-01.md`; implementation decisions `M02_IMPLEMENTATION_DECISIONS.md`; branch `feature/M02-01-postgres-prisma-schema` (base `7d1041f`). Bản đầu 26/11/2026: Prisma 6.19.3 pin exact; schema 27 bảng / 8 enum; migration `20261126152122_init` (638 dòng, 15 CHECK + 3 partial unique + UNIQUE NULLS NOT DISTINCT raw SQL); NestJS PrismaModule/PrismaService tối thiểu; mapping doc `docs/database/PRISMA_MAPPING.md`; test e2e 26/26 (25 tests ràng buộc + app e2e); workspace typecheck 9/9, lint 9/9, test 9/9, build 5/5; Docker runtime UNVERIFIED. Tự đánh giá AC-01 → AC-11 PASS, AC-12 chờ xác minh sau push.
 
 ## M03 — Product Catalog & Search (tuần 5–8) — 10 task, BACKLOG
 

@@ -1,3 +1,12 @@
+## 26/11/2026 — M02-01 bản đầu hoàn thành (IN_REVIEW)
+
+- Bản đầu M02-01 hoàn thành 26/11/2026, chờ ChatGPT review (chat "Review M02-01"); không tự DONE.
+- Prisma 6.19.3 pin exact (`prisma` + `@prisma/client`); schema `backend/prisma/schema.prisma` 27 bảng / 8 enum (17 bảng ERD + G-02 Articles/ArticleSEO + G-04 admin/RBAC); migration `20261126152122_init` (638 dòng) chạy thành công trên PostgreSQL 16.15 local (dev + test), `prisma migrate status` sạch.
+- 15 CHECK + 3 partial unique + UNIQUE NULLS NOT DISTINCT + partial index nằm trong migration dưới dạng raw SQL — Prisma 6.19.3 không hỗ trợ `@@check` (đã kiểm chứng, P1012; đính chính ghi chú ERD §12.4).
+- NestJS PrismaModule/PrismaService tối thiểu; mapping doc `docs/database/PRISMA_MAPPING.md`; test e2e 26/26; workspace typecheck 9/9, lint 9/9, test 9/9, build 5/5; `git diff --check` + secret scan sạch.
+- Docker runtime UNVERIFIED (giới hạn máy Muse). `prisma migrate dev` kèm generate bị treo trên máy này — dùng `--skip-generate` + `generate` riêng.
+- Tự đánh giá AC-01 → AC-11 PASS, AC-12 chờ xác minh sau push (xem Task Brief M02-01 §10).
+
 ## 26/11/2026 — Bắt đầu M02-01 theo ủy quyền điều phối của Henry
 
 - Henry giao ChatGPT toàn quyền điều phối dự án, chủ động quyết định kế hoạch, giao task, review và tiếp tục mà không hỏi duyệt từng bước.
