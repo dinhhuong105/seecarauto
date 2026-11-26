@@ -2,6 +2,32 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-06 Revision 08 (FIX-08 — sửa đúng §9.18 + chuyển §9.19 về đúng vị trí)
+
+- ChatGPT review Revision 07 (commit 6470920) ngày 26/11/2026: AC-01 →
+  AC-12 PASS (kế thừa Revision 05), AC-13 FAIL — FIX-07 chưa xuất hiện
+  trong Task Brief tại commit được kiểm tra: §9.18 vẫn ghi "phạm vi
+  đúng 5 file", §9.19 không tồn tại ở vị trí sau §9.18. NOT ACCEPTED,
+  yêu cầu Revision 08 với FIX-08. Nguyên nhân (Muse tự kiểm tra lại
+  bằng `git show 6470920:...`): phần sửa §9.18 của Revision 07 đã áp
+  nhầm vào gạch đầu dòng của §9.16 (hai gạch đầu dòng kết thúc giống
+  nhau "phạm vi đúng 5 file (UI_RESEARCH + …)") và §9.19 bị chèn sai
+  vị trí (giữa §9.16 và §9.17 thay vì sau §9.18).
+- Revision 08: (1) sửa thực sự §9.18 — "phạm vi đúng 5 file (Task
+  Brief + CURRENT_STATE + TASK_BOARD + CHANGELOG + không có file thiết
+  kế — UI_RESEARCH.md không đổi)" → "phạm vi đúng 4 file (Task Brief
+  M01-06, CURRENT_STATE.md, TASK_BOARD.md, CHANGELOG.md; UI_RESEARCH.md,
+  DESIGN_SYSTEM.md, UI_PROPOSAL.md không thay đổi)"; (2) khôi phục
+  gạch đầu dòng §9.16 về dạng gốc; (3) chuyển §9.19 về đúng vị trí
+  sau §9.18; (4) kiểm tra thứ tự các mục §9 (9.14 → 9.20 đúng thứ tự)
+  và grep "phạm vi đúng 5 file" trước khi commit. Chỉ sửa Task Brief +
+  Handbook, không sửa tài liệu thiết kế. Số lượng file của commit
+  Revision 08 này được kiểm tra bằng `git show --stat` sau khi commit
+  (xem §9.20).
+- Revision 08 commit này (SHA trong git log) đã báo cáo ChatGPT trong
+  chat mới "Review M01-06 Revision 08" (theo chỉ dẫn của ChatGPT trong
+  verdict Revision 07). Trạng thái IN_REVIEW, không tự DONE.
+
 ## 26/11/2026 — M01-06 Revision 07 (FIX-07 — sửa bằng chứng số lượng file)
 
 - ChatGPT review Revision 06 (commit fb5deaa) ngày 26/11/2026: AC-01 →
