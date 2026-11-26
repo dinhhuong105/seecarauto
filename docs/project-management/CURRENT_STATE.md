@@ -3,14 +3,20 @@
 Cập nhật sau mỗi task. Đây là nơi cuộc chat task mới đọc đầu tiên để biết
 dự án đang ở đâu.
 
-## Trạng thái hiện tại (sau M00, 26/11/2026)
+## Trạng thái hiện tại (sau M00, M01-01 đã soạn — 26/11/2026)
 
-- **Milestone đang làm:** M00 — Project Foundation & Engineering Standards.
+- **Milestone đang làm:** M01 — Architecture & UI/UX.
 - **Trạng thái M00:** DONE (7/7 task, nghiệm thu đầy đủ 26/11/2026:
   `pnpm typecheck` 9/9, `pnpm lint` 9/9, `pnpm test` 9/9, `pnpm build`
-  5/5, `docker compose config --quiet` exit 0).
-- **Việc kế tiếp:** chờ ChatGPT giao M01-01 và Henry duyệt, rồi sang M01
-  — Architecture & UI/UX.
+  5/5, `docker compose config --quiet` exit 0). Commit feea4d4 đã push
+  lên GitHub; CI #1 chạy SUCCESS 1m22s (theo kiểm tra của ChatGPT ngày
+  26/11/2026 — Muse chưa tự kiểm chứng độc lập).
+- **Trạng thái M01-01 (PRD/SRS):** đã soạn xong, IN_REVIEW — chờ ChatGPT
+  review + Henry nghiệm thu (tiêu chí nghiệm thu số 9 của task). Tài liệu:
+  `docs/product/PRD.md`, `docs/product/SRS.md`,
+  `docs/project-management/tasks/M01-01.md`.
+- **Việc kế tiếp:** sau khi M01-01 được nghiệm thu, sang M01-02 (ERD chi
+  tiết).
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`, commit M00 đã push — xem `git log`).
 - **Môi trường chạy:** frontend http://localhost:3000, admin
@@ -40,10 +46,17 @@ dự án đang ở đâu.
   `pnpm build` 5/5 (frontend/admin Next.js + backend NestJS);
   `docker compose config --quiet` exit 0 (6 services, healthcheck đủ).
   Docker runtime vẫn UNVERIFIED (xem "Vấn đề chưa giải quyết" 1).
+- M01-01 (PRD/SRS) đã soạn xong 26/11/2026, IN_REVIEW: `docs/product/
+  PRD.md` (13 module, luồng nghiệp vụ + ngoại lệ, quyết định mở D-01 →
+  D-08), `docs/product/SRS.md` (94 FR, 20 NFR, 16 BR, 7 INT, AC-01 →
+  AC-13, bảng truy vết), Task Brief `tasks/M01-01.md`. Chỉ làm tài
+  liệu — không code tính năng, không Prisma schema/migration, không dữ
+  liệu giả. Henry duyệt làm lúc ~08:59 ngày 26/11/2026.
 
 ## Đang làm
 
-- Không có task đang chạy. Chờ M01.
+- M01-01 (PRD/SRS): đã soạn xong, IN_REVIEW — chờ ChatGPT review +
+  Henry nghiệm thu. Chưa commit/push (parent sẽ kiểm tra, commit, push).
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

@@ -2,6 +2,27 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-01 PRD/SRS đã soạn xong, IN_REVIEW
+
+- Henry duyệt làm M01-01 lúc ~08:59 ("DUYỆT M01-01, làm luôn"); ChatGPT
+  đã giao M01-01 về mặt kế hoạch trước đó.
+- Tạo `docs/product/PRD.md` (tổng quan, nhóm người dùng, hành trình khách
+  hàng + quản trị, 13 module, phân loại P0/P1/P2 theo Charter mục 2, luồng
+  nghiệp vụ + ngoại lệ, quyết định mở D-01 → D-08) và
+  `docs/product/SRS.md` (94 FR, 20 NFR, 16 BR, 7 INT, AC-01 → AC-13,
+  bảng truy vết yêu cầu → module → AC). Task Brief
+  `docs/project-management/tasks/M01-01.md`; cập nhật `CURRENT_STATE.md`,
+  `TASK_BOARD.md` (M01-01 IN_REVIEW).
+- Phạm vi task này chỉ làm tài liệu: không code tính năng, không Prisma
+  schema/migration, không API/UI thật, không dữ liệu giả. Quy trình
+  checkout chi tiết (D-08) chưa chốt — chỉ chốt khung, đề xuất chi tiết
+  trình Henry duyệt ở M01-04/M05.
+- M00: commit feea4d4 đã push lên GitHub (remote HEAD khớp); CI #1 chạy
+  SUCCESS 1m22s cho commit feea4d4 theo kiểm tra của ChatGPT ngày
+  26/11/2026 (Muse chưa tự kiểm chứng độc lập). Docker runtime vẫn
+  UNVERIFIED trên máy dev của Muse.
+- Chưa commit/push M01-01 — parent sẽ kiểm tra, commit và push.
+
 ## 26/11/2026 — Sửa lỗi lint backend M00 (trước khi nghiệm thu)
 
 - `backend/.prettierrc` đổi `singleQuote: true` → `false` cho đúng chuẩn
