@@ -2,7 +2,7 @@
 
 > **Phạm vi:** tài liệu nghiên cứu cho M01-06. Chỉ ghi quan sát và phân tích; không copy ảnh, logo, nội dung của website tham khảo. Mọi tên sản phẩm/giá trong tài liệu này là **ví dụ minh họa lấy từ trang tham khảo đã đọc thật ngày 26/11/2026, không phải dữ liệu thật của SeeCar Auto** (SeeCar Auto chưa có dữ liệu sản phẩm/giá — D-02/D-03 chờ Henry).
 >
-> **Ngày nghiên cứu:** 26/11/2026. **Phương pháp:** đọc trực tiếp trang chủ của 5 website tham khảo qua trình duyệt (text crawl); các trang con dùng JavaScript nặng không hiện đủ nội dung trong bản text — ghi rõ giới hạn ở §1.4.
+> **Ngày nghiên cứu:** 26/11/2026. **Phương pháp:** đọc trực tiếp trang chủ của 5 website tham khảo qua trình duyệt (text crawl); các trang con dùng JavaScript nặng không hiện đủ nội dung trong bản text — ghi rõ giới hạn ở §1.5.
 
 ## 1. Tổng quan
 
@@ -41,7 +41,21 @@
 | Giá công khai | Có — VND trên thẻ | Có — USD theo món | Có — USD theo món | Có — USD theo món | Không — "Liên hệ" |
 | Nội dung hướng dẫn/blog | Có — "Tin tức & thư viện" | Không | Không | Có — "Advice and How-To's" | Có — tin tức công ty |
 
-### 1.4 Giới hạn của nghiên cứu này (ghi rõ)
+### 1.4 Bảng phân loại mức độ quan sát (FIX-03 — Revision 02)
+
+Bảng này phân biệt bằng chứng quan sát thực tế với suy luận và đề xuất thiết kế. "Đã quan sát" = đọc được trong bản text crawl ngày 26/11/2026. "Quan sát một phần" = chỉ thấy trên trang chủ (thẻ/danh sách), chưa đọc được trang con đầy đủ. "Chưa quan sát" = không thấy trong bản text (thường do JavaScript) — không suy đoán thay. "Không có" = website không có tính năng đó (xác nhận từ trang chủ).
+
+| Loại trang | Quang Vũ | RockAuto | PartsGeek | AutoZone | MAST |
+| --- | --- | --- | --- | --- | --- |
+| Trang chủ | Đã quan sát (275 dòng) | Đã quan sát (608 dòng) | Đã quan sát (1126 dòng) | Đã quan sát (184 dòng) | Đã quan sát (64 dòng) |
+| Danh mục | Đã quan sát (tab theo hệ thống xe + 40+ nhóm trên trang chủ) | Chưa quan sát trực tiếp (cây danh mục chỉ hiện sau khi chọn xe; suy luận từ luồng chọn xe) | Đã quan sát (Best Sellers + danh mục A–Z) | Đã quan sát (Featured Categories) | Không có (B2B, không có danh mục sản phẩm) |
+| Tìm kiếm | Quan sát một phần (ô tìm theo mã + dòng xe ở hero; chưa đọc trang kết quả) | Quan sát một phần (ô Part Number Search trên trang chủ; chưa đọc trang kết quả) | Quan sát một phần (ô tìm theo năm/hãng/dòng; chưa đọc trang kết quả) | Chưa quan sát trong bản text (ô tìm kiếm ở header, JavaScript) | Không có |
+| Bộ lọc theo xe | Quan sát một phần (mục "Phụ tùng cho xe của bạn" trên trang chủ; chưa đọc luồng chọn đầy đủ) | Đã quan sát (toàn bộ trang chủ là danh sách hãng → chọn năm/dòng/động cơ) | Quan sát một phần (ô năm/hãng/dòng ở đầu trang; chưa đọc luồng lọc đầy đủ) | Chưa quan sát trong bản text (bộ chọn xe ở header, JavaScript) | Không có |
+| Chi tiết sản phẩm | Quan sát một phần (thẻ sản phẩm: ảnh, tên, mã, đã bán, kho, sao, giá; chưa đọc trang chi tiết đầy đủ) | Quan sát một phần (mỗi món có nhiều thương hiệu/giá/mã + nút Info — theo cấu trúc danh mục; chưa đọc trang món đầy đủ) | Quan sát một phần (món trong Best Sellers; chưa đọc trang món đầy đủ) | Quan sát một phần (thẻ deals; chưa đọc trang món đầy đủ) | Không có |
+
+**Kết luận từ bảng:** chỉ có **Trang chủ** là được quan sát đầy đủ ở cả 5 website. Mọi phân tích về trang chi tiết trong tài liệu này đều dựa trên thẻ sản phẩm ở trang chủ + cấu trúc danh mục đã đọc được — không bịa chi tiết trang con chưa đọc. Mọi khuyến nghị thiết kế (R-V/R-S/R-P/R-A) đều ghi rõ căn cứ FR/wireframe, không ghi là "đã quan sát" khi chỉ là suy luận.
+
+### 1.5 Giới hạn của nghiên cứu này (ghi rõ)
 
 - **Trang chi tiết sản phẩm đầy đủ:** bản text crawl không mở được trang chi tiết đầy đủ của các trang tham khảo (nội dung dùng JavaScript, liên kết sản phẩm không lộ URL trong bản text). Phân tích trang chi tiết ở §3.3 dựa trên **thẻ sản phẩm ở trang chủ** (Quang Vũ: ảnh, tên kèm xe/đời/thương hiệu/mã, đã bán, trạng thái kho, sao, giá) + cấu trúc danh mục đã đọc được — không bịa chi tiết trang con chưa đọc.
 - **Bộ chọn xe của AutoZone:** nằm ở header (JavaScript), không hiện trong bản text — ghi là "chưa quan sát được trong bản text", không khẳng định cấu trúc của nó.
@@ -180,7 +194,7 @@
 
 ### 3.4 Giao diện Admin Dashboard
 
-**Giới hạn:** không website tham khảo nào cho xem giao diện quản trị công khai (ghi rõ ở §1.4). Phân tích dưới đây dựa trên **mẫu quản trị phổ biến** (bảng/bộ lọc/form/modal) đối chiếu với cấu trúc admin đã nghiệm thu ở M01-05 — không phải quan sát của một trang cụ thể.
+**Giới hạn:** không website tham khảo nào cho xem giao diện quản trị công khai (ghi rõ ở §1.5). Phân tích dưới đây dựa trên **mẫu quản trị phổ biến** (bảng/bộ lọc/form/modal) đối chiếu với cấu trúc admin đã nghiệm thu ở M01-05 — không phải quan sát của một trang cụ thể.
 
 **Khuyến nghị cho SeeCar Auto (đối chiếu M01-05):**
 
@@ -188,7 +202,8 @@
 - **R-A2:** form tạo/sửa dạng modal hoặc trang riêng với tab (Thông tin/Identifiers/Hình ảnh/Fitment — mẫu 4 M01-05, API products/identifiers/images/fitments); lỗi nhập liệu hiển thị ngay dưới trường (inline), không chỉ toast chung.
 - **R-A3:** trạng thái theo quyền: nút bị ẩn (không disable mờ) khi thiếu quyền; truy cập URL không quyền → trang 403 — khớp ADMIN_NAVIGATION.md §4 (M01-05).
 - **R-A4:** Dashboard tổng quan: thẻ số liệu (đơn chờ xử lý, đơn hôm nay, sản phẩm đã xuất bản/nháp, bài viết) + bảng đơn mới nhất — khớp `GET /admin/dashboard/summary` (M01-03) + wireframe mẫu 2 (M01-05); số liệu không có quyền xem → ẩn (FR-077), không hiện số 0 giả.
-- **R-A5:** mọi thao tác nguy hiểm (xóa, hủy đơn, đổi quyền) có ConfirmDialog + ghi audit log (FR-084/FR-085).
+- **R-A5:** mọi thao tác nguy hiểm (xóa, hủy đơn, đổi quyền) có ConfirmDialog — truy vết FR-064 (hủy đơn có xác nhận + lý do), FR-085 (chặn tự khóa Super Admin cuối cùng — E-04 M01-05), wireframe M01-05 mẫu 9 (hủy đơn) + mẫu 11 (đổi quyền) + DESIGN_SYSTEM §5.9.
+- **R-A6:** audit log / lịch sử chỉ ở những nơi có FR quy định — FR-066 (mọi thay đổi trạng thái đơn; hủy đơn là một thay đổi trạng thái nên được ghi lịch sử đơn), FR-084 (thay đổi quyền), FR-033 (thay đổi fitment); xem qua `GET /audit-logs` (M01-03). **Gap:** xóa sản phẩm chưa có FR nào quy định audit log — không khẳng định mọi thao tác xóa/hủy đều có audit log; phạm vi sự kiện ghi log do M02 chốt.
 
 ## 4. Bài học tổng hợp (áp dụng cho SeeCar Auto)
 

@@ -18,13 +18,13 @@
 | --- | --- | --- |
 | Header (sticky) | Logo SeeCar Auto + ô tìm kiếm (mã/tên/thương hiệu) + bộ chọn xe đã chọn + giỏ hàng + hotline/Zalo 0886706338 | R-S1, R-V1, L3 |
 | Hero | Tiêu đề ngắn + bộ chọn xe (hãng → dòng → đời) + ô tìm theo mã + nút "Tìm phụ tùng" | L5, L10, R-V1; hero P0 không có deals (L11) |
-| Dải tin cậy | COD + chuyển khoản · Tra cứu đơn công khai · Tư vấn theo xe · Hotline/Zalo — chỉ ghi những gì thật sự có ở P0 | L8 |
+| Dải tin cậy | COD + chuyển khoản · Tra cứu đơn công khai · Tư vấn theo xe · Hotline/Zalo — chỉ ghi những gì thật sự có ở P0. **Chú thích (FIX-02):** COD/chuyển khoản tuân theo quyết định checkout D-08 (chờ Henry); tra cứu đơn công khai tuân theo D-09 và API hiện đánh dấu P0-PROVISIONAL ở phần xác minh bổ sung (BLOCKED_BY_D-09) — không trình bày hai tính năng này như chính sách đã triển khai. | L8 |
 | Danh mục theo hệ thống xe | 40+ nhóm dạng lưới icon + tên (động cơ, gầm, phanh, dầu nhớt…) — bấm vào ra `/parts/<category-slug>` | L4, FR-015 |
 | Xe phổ biến | Shortcut hãng/dòng phổ biến (chỉ khi có dữ liệu thật) | L13 |
 | Sản phẩm gợi ý | Lưới thẻ sản phẩm (theo quy tắc thẻ DESIGN_SYSTEM §5.2) — chỉ sản phẩm đã xuất bản thật | L1, FR-003 |
 | Thương hiệu | Logo các thương hiệu đang phân phối (chỉ thương hiệu thật) | L1, FR-002, FR-016 |
 | Blog / hướng dẫn | 3 bài mới nhất ("Dấu hiệu hỏng…", "Cách chọn…") — kênh SEO + tin cậy | L12, FR-004, FR-067 |
-| Footer | Hotline & Zalo + mô tả công dụng, địa chỉ, giờ làm việc, link tra cứu đơn/bài viết/liên hệ | L3 |
+| Footer | Hotline & Zalo + mô tả công dụng, địa chỉ, giờ làm việc, link tra cứu đơn/bài viết/liên hệ. **Chú thích (FIX-02):** địa chỉ và giờ làm việc chỉ hiển thị khi Henry cung cấp và xác minh thông tin thật — không tự điền. | L3 |
 
 **Không làm ở P0:** hero khuyến mãi/deals (P1), "Đã bán N+" khi chưa có dữ liệu (R-P5), carousel tự chạy (chỉ chạy khi người dùng bấm; tôn trọng `prefers-reduced-motion`).
 
@@ -60,7 +60,7 @@
 - **Danh sách:** bảng theo DESIGN_SYSTEM §5.7 (sticky header, 48px/hàng, checkbox, thao tác phải) + bộ lọc + tìm kiếm + phân trang (R-A1).
 - **Form:** modal hoặc trang riêng với tab (R-A2); lỗi inline dưới trường; nút chính 1 cái/trang.
 - **Dashboard:** thẻ số liệu (đơn chờ xử lý, đơn hôm nay, sản phẩm đã xuất bản/nháp, bài viết) + bảng đơn mới nhất; số liệu không có quyền xem → ẩn (FR-077), không hiện số 0 giả (R-A4).
-- **Thao tác nguy hiểm:** ConfirmDialog + audit log (R-A5, FR-084/FR-085).
+- **Thao tác nguy hiểm:** ConfirmDialog cho mọi thao tác không hoàn tác được (R-A5); lịch sử/audit log chỉ ở những nơi có FR quy định (R-A6) — không khẳng định mọi thao tác xóa/hủy đều có audit log.
 - **Trạng thái theo quyền:** nút bị ẩn (không disable mờ); URL không quyền → 403 (M01-05 ADMIN_NAVIGATION §4).
 
 ## 6. Responsive — Desktop / Tablet / Mobile
@@ -127,7 +127,8 @@
 | R-A2 | Form modal/tab, lỗi inline | API products/identifiers/images/fitments; M01-05 mẫu 4 | Quản trị đúng |
 | R-A3 | Trạng thái theo quyền: ẩn nút, 403 | FR-086; M01-05 ADMIN_NAVIGATION §4 | Bảo mật |
 | R-A4 | Dashboard: thẻ số liệu + đơn mới nhất, ẩn khi không có quyền | FR-075 → FR-078; `GET /admin/dashboard/summary` | Quản trị nhanh |
-| R-A5 | ConfirmDialog + audit log cho thao tác nguy hiểm | FR-084, FR-085 | An toàn dữ liệu |
+| R-A5 | ConfirmDialog cho thao tác nguy hiểm (xóa, hủy đơn, đổi quyền) | FR-064 (hủy đơn có xác nhận + lý do), FR-085 (chặn tự khóa Super Admin cuối cùng — E-04); wireframe M01-05 mẫu 9 (hủy đơn) + mẫu 11 (đổi quyền) + DESIGN_SYSTEM §5.9 | An toàn dữ liệu |
+| R-A6 | Audit log / lịch sử — chỉ ở nơi có FR quy định | FR-066 (mọi thay đổi trạng thái đơn — hủy đơn là một thay đổi trạng thái), FR-084 (thay đổi quyền), FR-033 (thay đổi fitment); `GET /audit-logs` (M01-03). **Gap:** xóa sản phẩm chưa có FR nào quy định audit log — không khẳng định; phạm vi sự kiện ghi log do M02 chốt. | An toàn dữ liệu |
 
 ## 9. Lịch sử revision
 

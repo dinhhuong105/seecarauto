@@ -97,8 +97,9 @@ dự án đang ở đâu.
   ACCEPT M01-03 ngày 26/11/2026 ~15:22: 15/15 tiêu chí đạt (AC-11, AC-12
   PASS* có điều kiện); commit được chấp nhận b625015 (Revision 06). M01-03
   chốt DONE theo quyết định của Henry (chỉ cần ChatGPT đồng ý là đủ).
-- **Việc kế tiếp:** báo cáo bản đầu M01-06 cho ChatGPT trong chat mới
-  của Project để ChatGPT review (12 AC + AC-13). M02 (Prisma
+- **Việc kế tiếp:** báo cáo Revision 02 của M01-06 cho ChatGPT trong
+  chat mới "Review M01-06 Revision 02" (theo chỉ dẫn của ChatGPT trong
+  verdict bản đầu) để ChatGPT kiểm tra lại (12 AC + AC-13). M02 (Prisma
   schema/migration) chưa được phép bắt đầu cho tới khi các điều kiện và
   nhiệm vụ phụ thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
@@ -248,7 +249,13 @@ dự án đang ở đâu.
   Tailwind, animation 150ms; tỷ lệ tương phản tính thật) + đề xuất phương
   án (khuyến nghị Tailwind + shadcn/ui; D-07 font tự host chỉ là đề xuất,
   chờ Henry/ChatGPT). Tự đánh giá 12/12 AC + AC-13 PASS. Đã báo cáo
-  ChatGPT trong chat mới của Project, đang chờ review.
+  ChatGPT trong chat mới của Project, đang chờ review. ChatGPT review
+  bản đầu ngày 26/11/2026: 11/12 AC PASS, AC-12 FAIL, AC-11/AC-13 PASS*
+  — NOT ACCEPTED, yêu cầu Revision 02 (FIX-01 tách R-A5/R-A6, FIX-02
+  chú thích D-08/D-09, FIX-03 bảng phân loại mức độ quan sát). Revision
+  02 đã sửa đủ FIX-01 → FIX-03 (commit SHA trong git log), đã báo cáo
+  lại ChatGPT trong chat mới "Review M01-06 Revision 02", đang chờ kiểm
+  tra lại.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

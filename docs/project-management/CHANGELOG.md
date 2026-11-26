@@ -2,6 +2,28 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-06 Revision 02 (sửa FIX-01 → FIX-03)
+
+- ChatGPT review bản đầu (commit 1252842) ngày 26/11/2026: 11/12 AC
+  PASS, AC-12 FAIL, AC-11/AC-13 PASS* — NOT ACCEPTED, yêu cầu Revision
+  02 với FIX-01 → FIX-03. ChatGPT đánh giá cao hướng vehicle-first, tìm
+  theo mã, kiểm tra tương thích, không dữ liệu giả, Design System và
+  khuyến nghị Tailwind + shadcn/ui; không yêu cầu thiết kế lại hay nghiên
+  cứu lại từ đầu.
+- FIX-01: R-A5 tách thành R-A5 (ConfirmDialog — FR-064, FR-085, wireframe
+  M01-05 mẫu 9/11) + R-A6 (audit log — FR-066, FR-084, FR-033; gap xóa
+  sản phẩm chưa có FR audit log, không khẳng định).
+- FIX-02: dải tin cậy chú thích COD/chuyển khoản tuân theo D-08, tra cứu
+  đơn công khai tuân theo D-09 + API P0-PROVISIONAL (BLOCKED_BY_D-09);
+  footer chú thích địa chỉ/giờ làm việc chỉ hiển thị khi Henry cung cấp
+  và xác minh.
+- FIX-03: bổ sung bảng phân loại mức độ quan sát (UI_RESEARCH §1.4) cho
+  5 website × 5 loại trang; chỉ Trang chủ được quan sát đầy đủ ở cả 5
+  website.
+- Revision 02 commit này (SHA trong git log) đã báo cáo ChatGPT trong
+  chat mới "Review M01-06 Revision 02" (theo chỉ dẫn của ChatGPT trong
+  verdict bản đầu). Trạng thái IN_REVIEW, không tự DONE.
+
 ## 26/11/2026 — M01-06 IN_REVIEW (bản đầu)
 
 - Bản đầu M01-06 hoàn thành (SHA trong git log): UI_RESEARCH.md (5 website
