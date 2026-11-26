@@ -2,7 +2,26 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
-## 26/11/2026 — M01-03 IN_REVIEW (Revision 02, đang làm)
+## 26/11/2026 — M01-03 IN_REVIEW (ChatGPT review Revision 02: 14/15 PASS; Revision 03 đang làm)
+
+- ChatGPT đọc trực tiếp commit b491055 trên GitHub và review ngày 26/11/2026
+  ~15:00: AC-01 → AC-14 PASS (AC-11, AC-12 PASS* có điều kiện — chấp nhận
+  dựa trên bằng chứng, chưa tự chạy lại công cụ); AC-15 FAIL duy nhất vì
+  Project Handbook chưa cập nhật đúng Revision 02 (CURRENT_STATE còn mô tả
+  bản đầu/16 provisional/test cũ; TASK_BOARD còn ghi 11/15 và Revision 02
+  đang làm; Task Brief còn ghi Revision 02 đang làm; CHANGELOG chưa ghi
+  nhận commit b491055 đã hoàn thành).
+- Revision 03 (đang làm): chỉ sửa 4 file Handbook — CURRENT_STATE (ghi
+  Revision 02 hoàn thành, commit b491055, 30 provisional / 66 P0, kết quả
+  kiểm thử mới, trạng thái chờ review), TASK_BOARD (dòng M01-03), CHANGELOG
+  (bản ghi Revision 02 hoàn thành + kết quả review), Task Brief (metadata +
+  checklist). Không sửa API_SPEC/OpenAPI/Error Catalog/Scenarios/Security,
+  không sửa PRD/SRS/ERD, không tạo Prisma schema/migration. Không cần chạy
+  lại toàn bộ test API — chỉ `git diff --check`, xác minh phạm vi 4 file,
+  commit và kiểm chứng remote HEAD. Sau Revision 03, ChatGPT kiểm tra lại
+  AC-15; nếu đạt sẽ ACCEPT M01-03.
+
+## 26/11/2026 — M01-03 IN_REVIEW (Revision 02 hoàn thành, đã báo cáo ChatGPT)
 
 - ChatGPT review trực tiếp trên GitHub ngày 26/11/2026 ~14:38 (sau khi Henry cấp
   quyền truy cập GitHub cho ChatGPT, chỉ repo seecarauto; đọc đúng commit
@@ -18,6 +37,14 @@ Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nh
   S-03/S-14 ghi rõ OEM nhiều-sản-phẩm là thiết kế dự kiến; CURRENT_STATE cập
   nhật (M01-03 IN_REVIEW, M01-04 chưa bắt đầu). Không sửa PRD/SRS/ERD, không
   tạo Prisma schema/migration, không tự quyết PD-01 → PD-09.
+- Revision 02 hoàn thành: commit b491055 đã push lên GitHub (remote HEAD
+  b491055916c650a46703a79736f700f6a98f0921 đã kiểm chứng khớp local HEAD),
+  báo cáo ChatGPT trong chat "Review M01-03 API Specification" ngày
+  26/11/2026 ~14:56. ChatGPT review Revision 02 ~15:00: 14/15 tiêu chí
+  PASS (AC-11, AC-12 PASS* có điều kiện), chỉ AC-15 FAIL — Project
+  Handbook (CURRENT_STATE, TASK_BOARD, CHANGELOG, Task Brief) chưa cập nhật
+  đúng trạng thái Revision 02 / commit b491055. Giao Revision 03: chỉ sửa
+  4 file Handbook, không sửa tài liệu API, không cần chạy lại test API.
 
 ## 26/11/2026 — M01-03 IN_REVIEW (bản đầu, chờ ChatGPT review)
 

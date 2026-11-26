@@ -50,35 +50,45 @@ dự án đang ở đâu.
   `docs/database/DATA_DICTIONARY.md`,
   `docs/project-management/tasks/M01-02.md`. Chỉ làm tài liệu thiết kế
   — không Prisma schema/migration, không code, không seed data.
-- **Trạng thái M01-03 (API Specification):** IN_REVIEW — bản đầu đã soạn
-  xong ngày 26/11/2026 trên nhánh `feature/M01-03-api-spec` (từ main
-  cecd37e), đang báo cáo ChatGPT review trong chat mới của project.
+- **Trạng thái M01-03 (API Specification):** IN_REVIEW — Revision 02 đã
+  hoàn thành ngày 26/11/2026 (commit b491055 trên nhánh
+  `feature/M01-03-api-spec`, remote HEAD đã kiểm chứng khớp local HEAD)
+  và đã báo cáo ChatGPT review trong chat "Review M01-03 API Specification".
   Deliverables: `docs/api/API_SPEC.md` (24 mục), `docs/api/openapi.yaml`
-  (OpenAPI 3.1.0, 68 paths, 96 operations, 37 schemas), `docs/api/API_ERROR_CATALOG.md`,
-  `docs/api/API_SCENARIOS.md` (S-01 → S-17), `docs/api/API_SECURITY.md`,
-  `docs/project-management/tasks/M01-03.md`. Kiểm thử thực tế:
-  Redocly CLI 2.83.0 lint 0 errors (4 warnings đã ghi rõ lý do chấp
-  nhận); script đối chiếu liên tài liệu `/tmp/m0103_check.py` ALL CHECKS
-  PASS (96 endpoint §10 khớp 96 operation OpenAPI; 96 operationId duy
-  nhất; 41 $ref đều resolve; 121 requirement ID trong §20 đều tồn tại
-  trong PRD/SRS; 9/9 PD được tham chiếu, không PD nào bị tự quyết; 176
-  field schema đối chiếu Data Dictionary; 88/88 FR P0 đều được map);
-  scenario walkthrough S-01 → S-17 PASS (23 endpoint tham chiếu đều có
-  trong OpenAPI, mã lỗi đều có trong Error Catalog); preview OpenAPI
-  render bằng Redocly build-docs, 96/96 operationId hiển thị; git diff
-  --check sạch, secret scan sạch, không Prisma schema/migration, không
-  sửa PRD/SRS/ERD. 16 endpoint P0-PROVISIONAL (giỏ hàng chờ M02 quyết
-  bảng lưu trữ; import Excel chờ M04; checkout chi tiết chờ D-08; tra
-  cứu đơn bổ sung chờ D-09; AI SEO Lớp 2 chờ D-04; vòng đời trạng thái
-  đơn chờ PD-08). PD-01 → PD-09 và D-01 → D-09 giữ nguyên, chờ Henry
-  quyết định. M01-03 chỉ chuyển DONE khi ChatGPT ACCEPT (15 tiêu chí
-  AC-01 → AC-15).
-- **Việc kế tiếp:** chờ ChatGPT review M01-03 (15 tiêu chí). Nếu FAIL thì
-  sửa theo đúng lỗi/file/vị trí ChatGPT liệt kê (Revision tiếp theo,
-  báo cáo lại trong cùng chat review); nếu ACCEPT thì làm housekeeping
-  chốt M01-03 DONE rồi nhờ ChatGPT giao brief M01-04 (Sitemap và
-  Wireframe). M02 (Prisma schema/migration) chưa được phép bắt đầu cho
-  tới khi các điều kiện và nhiệm vụ phụ thuộc được chấp nhận.
+  (OpenAPI 3.1.0, 68 paths, 96 operations, 37 schemas), `docs/api/API_ERROR_CATALOG.md`
+  (11 nhóm lỗi, 44 mã lỗi duy nhất), `docs/api/API_SCENARIOS.md` (S-01 → S-17),
+  `docs/api/API_SECURITY.md`, `docs/project-management/tasks/M01-03.md`.
+  Kiểm thử thực tế (Revision 02): Redocly CLI 2.83.0 lint 0 errors
+  (4 warnings đã ghi rõ lý do chấp nhận); script đối chiếu liên tài liệu
+  `/tmp/m0103_check2.py` ALL CHECKS PASS (96 endpoint §10 khớp 96 operation
+  OpenAPI — 66 P0 + 30 P0-PROVISIONAL; 14 endpoint phụ thuộc PD-02/03/04/05/06
+  đã đánh dấu provisional ở cả §10 và OpenAPI; If-Match required: true ở 2
+  operation; mọi cặp `NNN CODE` khớp Error Catalog; 37 $ref schema đều
+  resolve; 97 requirement ID trong §20 đều tồn tại trong PRD/SRS; 9/9 PD
+  được tham chiếu, không PD nào bị tự quyết; 135 field schema đối chiếu
+  Data Dictionary — 84 field API-only đã review; 88/88 FR P0 đều được map,
+  6/6 FR P1 liệt kê ở §22); scenario walkthrough S-01 → S-17 PASS (23
+  endpoint tham chiếu đều có trong OpenAPI, mã lỗi đều có trong Error
+  Catalog); preview OpenAPI render bằng Redocly build-docs, 96/96
+  operationId hiển thị; git diff --check sạch, secret scan sạch, không
+  Prisma schema/migration, không sửa PRD/SRS/ERD. 30 endpoint
+  P0-PROVISIONAL (16 cũ: giỏ hàng chờ M02 quyết bảng lưu trữ; import Excel
+  chờ M04; checkout chi tiết chờ D-08; tra cứu đơn bổ sung chờ D-09; AI SEO
+  Lớp 2 chờ D-04; vòng đời trạng thái đơn chờ PD-08; + 14 mới phụ thuộc
+  PD-02/03/04/05/06). PD-01 → PD-09 và D-01 → D-09 giữ nguyên, chờ Henry
+  quyết định. ChatGPT review Revision 02 ngày 26/11/2026 ~15:00: 14/15 tiêu
+  chí PASS (AC-11, AC-12 PASS* có điều kiện), chỉ AC-15 FAIL (Project
+  Handbook chưa cập nhật đúng Revision 02) — giao Revision 03 chỉ sửa 4
+  file Handbook, không sửa tài liệu API. M01-03 chỉ chuyển DONE khi ChatGPT
+  ACCEPT (15 tiêu chí AC-01 → AC-15).
+- **Việc kế tiếp:** đang làm Revision 03 (chỉ sửa 4 file Handbook:
+  CURRENT_STATE, TASK_BOARD, CHANGELOG, Task Brief — ghi Revision 02 hoàn
+  thành, commit b491055, 30 provisional / 66 P0, kết quả kiểm thử mới, trạng
+  thái chờ review) rồi báo cáo lại ChatGPT trong cùng chat review để kiểm
+  tra lại AC-15. Nếu ACCEPT thì làm housekeeping chốt M01-03 DONE rồi nhờ
+  ChatGPT giao brief M01-04 (Sitemap và Wireframe). M02 (Prisma
+  schema/migration) chưa được phép bắt đầu cho tới khi các điều kiện và
+  nhiệm vụ phụ thuộc được chấp nhận.
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
   (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
   Revision 01 9dab12d, commit Revision 02 4ca0a62 và commit Revision 03
@@ -141,9 +151,12 @@ dự án đang ở đâu.
   GitHub cho ChatGPT (chỉ repo seecarauto): 11/15 tiêu chí PASS (AC-11, AC-12
   PASS* có điều kiện), 4 FAIL (AC-10, AC-13, AC-14, AC-15) — yêu cầu
   Revision 02 (đồng bộ HTTP status, If-Match bắt buộc, đánh dấu P0-PROVISIONAL
-  cho endpoint phụ thuộc PD-02/03/04/05/06, cập nhật CURRENT_STATE). M01-03
-  đang làm Revision 02; M01-04 chưa bắt đầu — chỉ bắt đầu M01-04 sau khi
-  ChatGPT ACCEPT M01-03.
+  cho endpoint phụ thuộc PD-02/03/04/05/06, cập nhật CURRENT_STATE). Revision
+  02 hoàn thành (commit b491055, đã push, remote HEAD khớp), đã báo cáo
+  ChatGPT; ChatGPT review 26/11 ~15:00: 14/15 PASS, chỉ AC-15 FAIL
+  (Handbook chưa cập nhật đúng Revision 02). M01-03 đang làm Revision 03
+  (chỉ sửa 4 file Handbook); M01-04 chưa bắt đầu — chỉ bắt đầu M01-04 sau
+  khi ChatGPT ACCEPT M01-03.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 
