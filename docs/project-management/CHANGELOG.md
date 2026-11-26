@@ -2,6 +2,28 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-01 Revision 02 (theo re-review của ChatGPT, IN_REVIEW)
+
+- ChatGPT re-review Revision 01 (commit 9dab12d): 7/9 tiêu chí đạt, chưa
+  chấp nhận; yêu cầu Revision 02 rồi kiểm tra cuối, sau đó Henry nghiệm
+  thu mới sang M01-02. Vẫn chỉ làm tài liệu, không code tính năng.
+- 3 điểm sửa: (1) đồng bộ CURRENT_STATE.md với Revision 01 — ghi commit
+  9dab12d đã push lên GitHub (remote HEAD đã kiểm chứng), M01-01 vẫn
+  IN_REVIEW, M01-02 chưa bắt đầu; (2) thêm AC-19 (Tồn kho theo số lượng,
+  P1) với 5 kiểm thử — admin cập nhật số lượng, đơn xác nhận cập nhật
+  đúng số lượng, không cho tồn kho âm, cảnh báo ngưỡng tồn kho thấp, dữ
+  liệu tồn kho phản ánh đúng trên frontend; ngưỡng cảnh báo và thời điểm
+  trừ kho do Henry quyết ở milestone Inventory / M05, chưa có số liệu hay
+  quy tắc cụ thể; BR-012 phần P1 trỏ AC-19, phần P0 giữ AC-02; (3)
+  NFR-015 sao lưu/khôi phục có tiêu chí kiểm thử cụ thể của riêng nó
+  (lấy backup, khôi phục ở staging, kiểm tra dữ liệu sau khôi phục;
+  RTO/RPO do M02/M09 chốt, chưa có số) và bảng truy vết không còn lấy
+  AC-09/AC-12 làm bằng chứng sao lưu/khôi phục.
+- Vẫn 94 FR, 20 NFR, 16 BR, 7 INT, mã duy nhất, không yêu cầu nào bị mất;
+  AC-01 → AC-19; D-01 → D-09 không đổi; M00 DONE và Docker runtime
+  UNVERIFIED không đổi; M01-01 vẫn IN_REVIEW.
+- commit Revision 02 (SHA trong git log — không ghi SHA của chính commit này vào file để tránh vòng lặp amend)
+
 ## 26/11/2026 — M01-01 Revision 01 (theo review của ChatGPT, IN_REVIEW)
 
 - ChatGPT review bản đầu (commit 0ecabf0) chưa chấp nhận; yêu cầu Revision
@@ -44,8 +66,8 @@ Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nh
   UNVERIFIED trên máy dev của Muse.
 - M01-01 đã commit 0ecabf0 và push lên GitHub ngày 26/11/2026 ~09:37
   (remote HEAD 0ecabf015ea57b3191354afefd4d63f04c01d441 đã kiểm chứng).
-  Revision 01 đang thực hiện theo review của ChatGPT (xem mục mới nhất
-  ở đầu file).
+  Revision 01 đã commit 9dab12d và push lên GitHub (xem mục mới nhất ở
+  đầu file).
 
 ## 26/11/2026 — Sửa lỗi lint backend M00 (trước khi nghiệm thu)
 

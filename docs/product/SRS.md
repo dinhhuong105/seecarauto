@@ -207,7 +207,7 @@ SRS này đặc tả chi tiết các yêu cầu phần mềm cho bản đầu (P
 | NFR-012 | Accessibility: dùng được hoàn toàn bằng bàn phím; focus ring rõ; tương phản đọc được; không truyền thông tin chỉ bằng màu; ảnh có `alt`; nút icon-only có `aria-label`; form có label; hỗ trợ `prefers-reduced-motion` (UI_UX_STANDARDS mục 1.6) | P0 | Duyệt bằng bàn phím toàn bộ luồng mua hàng; bật `prefers-reduced-motion` → animation tắt/bớt |
 | NFR-013 | UI dùng chung component `@seecarauto/ui` (Modal, Toast, Tooltip, Button...); một design system thống nhất (màu, font, spacing, radius, shadow, animation token) (ADR-009) | P0 | Review code: không có màn hình tự chế modal/toast/tooltip riêng |
 | NFR-014 | Trạng thái loading (skeleton), empty, error + nút thử lại trên mọi trang dữ liệu (UI_UX_STANDARDS mục 1.5) | P0 | Giả lập lỗi API từng trang → thấy error state + nút thử lại |
-| NFR-015 | Sao lưu tự động database (M02/M08); khôi phục được sau sự cố (quy trình khôi phục do M02 chốt) | P0 | Kiểm thử khôi phục backup ở staging theo quy trình M02 |
+| NFR-015 | Sao lưu tự động database (M02/M08); khôi phục được sau sự cố (quy trình khôi phục do M02 chốt) | P0 | Lấy backup tự động theo quy trình M02 chốt; khôi phục backup ở môi trường staging (không dùng production để thử khôi phục); kiểm tra dữ liệu sau khôi phục khớp dữ liệu lúc backup (đơn hàng, sản phẩm, tài khoản, nội dung); ghi kết quả khôi phục vào biên bản kiểm thử M02/M09. RTO/RPO là mục tiêu do M02/M09 chốt theo yêu cầu Henry — chưa có số ở đây |
 | NFR-016 | Docker: mỗi app có Dockerfile riêng, `docker-compose.yml` cho local, health check đầy đủ; deploy chỉ đạt khi mọi service `(healthy)` (ADR-008, DOCKER_STANDARDS) | P0 | `docker compose config --quiet` exit 0; `docker compose up` + `docker compose ps` mọi service healthy (kiểm tra thật trên Windows/VPS/CI — runtime UNVERIFIED trên máy dev của Muse, xem DOCKER_STANDARDS mục 5) |
 | NFR-017 | CI chạy: install → lint → typecheck → test → build → validate compose → secret scan (CODING_STANDARDS mục 9) | P0 | CI #1 đã chạy SUCCESS 1m22s cho commit M00 feea4d4 (theo kiểm tra của ChatGPT ngày 26/11/2026); mọi commit sau phải giữ CI xanh |
 | NFR-018 | TypeScript `strict: true` toàn workspace; ESLint + Prettier (2 spaces, semicolons, double quotes, trailing commas) | P0 | `pnpm lint` và `pnpm typecheck` exit 0 |
@@ -269,6 +269,7 @@ SRS này đặc tả chi tiết các yêu cầu phần mềm cho bản đầu (P
 | Analytics (P1) | AC-16 | Biểu đồ doanh thu đúng tổng theo khoảng thời gian đã chọn; sản phẩm bán chạy xếp đúng thứ tự; chưa có dữ liệu → empty state (FR-079) |
 | Tài khoản khách hàng (P1) | AC-17 | Đăng ký/đăng nhập đúng; lưu địa chỉ giao hàng và chọn được ở checkout; đăng nhập chỉ thấy đơn của tài khoản đó, chi tiết đơn đúng snapshot (FR-093, FR-094) |
 | Tích hợp hệ thống | AC-18 | Frontend/admin chỉ gọi backend qua REST `/api/v1`; Swagger tại `/api/docs` đủ endpoint P0 và gọi thử được; đồng bộ Meilisearch qua BullMQ khi dữ liệu đổi; URL ảnh tuyệt đối theo cấu hình S3/R2; response lỗi và phân trang/sắp xếp đúng định dạng thống nhất (INT-001 → INT-005, INT-007; INT-006 kiểm tra ở AC-15) |
+| Tồn kho theo số lượng (P1) | AC-19 | Admin cập nhật số lượng tồn kho; đơn hàng được xác nhận theo quy tắc tồn kho đã duyệt cập nhật đúng số lượng; không cho phép tồn kho âm; cảnh báo khi đạt ngưỡng tồn kho thấp đã cấu hình; thay đổi dữ liệu tồn kho phản ánh đúng trên frontend. Ngưỡng cảnh báo tồn kho thấp và thời điểm trừ kho do Henry quyết định ở milestone Inventory / M05 — chưa có số liệu hay quy tắc cụ thể trong tài liệu này |
 
 ## 7. Bảng truy vết (Traceability) — Yêu cầu → Tính năng/Module → Acceptance Criteria
 
@@ -297,8 +298,8 @@ P0 và P1 được tách riêng: mỗi FR chỉ trỏ tới AC kiểm thử đú
 | NFR-004, NFR-005 | Redis cache + TTL (ADR-006) | AC-02, AC-06, AC-07, AC-10, AC-12 |
 | NFR-006 → NFR-008 | Bảo mật, secret, xác thực | AC-12, AC-13, AC-17 |
 | NFR-009, NFR-010 | SEO kỹ thuật, URL tiếng Anh | AC-01, AC-03, AC-07, AC-10 |
-| NFR-011 → NFR-014 | Responsive, accessibility, design system, trạng thái | AC-01 → AC-18 (toàn hệ thống) |
-| NFR-015 | Sao lưu / khôi phục | AC-09 (dữ liệu đơn hàng), AC-12 (audit log) |
+| NFR-011 → NFR-014 | Responsive, accessibility, design system, trạng thái | AC-01 → AC-19 (toàn hệ thống) |
+| NFR-015 | Sao lưu / khôi phục | Kiểm thử hệ thống M02 (hạ tầng) / M09 (launch): lấy backup, khôi phục ở staging, kiểm tra dữ liệu sau khôi phục — xem tiêu chí kiểm thử NFR-015 (AC-09/AC-12 không phải bằng chứng sao lưu/khôi phục) |
 | NFR-016, NFR-017 | Docker + CI | Toàn hệ thống (kiểm tra ở M02/M09) |
 | NFR-018 | TypeScript strict, ESLint, Prettier | Toàn hệ thống |
 | NFR-019 | Không lưu thông tin thẻ | AC-08, AC-15 |
@@ -314,7 +315,7 @@ P0 và P1 được tách riêng: mỗi FR chỉ trỏ tới AC kiểm thử đú
 | BR-009 | Giai đoạn đầu chỉ COD + chuyển khoản | FR-053 → AC-08 |
 | BR-010 | Đơn chuyển khoản chờ xác nhận tiền | FR-063 → AC-09 |
 | BR-011 | Fitment là dữ liệu có cấu trúc | FR-027, FR-031 → AC-05 |
-| BR-012 | Trạng thái còn hàng P0; tồn kho theo số lượng P1 | FR-008, FR-010 → AC-02 (phần P0); phần P1 kiểm thử ở milestone Inventory, chưa có AC trong tài liệu này |
+| BR-012 | Trạng thái còn hàng P0; tồn kho theo số lượng P1 | FR-008, FR-010 → AC-02 (phần P0); phần P1 (quản lý tồn kho theo số lượng) → AC-19 (chưa có FR riêng cho tồn kho theo số lượng ở bản này — chức năng tồn kho chi tiết được đặc tả ở milestone Inventory / M05) |
 | BR-013 | Chỉ hiển thị số liệu thật | FR-075 → AC-11 |
 | BR-014 | AI không khẳng định lượng tìm kiếm | FR-070 → AC-10 |
 | BR-015 | Nội dung tiếng Việt; URL/slug/API tiếng Anh | NFR-010 → AC-01, AC-03, AC-07, AC-10 |
