@@ -1,0 +1,1 @@
+{"name":"@seecarauto/typescript-config","private":true,"scripts":{"clean":"echo 'typescript-config: nothing to clean'","lint":"echo 'typescript-config: no lintable source'","test":"echo 'typescript-config: no tests'","typecheck":"echo 'typescript-config: no typecheck'"},"version":"0.1.0"}

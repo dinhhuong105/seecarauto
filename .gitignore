@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+.turbo/
+
+# Environment — NEVER commit real secrets. Only .env.example is committed.
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+
+# Docker volumes / local data (kept out of git)
+docker-data/
+postgres-data/
+redis-data/
+meilisearch-data/
+
+# Test / coverage
+coverage/
+.nyc_output/
+
+# Prisma
+prisma/migrations/*.sql
+
+# TypeScript build info (generated)
+*.tsbuildinfo

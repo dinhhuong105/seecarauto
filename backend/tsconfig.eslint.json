@@ -1,0 +1,1 @@
+{"$schema":"https://json.schemastore.org/tsconfig","compilerOptions":{"declaration":false,"noEmit":true,"rootDir":"./"},"exclude":["node_modules","dist"],"extends":"./tsconfig.json","include":["src/**/*","test/**/*"]}
