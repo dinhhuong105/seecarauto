@@ -298,7 +298,7 @@ P0 và P1 được tách riêng: mỗi FR chỉ trỏ tới AC kiểm thử đú
 | NFR-004, NFR-005 | Redis cache + TTL (ADR-006) | AC-02, AC-06, AC-07, AC-10, AC-12 |
 | NFR-006 → NFR-008 | Bảo mật, secret, xác thực | AC-12, AC-13, AC-17 |
 | NFR-009, NFR-010 | SEO kỹ thuật, URL tiếng Anh | AC-01, AC-03, AC-07, AC-10 |
-| NFR-011 → NFR-014 | Responsive, accessibility, design system, trạng thái | AC-01 → AC-19 (toàn hệ thống) |
+| NFR-011 → NFR-014 | Responsive, accessibility, design system, trạng thái | AC-01 → AC-18 (toàn hệ thống) |
 | NFR-015 | Sao lưu / khôi phục | Kiểm thử hệ thống M02 (hạ tầng) / M09 (launch): lấy backup, khôi phục ở staging, kiểm tra dữ liệu sau khôi phục — xem tiêu chí kiểm thử NFR-015 (AC-09/AC-12 không phải bằng chứng sao lưu/khôi phục) |
 | NFR-016, NFR-017 | Docker + CI | Toàn hệ thống (kiểm tra ở M02/M09) |
 | NFR-018 | TypeScript strict, ESLint, Prettier | Toàn hệ thống |

@@ -2,6 +2,25 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-01 Revision 03 (theo final review của ChatGPT, IN_REVIEW)
+
+- ChatGPT final review Revision 02 (commit 4ca0a62): 8/9 tiêu chí đạt,
+  chưa chấp nhận; yêu cầu Revision 03 rồi mới quyết định ACCEPT cuối
+  cùng, sau đó Henry nghiệm thu mới sang M01-02. Vẫn chỉ làm tài liệu,
+  không code tính năng.
+- 2 điểm sửa: (1) đồng bộ CURRENT_STATE.md với commit Revision 02 —
+  ghi commit 4ca0a62 (full 4ca0a6205d16b2b677af98b0c17a93f19a2ab950) đã
+  push lên GitHub (remote HEAD đã kiểm chứng), M01-01 vẫn IN_REVIEW,
+  M01-02 chưa bắt đầu; (2) traceability NFR-011 → NFR-014 đổi AC-01 →
+  AC-19 thành AC-01 → AC-18 (AC-19 là Inventory P1, không thuộc nhóm
+  kiểm thử responsive/accessibility/design system); AC-19 vẫn được
+  truy vết qua BR-012.
+- Vẫn 94 FR, 20 NFR, 16 BR, 7 INT, mã duy nhất, không yêu cầu nào bị mất;
+  AC-01 → AC-19 (AC-19 chỉ truy vết qua BR-012, không qua NFR-011 →
+  NFR-014); D-01 → D-09 không đổi; M00 DONE và Docker runtime UNVERIFIED
+  không đổi; M01-01 vẫn IN_REVIEW.
+- commit Revision 03 (SHA trong git log — không ghi SHA của chính commit này vào file để tránh vòng lặp amend)
+
 ## 26/11/2026 — M01-01 Revision 02 (theo re-review của ChatGPT, IN_REVIEW)
 
 - ChatGPT re-review Revision 01 (commit 9dab12d): 7/9 tiêu chí đạt, chưa

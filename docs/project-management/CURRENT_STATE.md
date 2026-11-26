@@ -19,16 +19,24 @@ dự án đang ở đâu.
   6 files, +159/-55). ChatGPT re-review Revision 01: 7/9 tiêu chí đạt,
   chưa chấp nhận, yêu cầu Revision 02 (3 điểm: đồng bộ CURRENT_STATE
   với Revision 01; AC-19 cho phần P1 của BR-012; nhất quán kiểm thử
-  sao lưu/khôi phục NFR-015) — Revision 02 đang thực hiện, vẫn
-  IN_REVIEW, chờ ChatGPT kiểm tra cuối + Henry nghiệm thu (tiêu chí
-  nghiệm thu số 9 của task). M01-02 chưa bắt đầu.
+  sao lưu/khôi phục NFR-015). Revision 02 đã commit 4ca0a62 và push lên
+  GitHub ngày 26/11/2026 ~10:15 (remote HEAD
+  4ca0a6205d16b2b677af98b0c17a93f19a2ab950 đã kiểm chứng, parent 9dab12d,
+  4 files, +80/-25). ChatGPT final review Revision 02: 8/9 tiêu chí
+  đạt, chưa chấp nhận, yêu cầu Revision 03 (2 điểm: đồng bộ
+  CURRENT_STATE với commit Revision 02; traceability NFR-011 → NFR-014
+  đổi AC-01 → AC-19 thành AC-01 → AC-18, AC-19 giữ truy vết qua
+  BR-012) — Revision 03 đang thực hiện, vẫn IN_REVIEW, chờ ChatGPT
+  quyết định ACCEPT cuối cùng + Henry nghiệm thu (tiêu chí nghiệm thu
+  số 9 của task). M01-02 chưa bắt đầu.
   Tài liệu: `docs/product/PRD.md`, `docs/product/SRS.md`,
   `docs/project-management/tasks/M01-01.md`.
 - **Việc kế tiếp:** sau khi M01-01 được nghiệm thu, sang M01-02 (ERD chi
   tiết).
 - **Repository:** https://github.com/dinhhuong105/seecarauto.git
-  (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0 và commit
-  Revision 01 9dab12d đã push — xem `git log`).
+  (nhánh `main`; commit M00 feea4d4, commit M01-01 0ecabf0, commit
+  Revision 01 9dab12d và commit Revision 02 4ca0a62 đã push — xem
+  `git log`).
 - **Môi trường chạy:** frontend http://localhost:3000, admin
   http://localhost:3001, backend http://localhost:3002
   (`GET /api/v1/health`, Swagger tại `/api/docs`).
@@ -62,19 +70,22 @@ dự án đang ở đâu.
   AC-19, bảng truy vết tách P0/P1), Task Brief `tasks/M01-01.md`. Commit
   0ecabf0 đã push lên GitHub ngày 26/11/2026 ~09:37 (remote HEAD đã kiểm
   chứng). Revision 01 đã commit 9dab12d và push lên GitHub (remote HEAD
-  đã kiểm chứng); Revision 02 đang thực hiện theo re-review của ChatGPT
-  (3 điểm). Chỉ làm tài liệu — không code tính năng, không Prisma
+  đã kiểm chứng); Revision 02 đã commit 4ca0a62 và push lên GitHub
+  (remote HEAD 4ca0a6205d16b2b677af98b0c17a93f19a2ab950 đã kiểm chứng);
+  Revision 03 đang thực hiện theo final review của ChatGPT (2 điểm).
+  Chỉ làm tài liệu — không code tính năng, không Prisma
   schema/migration, không dữ liệu giả. Henry duyệt làm lúc ~08:59 ngày
   26/11/2026.
 
 ## Đang làm
 
-- M01-01 (PRD/SRS) Revision 02: Revision 01 đã commit 9dab12d và push
-  lên GitHub (remote HEAD 9dab12d67f1a6bc246bdd01646ad042da6196f91 đã kiểm
-  chứng). Revision 02 đang thực hiện theo 3 điểm re-review của ChatGPT
-  (đồng bộ CURRENT_STATE, AC-19 cho BR-012 phần P1, kiểm thử NFR-015);
-  vẫn IN_REVIEW — chờ ChatGPT kiểm tra cuối + Henry nghiệm thu. Parent
-  sẽ kiểm tra, commit và push Revision 02.
+- M01-01 (PRD/SRS) Revision 03: Revision 02 đã commit 4ca0a62 và push
+  lên GitHub (remote HEAD 4ca0a6205d16b2b677af98b0c17a93f19a2ab950 đã kiểm
+  chứng). Revision 03 đang thực hiện theo 2 điểm final review của
+  ChatGPT (đồng bộ CURRENT_STATE với commit Revision 02, traceability
+  NFR-011 → NFR-014 đổi AC-01 → AC-19 thành AC-01 → AC-18);
+  vẫn IN_REVIEW — chờ ChatGPT quyết định ACCEPT cuối cùng + Henry
+  nghiệm thu. Parent sẽ kiểm tra, commit và push Revision 03.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 
