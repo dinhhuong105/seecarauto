@@ -4,7 +4,7 @@
 | --- | --- |
 | Task | M01-01 — PRD / SRS |
 | Milestone | M01 — Architecture & UI/UX |
-| Trạng thái tài liệu | IN_REVIEW (chờ ChatGPT review + Henry nghiệm thu) |
+| Trạng thái tài liệu | DONE (ChatGPT ACCEPT Revision 03 ngày 26/11/2026 ~10:22, commit e82cd0e; chốt DONE theo quyết định của Henry 26/11/2026 ~11:55) |
 | Ngày | 26/11/2026 |
 | Product Owner | Henry |
 | Project Manager | ChatGPT |

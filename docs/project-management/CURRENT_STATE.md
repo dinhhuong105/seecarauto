@@ -37,8 +37,13 @@ dự án đang ở đâu.
   (Task Brief đầy đủ, 12 tiêu chí nghiệm thu) — M01-02 đang làm.
   Tài liệu: `docs/product/PRD.md`, `docs/product/SRS.md`,
   `docs/project-management/tasks/M01-01.md`.
-- **Trạng thái M01-02 (ERD):** đang soạn (IN_PROGRESS) — ERD cho
-  Product, SKU, OEM, Vehicle Fitment. Tài liệu: `docs/database/ERD.md`,
+- **Trạng thái M01-02 (ERD):** IN_REVIEW — bản đầu đã commit 10611a1 và
+  push lên GitHub ngày 26/11/2026 ~12:14 (remote HEAD
+  10611a19c1e2f17427dc60a51d0a138f32b35a3f đã kiểm chứng, parent 4a86da0,
+  7 files, +1269/-11). ChatGPT review lần 1 ngày 26/11/2026 ~12:23:
+  NOT ACCEPTED, yêu cầu Revision 02 (FIX-01 → FIX-04) — Revision 02
+  đang thực hiện, vẫn IN_REVIEW, chờ ChatGPT review lại + ACCEPT.
+  M01-01 giữ nguyên DONE. Tài liệu: `docs/database/ERD.md`,
   `docs/database/diagrams/product-fitment-erd.mmd`,
   `docs/database/DATA_DICTIONARY.md`,
   `docs/project-management/tasks/M01-02.md`. Chỉ làm tài liệu thiết kế
@@ -95,11 +100,13 @@ dự án đang ở đâu.
 
 ## Đang làm
 
-- M01-02 (ERD) IN_PROGRESS: ChatGPT giao 26/11/2026 ~12:06 (12 tiêu chí
-  nghiệm thu). Đang soạn ERD.md + sơ đồ Mermaid + Data Dictionary +
-  Task Brief M01-02. Chỉ làm tài liệu thiết kế — không Prisma
-  schema/migration, không code, không seed data. Parent sẽ kiểm tra,
-  commit và push M01-02, rồi báo cáo ChatGPT trong chat mới của project.
+- M01-02 (ERD) IN_REVIEW: bản đầu đã commit 10611a1 và push lên GitHub
+  (remote HEAD 10611a19c1e2f17427dc60a51d0a138f32b35a3f đã kiểm chứng).
+  ChatGPT review lần 1: NOT ACCEPTED, yêu cầu Revision 02 (FIX-01 →
+  FIX-04). Revision 02 đang thực hiện theo 4 điểm của ChatGPT; vẫn
+  IN_REVIEW — chờ ChatGPT review lại + ACCEPT. Parent sẽ kiểm tra,
+  commit và push Revision 02, rồi báo cáo ChatGPT trong chat mới của
+  project.
 
 ## Vấn đề chưa giải quyết (UNRESOLVED)
 

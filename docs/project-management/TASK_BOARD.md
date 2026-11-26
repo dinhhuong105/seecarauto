@@ -29,7 +29,7 @@ GitHub Actions CI cơ bản — CI file đã có, chạy trên GitHub sau khi pu
 | Task | Tên | Trạng thái |
 | --- | --- | --- |
 | M01-01 | PRD / SRS | DONE | PRD + SRS đã soạn xong 26/11, ChatGPT ACCEPT Revision 03 (commit e82cd0e) ngày 26/11 ~10:22; M01-01 chốt DONE theo quyết định của Henry 26/11 ~11:55 (chỉ cần ChatGPT đồng ý là đủ) |
-| M01-02 | ERD chi tiết (Product, SKU, OEM, Vehicle Fitment) | IN_PROGRESS | ChatGPT giao 26/11 ~12:06, 12 tiêu chí nghiệm thu; ERD + sơ đồ Mermaid + Data Dictionary + Task Brief đang soạn |
+| M01-02 | ERD chi tiết (Product, SKU, OEM, Vehicle Fitment) | IN_REVIEW | Bản đầu commit 10611a1 đã push 26/11 ~12:14; ChatGPT review lần 1: NOT ACCEPTED, yêu cầu Revision 02 (FIX-01 → FIX-04) — đang sửa |
 | M01-03 | API Specification | BACKLOG |
 | M01-04 | Sitemap và Wireframe | BACKLOG |
 | M01-05 | Cấu trúc Admin Dashboard | BACKLOG |

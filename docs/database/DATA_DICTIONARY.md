@@ -38,7 +38,7 @@
 | Column | Data Type | Nullable | PK/FK/UK | Description |
 | --- | --- | --- | --- | --- |
 | id | UUID | NO | PK | ID nội bộ ổn định, `DEFAULT gen_random_uuid()` |
-| sku | VARCHAR(64) | NO | UK | SKU nội bộ duy nhất của SeeCar Auto, lưu dạng đã chuẩn hóa; không phải PK |
+| sku | VARCHAR(64) | NO | UK | SKU nội bộ duy nhất của SeeCar Auto, lưu dạng đã chuẩn hóa; không phải PK; CHECK `length(trim(sku)) > 0` — mã chỉ gồm ký tự phân cách chuẩn hóa thành rỗng thì bị từ chối (FIX-03) |
 | name | VARCHAR(255) | NO | — | Tên sản phẩm hiển thị |
 | slug | VARCHAR(255) | NO | UK | Slug tiếng Anh cho URL `/products/<slug>` |
 | short_description | VARCHAR(500) | YES | — | Mô tả ngắn (danh sách, gợi ý tìm kiếm) |
@@ -61,9 +61,9 @@
 | product_id | UUID | NO | FK → `products.id` | Mã thuộc về sản phẩm nào |
 | identifier_type | identifier_type (enum) | NO | — | `PART_NUMBER`, `OEM_NUMBER`, `MANUFACTURER_PART_NUMBER`, `ALTERNATE_NUMBER` (không chứa INTERNAL_SKU) |
 | identifier_value | VARCHAR(128) | NO | — | Mã gốc như nhà sản xuất/hãng xe cấp (giữ nguyên để hiển thị) |
-| normalized_value | VARCHAR(128) | NO | — | Mã đã chuẩn hóa (viết hoa, bỏ khoảng trắng/gạch ngang/gạch dưới/chấm); chỉ dùng để tìm kiếm chính xác |
-| issuing_make_id | UUID | YES | FK → `vehicle_makes.id` | Hãng xe cấp mã; chỉ dùng cho `OEM_NUMBER` (bắt buộc khi type là OEM_NUMBER) |
-| issuing_brand_id | UUID | YES | FK → `brands.id` | Hãng phụ tùng cấp mã; chỉ dùng cho `MANUFACTURER_PART_NUMBER` (bắt buộc) và `PART_NUMBER` (khi biết rõ) |
+| normalized_value | VARCHAR(128) | NO | — | Mã đã chuẩn hóa (viết hoa, bỏ khoảng trắng/gạch ngang/gạch dưới/chấm); chỉ dùng để tìm kiếm chính xác; CHECK `length(trim(normalized_value)) > 0` — mã chỉ gồm ký tự phân cách (vd. `---`, `___`) chuẩn hóa thành rỗng thì bị từ chối (FIX-03) |
+| issuing_make_id | UUID | YES | FK → `vehicle_makes.id` | Hãng xe cấp mã; chỉ dùng cho `OEM_NUMBER` — bắt buộc NOT NULL khi type là OEM_NUMBER, bắt buộc NULL với 3 loại còn lại (CHECK ma trận, ERD 4.4) |
+| issuing_brand_id | UUID | YES | FK → `brands.id` | Hãng phụ tùng cấp mã; chỉ dùng cho `MANUFACTURER_PART_NUMBER` (bắt buộc NOT NULL) và `PART_NUMBER` (NULL hoặc NOT NULL); bắt buộc NULL với `OEM_NUMBER` và `ALTERNATE_NUMBER` (CHECK ma trận, ERD 4.4) |
 | is_primary | BOOLEAN | NO | — | Mã chính trong cùng loại (hiển thị đầu tiên); DEFAULT false |
 | created_at | TIMESTAMPTZ | NO | — | DEFAULT now() |
 | updated_at | TIMESTAMPTZ | NO | — | DEFAULT now() |

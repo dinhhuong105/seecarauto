@@ -2,6 +2,26 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-02 Revision 02 (theo review của ChatGPT, IN_REVIEW)
+
+- ChatGPT review bản đầu (commit 10611a1, chat "Review M01-02 ERD"):
+  NOT ACCEPTED; yêu cầu Revision 02 rồi review lại. Thiết kế tổng thể
+  được đánh giá tốt, không yêu cầu thiết kế lại 17 bảng hay thay đổi
+  kiến trúc fitment. Vẫn chỉ làm tài liệu thiết kế, không Prisma
+  schema/migration, không code, không seed data.
+- 4 điểm sửa: (1) FIX-01 CHECK issuer đầy đủ cho `product_identifiers`
+  — ma trận 4 loại mã, chặn cả thiếu issuer và gắn nhầm issuer sai
+  loại; (2) FIX-02 Mermaid phản ánh đúng Data Dictionary — bỏ UK khỏi
+  slug theo phạm vi cha, ghi chú composite unique + `year_to` nullable,
+  kiểm tra lại toàn bộ PK/FK/UK/cardinality bằng script (đã mở rộng
+  assertion); (3) FIX-03 mã chỉ gồm ký tự phân cách chuẩn hóa thành
+  rỗng thì bị từ chối — validation application + CHECK database, bổ
+  sung test; (4) FIX-04 đồng bộ Handbook — M01-01 DONE ở mọi nơi (kể
+  cả header PRD.md), M01-02 IN_REVIEW; không ghi M01-02 DONE trước khi
+  ChatGPT ACCEPT.
+- M01-01 giữ nguyên DONE; M01-02 vẫn IN_REVIEW.
+- commit Revision 02 (SHA trong git log — không ghi SHA của chính commit này vào file để tránh vòng lặp amend)
+
 ## 26/11/2026 — M01-02 bắt đầu (ERD, IN_PROGRESS)
 
 - ChatGPT giao M01-02 (ERD — Product, SKU, OEM, Vehicle Fitment) lúc

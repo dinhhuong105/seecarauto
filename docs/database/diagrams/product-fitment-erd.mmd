@@ -2,7 +2,16 @@
 %% Sơ đồ Mermaid cho mô hình dữ liệu Product / SKU / OEM / Vehicle Fitment.
 %% Nguồn chi tiết: docs/database/ERD.md — mọi bảng/cột/khóa trong sơ đồ này
 %% phải khớp với ERD.md và docs/database/DATA_DICTIONARY.md.
-%% Quy ước: PK = Primary Key, FK = Foreign Key, UK = Unique.
+%% Quy ước: PK = Primary Key, FK = Foreign Key, UK = Unique (toàn cục).
+%% LƯU Ý (Revision 02 FIX-02): Mermaid erDiagram KHÔNG có ký hiệu nullable
+%% và KHÔNG biểu diễn được unique theo phạm vi cha — vì vậy:
+%% - cột nullable được ghi rõ trong DATA_DICTIONARY.md (cột Nullable) và ERD.md;
+%%   các trường hợp nullable quan trọng (vd. vehicle_generations.year_to)
+%%   được ghi chú %% ngay tại bảng đó dưới đây;
+%% - slug của vehicle_models / vehicle_generations / vehicle_variants KHÔNG
+%%   mang UK trong sơ đồ này vì chúng chỉ unique theo bảng cha
+%%   (UNIQUE(make_id, slug), UNIQUE(model_id, slug), UNIQUE(generation_id, slug))
+%%   — xem ghi chú %% tại từng bảng và ERD.md mục 4.9–4.11.
 %% Bảng product_specifications là P1; orders/order_items là ranh giới (M05 thiết kế đầy đủ).
 erDiagram
     brands ||--o{ products : has
@@ -109,29 +118,33 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
+    %% vehicle_models.slug: UNIQUE(make_id, slug) — unique theo hãng, KHÔNG phải UK toàn cục.
     vehicle_models {
         uuid id PK
         uuid make_id FK
         string name
-        string slug UK
+        string slug
         timestamp created_at
         timestamp updated_at
     }
+    %% vehicle_generations.slug: UNIQUE(model_id, slug) — unique theo dòng xe.
+    %% vehicle_generations.year_to: NULLABLE — NULL nghĩa là thế hệ vẫn đang sản xuất.
     vehicle_generations {
         uuid id PK
         uuid model_id FK
         string name
-        string slug UK
+        string slug
         int year_from
         int year_to
         timestamp created_at
         timestamp updated_at
     }
+    %% vehicle_variants.slug: UNIQUE(generation_id, slug) — unique theo thế hệ.
     vehicle_variants {
         uuid id PK
         uuid generation_id FK
         string name
-        string slug UK
+        string slug
         string note
         timestamp created_at
         timestamp updated_at

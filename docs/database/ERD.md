@@ -4,7 +4,7 @@
 | --- | --- |
 | Task | M01-02 — ERD (Product, SKU, OEM, Vehicle Fitment) |
 | Milestone | M01 — Architecture & UI/UX |
-| Trạng thái tài liệu | IN_PROGRESS (đang soạn, chờ ChatGPT review) |
+| Trạng thái tài liệu | IN_REVIEW (đã báo cáo ChatGPT review lần 1 ngày 26/11/2026, đang làm Revision 02 theo 4 điểm FIX-01 → FIX-04) |
 | Ngày | 26/11/2026 |
 | Product Owner | Henry |
 | Project Manager / Reviewer | ChatGPT |
@@ -90,6 +90,7 @@ Luồng đọc chính:
 - **Một OEM Number gắn được nhiều sản phẩm** — được (không unique toàn cục cho OEM). Lý do: mã OEM là mã của hãng xe; nhiều phụ tùng aftermarket khác nhau (khác thương hiệu) đều có thể tương đương cùng một mã OEM. Chặn trùng OEM toàn cục sẽ chặn sai trường hợp hợp lệ. Chống trùng chỉ áp dụng **trong cùng một sản phẩm** (UNIQUE `product_id, identifier_type, normalized_value`) và **với Manufacturer Part Number theo issuer** (xem dưới).
 - **Manufacturer Part Number: unique theo issuer.** Một mã MPN của cùng một nhà sản xuất chỉ thuộc về đúng một phụ tùng của hãng đó — trùng MPN cùng issuer là lỗi dữ liệu, nên chặn bằng partial unique index `UNIQUE(identifier_type, normalized_value, issuing_brand_id) WHERE identifier_type = 'MANUFACTURER_PART_NUMBER'`.
 - **Chuẩn hóa mã (áp dụng cho `products.sku` và `product_identifiers.normalized_value`):** viết hoa toàn bộ, bỏ khoảng trắng, gạch ngang `-`, gạch dưới `_`, dấu chấm `.`. Ví dụ minh họa (không phải mã thật): mã nhập `abc-123 4.5` → chuẩn hóa `ABC12345`. Bản gốc giữ nguyên ở `identifier_value` để hiển thị; tìm kiếm chỉ so khớp `normalized_value`. Quy tắc này phải được áp dụng **giống hệt nhau khi ghi và khi tìm** — M02/M03 implement một hàm chuẩn hóa duy nhất dùng chung (ghi chú cho M02). Không fuzzy mạnh với mã OEM (ADR-010): so khớp chính xác trên `normalized_value`, sai một ký tự là không khớp.
+- **Trường hợp biên — mã chỉ gồm ký tự phân cách (Revision 02 FIX-03):** mã nhập chỉ gồm các ký tự bị loại khi chuẩn hóa (ví dụ minh họa: `---`, `___`, `. . .`) sẽ chuẩn hóa thành **chuỗi rỗng** — đây không phải mã hợp lệ. Quy tắc: sau chuẩn hóa, `normalized_value` và `products.sku` **bắt buộc không rỗng** — kiểm tra ở application-level khi ghi (từ chối và báo rõ) **và** ở database bằng `CHECK(length(trim(normalized_value)) > 0)` / `CHECK(length(trim(sku)) > 0)`. Không thay đổi quy tắc ADR-010; đây chỉ là bổ sung tính đầy đủ của quy tắc chuẩn hóa.
 
 ### 3.2 Mức chi tiết Vehicle Fitment — Đề xuất: phương án D (mô hình `vehicle_applications` thống nhất)
 
@@ -122,7 +123,11 @@ Luồng đọc chính:
 - `product_identifiers` có **hai cột issuer riêng**, mỗi cột chỉ dùng cho đúng loại mã:
   - `issuing_make_id` → `vehicle_makes` (nullable): chỉ dùng khi `identifier_type = 'OEM_NUMBER'` — hãng xe cấp mã OEM.
   - `issuing_brand_id` → `brands` (nullable): chỉ dùng khi `identifier_type = 'MANUFACTURER_PART_NUMBER'` (và `PART_NUMBER` khi biết rõ nhà sản xuất cấp mã) — hãng phụ tùng cấp mã.
-- Ràng buộc CHECK (mức database): `OEM_NUMBER` bắt buộc có `issuing_make_id`; `MANUFACTURER_PART_NUMBER` bắt buộc có `issuing_brand_id`; `ALTERNATE_NUMBER` không bắt buộc issuer (mã thay thế có thể chỉ là tham chiếu chéo không rõ nguồn).
+- Ràng buộc CHECK (mức database — ma trận đầy đủ, Revision 02 FIX-01):
+  `OEM_NUMBER` bắt buộc `issuing_make_id IS NOT NULL` **và** `issuing_brand_id IS NULL`;
+  `MANUFACTURER_PART_NUMBER` bắt buộc `issuing_brand_id IS NOT NULL` **và** `issuing_make_id IS NULL`;
+  `PART_NUMBER` bắt buộc `issuing_make_id IS NULL`, `issuing_brand_id` được phép NULL hoặc NOT NULL (khi biết rõ nhà sản xuất cấp mã);
+  `ALTERNATE_NUMBER` bắt buộc cả hai cột issuer đều NULL (mã thay thế chỉ là tham chiếu chéo, không gắn issuer).
 - **Phương án đã loại:** một bảng `manufacturers` chung rồi cho cả `vehicle_makes` và `brands` trỏ vào đó — trùng lặp dữ liệu (Toyota vừa là make vừa là manufacturer) và làm rối quan hệ; hoặc một cột issuer đa hình (polymorphic, không FK được) — mất toàn vẹn tham chiếu. Hai cột FK rõ ràng tốn thêm 2 cột nhưng giữ được FK thật.
 - **Lưu ý:** issuer của OEM là hãng xe (vehicle_makes), không phải "brand phụ tùng" — vì vậy không dùng chung cột `issuing_brand_id` cho OEM. Đây là điểm dễ nhầm nhất của mô hình này, được ghi rõ ở đây để M02/M03 không implement sai.
 
@@ -222,7 +227,12 @@ FR liên quan: FR-007 → FR-014, FR-042 → FR-049, FR-054 (snapshot nguồn). 
 
 Ràng buộc thêm (mức database, xem mục 7):
 
-- `CHECK`: `identifier_type = 'OEM_NUMBER'` → `issuing_make_id IS NOT NULL`; `identifier_type = 'MANUFACTURER_PART_NUMBER'` → `issuing_brand_id IS NOT NULL`; `identifier_type IN ('PART_NUMBER', 'ALTERNATE_NUMBER')` → không bắt buộc issuer.
+- `CHECK` ma trận issuer (Revision 02 FIX-01 — mức database, một CHECK duy nhất bao cả 4 loại):
+  `identifier_type = 'OEM_NUMBER'` → `issuing_make_id IS NOT NULL AND issuing_brand_id IS NULL`;
+  `identifier_type = 'MANUFACTURER_PART_NUMBER'` → `issuing_brand_id IS NOT NULL AND issuing_make_id IS NULL`;
+  `identifier_type = 'PART_NUMBER'` → `issuing_make_id IS NULL` (`issuing_brand_id` NULL hoặc NOT NULL);
+  `identifier_type = 'ALTERNATE_NUMBER'` → `issuing_make_id IS NULL AND issuing_brand_id IS NULL`.
+  Ma trận này chặn cả hai lỗi: thiếu issuer bắt buộc **và** gắn nhầm issuer sai loại mã (vd. mã OEM lại ghi `issuing_brand_id`).
 - `UNIQUE(product_id, identifier_type, normalized_value)` — chống trùng mã cùng loại trên cùng một sản phẩm.
 - Partial unique `UNIQUE(identifier_type, normalized_value, issuing_brand_id) WHERE identifier_type = 'MANUFACTURER_PART_NUMBER'` — một mã MPN của cùng một hãng chỉ thuộc về một phụ tùng.
 - Partial unique `(product_id, identifier_type) WHERE is_primary` — tối đa 1 mã chính mỗi loại trên mỗi sản phẩm.
@@ -502,7 +512,7 @@ Quy ước: `UQ` = unique index, `BT` = B-tree, `C` = composite. Index chỉ t�
 | 5 | Không có Year thuộc Model không tồn tại | Database + Application | Năm không phải bảng riêng: `vehicle_generations.year_from/year_to` thuộc về model qua FK `model_id`; `vehicle_applications.year` thuộc về model qua FK `model_id` — không thể tồn tại year "mồ côi" |
 | 6 | Không có SKU trùng | Database | `UNIQUE(products.sku)` trên dạng đã chuẩn hóa (mục 3.1) |
 | 7 | Không có fitment trùng | Database | `UNIQUE(product_id, vehicle_application_id)` trên `product_vehicle_fitments` (I-22) |
-| 8 | Không có mã định danh rỗng hoặc chỉ chứa khoảng trắng | Database + Application | `CHECK(length(trim(identifier_value)) > 0)` trên `product_identifiers.identifier_value` (và tương tự `products.sku`); chuẩn hóa ở application-level trước khi ghi |
+| 8 | Không có mã định danh rỗng hoặc chỉ chứa khoảng trắng | Database + Application | `CHECK(length(trim(identifier_value)) > 0)` trên `product_identifiers.identifier_value` (và tương tự `products.sku`); **mã chỉ gồm ký tự phân cách (vd. `---`, `___`) chuẩn hóa thành rỗng thì bị từ chối** — `CHECK(length(trim(normalized_value)) > 0)` trên `product_identifiers.normalized_value` và `CHECK(length(trim(sku)) > 0)` trên `products.sku`, cộng validation ở application-level trước khi ghi (Revision 02 FIX-03) |
 | 9 | Không cho phép slug trùng trong cùng phạm vi unique | Database | `UNIQUE` trên `brands.slug`, `categories.slug`, `products.slug` (toàn cục); `UNIQUE(make_id, slug)`, `UNIQUE(model_id, slug)`, `UNIQUE(generation_id, slug)` (theo phạm vi cha) |
 | 10 | Không để xóa một bản ghi cha làm mất dữ liệu lịch sử không chủ đích | Database | `ON DELETE RESTRICT` cho mọi FK danh mục/xe/thương hiệu/đơn hàng; `products.deleted_at` soft delete thay cho xóa cứng; `ON DELETE CASCADE` chỉ cho dữ liệu con không mang giá trị lịch sử (mục 2.3) |
 | 11 | Không tạo vòng lặp trong cây Category | Application | Trước khi lưu `categories.parent_id`, duyệt tổ tiên của parent — nếu gặp chính category đang sửa thì từ chối. Không thể biểu diễn bằng CHECK; ghi chú cho M02/M03 implement trong service + test. Recursive CTE kiểm tra định kỳ ở M03 |
@@ -656,4 +666,4 @@ Mỗi quyết định gồm: vấn đề, các phương án, ưu/nhược, khuy�
 4. `CHECK` constraints (năm 1900–2100, giá >= 0, `year_to >= year_from`, issuer theo loại mã, identifier không rỗng) — Prisma không sinh CHECK từ schema; M02 thêm bằng `@@check` (Prisma 6 hỗ trợ) hoặc raw SQL migration.
 5. `updated_at` tự động — dùng Prisma middleware hoặc PostgreSQL trigger; chọn một cách duy nhất, ghi vào M02.
 6. Không tạo Prisma schema/migration trong task này — M02 làm sau khi ChatGPT ACCEPT ERD này.
-7. **Chưa kiểm chứng bằng render hình ảnh:** sơ đồ Mermaid trong task này được kiểm tra cú pháp bằng script đối chiếu (xem báo cáo M01-02), chưa render thành hình ảnh trên máy dev của Muse — ChatGPT/CI kiểm tra render khi review.
+7. **Render sơ đồ Mermaid — ĐÃ kiểm chứng (Revision 02):** sơ đồ đã render thành công bằng Mermaid thật (mermaid.live v12.3.0, kiểm chứng ngày 26/11/2026 ~12:33): đủ 17/17 bảng theo tên, tên bảng + hàng thuộc tính + ký hiệu PK/FK/UK đọc rõ khi phóng to, đường quan hệ có nhãn, không hộp chồng lấn, không chữ bị cắt (xem toàn bộ thì chữ nhỏ vì sơ đồ lớn — phải phóng to mới đọc rõ, đây là hệ quả kích thước, không phải lỗi render). Ngoài ra đã render bằng Mermaid 11 trong Node (jsdom): SVG ~424 KB, đủ 17/17 bảng, 497 đường nối — nhưng ảnh PNG chuyển từ SVG bằng sharp không hiện chữ (foreignObject không được hỗ trợ) nên chỉ dùng làm bằng chứng cấu trúc, bằng chứng đọc được là bản render trên mermaid.live. Link xem sơ đồ: https://mermaid.live/edit#pako:eNq9WU9v3EQU_ypPliIlUrrbIjiwFYdAEqjShNASBNJK1qxn1h7FnjEz46WmVEJCCHHgUJULqpBaoqpCLSqicFkL9eCq38N8Epixvbvend04JW0ukef9mfd-78_Mm73peBwTp-esrcHOtW345-sf4Toh7yEBW4nisL5_8dKFi29s9NnaGlx_cR-e3y6yO7BPRIQoBi_gEOV_QpA_ZgHgInsCIS2y7xI4FBwnnoIuXN87gi58uLMPXfiEBNQLCexSFRGmOkbtgZ8U2R0GXkBB0WL8TPUAc092MVJogCTp7lzb7kTYGBcV2Q8UBsX4hPldr8h-Ut3jIH-KQAnOfJATE1l-LzXq46AYn1A4DorsbgyjIrtLoVI4yu_N7bS99fGWu33lvY-vfHiwde2zToRLGz9KUnjxe5Hd9XpwuAfvwKGgERIp7JF0E3b1yi4XhPqsXDnSK0eMfp4QWFc8v8fAK7IH3kap7uqLJ0eQ_wzr18iISsoZXHwDdq98qqHuTdAlYpsiX6AI9j7Ifzx4H7z8KRznf0NQYsySMESDkBiV2peKbUCL7JsEMC2ybxk8v60NP_EgKc1RAeEGlPsRjCh4ATLAjvLHMCrGv6U9o-4CGHAne0zV-AEFkf9VAb4IGKyXkgeV5IYxrUT8stEN4OX3PVBCa_yZ-RAU2Uk83erzBDFQosh-YD6sj3AHRmXeuD5hRCBFOZOdlCDhKr5RqWzY5wX5GNbWgPkoBVWM79cpA89v508Bm1BS_fFLernyV4aJr51-iCbbRRyTUELXtv_M6ggJipiSFf6VQRFivs4DW2IatLWRzP8vAEX2fSM4lalegCpV60cHVz462lmP0DFxKd40tm5sQr2szbSsT62dEmu4dMhvkKiBVgmUKrJHzK-NmMZOl94DD97svP3P13fe7Fy6VKbyuyVfXNa7K2Pi0SH1KpDC_B4cXroMXGAiZNf8c6kiUUkSiAXgUxOM9f2Lb4EKTAOA42L8TOM1fpga2B7qwpnUQ5_Bfy4MBGJYwldfXbjAb9YGSOhBgGTJ4SFFfC4osXH1nbiq4Yot7TvLxGZWjCAShCngw1piora5jUsxYYoOKRENu5axN7YJqVQEu5Sd4ktTyuNMIcpO2YhGyCetTJqLZwuJuiqGZY8vERtSJZeBVTG6XoCYT9yQ-8Z97vsEu0Mu7FKzqdQDQYZEEOYR7A7SUmBSxOh4itlcZc-4M0eZ458tfIvQLHlOctIcbHvZTENxHM7g3Xcoq5FbbWMLwRV2tpCeuHJ20QZLy4RRBMMgbaOpXQZZUbdXat-hUiZE6mtLbYC13SyT2z88qOXK1mdP22m1Nva4WX7pvyShGCiGw73pmlSCMh8YisjCojnFjhaZMZGeoLGGbYEWcp-7iQinhAHnIUEMqHT1_cTcMWqaohGRCkUxeIIg3aKQslGTGDeotxb62ClumrWy1boUw-7LIkCZAkxlHKLUNfC_Fj8n_apdMOVxYgvbmWIsAy6UuyrSVpqxymTePMyGUp-OS2IgFVKJXFhGI0RDNKAhVak7z4OJRyMUQiyoZ0U8TgYhlcFSzM8WkSYVk5Asj1ejoFsl6ETOhs5Um6vSmKyij1CYLDIwLiIU0i8JnmcoLZIyocx3q5vhYvRqBmt8Z9K_ugudd_q7K8p9BrnDVUl3eHotz8ewvN6cQ_i0omZrrPM7VK4iN1TTNKkLcHmPOQPIcx7NXcP-v2daoXtMUjthLtVWdNBTPWieuq_gZHutp5cetBuXsI42qwfWAc0MWbODXZCfMH-zHtOrhwk9Ik4fCDrWm16beNtawGl4vgpcZmf0JjjNMXUBHZz_wXy4QTorVVZjfw8Ojq5e3Xr36o7Roz-A-cHzX5EZLFWgB8igyL7TjxqP9CuIHselHlbhRlKMH6jO8qtxK7grb14Sb11SxpWh4JFlWfFXEZv6Bt8MjO2dYCE6U0Q7S6aCNqg1tnpJ6CYnozq_urZOFy9bdcvz4xQMDLnCc55WZ8a5n9AL49f_OFxKBxaxXBLsem4711DahsHX5xLyLJfr0hT9NOEiHFEte4YTNBGhKwimgrQfJ_StUqVzd07DX1FmLahkeIhde6WRL9y2p8WtxtDbzthyJtY_RNjOdy-RikdEuNbWMKHGAWeWzhHQONb3X4SxIFLOB6aWtsARo9TkUURUwPGpc0890yiuUOiiiCdMnVtOz74atMnlit-SyatvhTVVQ-1KhmIZcGWbVS3EGoCEUeWayc7CpLuYft7XObgoGlJGXANgy1RzNp2o_LHE6Tk3-44KSET6Tq_vYDJESaj6zi1n0ylRrR6PnZ4SCdl0BE_8wOkNUSjJrX8BmRM3eA
