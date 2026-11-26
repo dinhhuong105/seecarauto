@@ -2,7 +2,35 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
-## 26/11/2026 — M01-03 IN_REVIEW (Revision 04 hoàn thành — ghi nhận trạng thái; chờ kiểm tra lại AC-15)
+## 26/11/2026 — M01-03 IN_REVIEW (Revision 06 hoàn thành — cập nhật AC-15; chờ kiểm tra lại)
+
+- Revision 06 hoàn thành (commit — SHA trong git log, không ghi SHA của
+  chính commit này vào file): cập nhật 6 điểm AC-15 ở cả 4 file Handbook —
+  Task Brief bổ sung ngày báo cáo Revision 05 (~15:15) và Revision 06
+  (~15:23), checklist Handbook xác nhận cả 4 file đã đồng bộ trạng thái
+  Revision 05, checklist Git ghi commit mới nhất là Revision 06; CHANGELOG
+  thêm mục Revision 05 hoàn thành; TASK_BOARD và CURRENT_STATE ghi nhận
+  Revision 05 hoàn thành (commit 6a7301b, đã push, remote HEAD khớp).
+  Không sửa tài liệu API, không sửa PRD/SRS/ERD, không tạo Prisma
+  schema/migration. Bài học tinh chỉnh: tài liệu đã commit mô tả revision
+  của chính nó ở thì hoàn thành (lúc đọc thì nó đã hoàn thành), không mô
+  tả là "đang làm"; SHA của chính commit được ghi bằng "SHA trong git log"
+  vì SHA chưa tồn tại lúc viết. Đang chờ ChatGPT kiểm tra lại AC-15.
+
+## 26/11/2026 — M01-03 IN_REVIEW (Revision 05 hoàn thành — ghi nhận trạng thái; AC-15 kiểm tra lại: vẫn FAIL)
+
+- Revision 05 hoàn thành: commit 6a7301b đã push lên GitHub (remote HEAD
+  6a7301b77795a4c4dd70d15622ada0f8ee311baa đã kiểm chứng khớp local HEAD),
+  báo cáo ChatGPT trong chat "Review M01-03 API Specification" ngày
+  26/11/2026 ~15:15. ChatGPT kiểm tra lại AC-15 ~15:16: vẫn FAIL —
+  checklist Git còn ghi lần kiểm chứng gần nhất là Revision 04 (b593e98)
+  thay vì commit mới nhất 6a7301b; CHANGELOG chưa ghi Revision 05 hoàn
+  thành (tiêu đề mục mới nhất vẫn là Revision 04 trong khi nội dung đã
+  nói đến Revision 05); checklist Handbook chưa xác nhận trạng thái sau
+  Revision 05; ngày báo cáo chưa ghi lần báo cáo Revision 05. Giao
+  Revision 06 cập nhật các điểm trên ở cả 4 file Handbook.
+
+## 26/11/2026 — M01-03 IN_REVIEW (Revision 04 hoàn thành — ghi nhận trạng thái; AC-15 kiểm tra lại: vẫn FAIL)
 
 - Revision 04 hoàn thành: commit b593e98 đã push lên GitHub (remote HEAD
   b593e989a217a7ec5a6fb890c2944c1c743b07d6 đã kiểm chứng khớp local HEAD),
@@ -19,8 +47,8 @@ Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nh
   sau Revision 04; checklist Git ghi lần kiểm chứng gần nhất là Revision
   04 (b593e98); CURRENT_STATE ghi nhận Revision 04 hoàn thành, đã push,
   đang chờ kiểm tra lại AC-15. Không sửa tài liệu API, không sửa
-  PRD/SRS/ERD, không tạo Prisma schema/migration. Đang chờ ChatGPT kiểm tra
-  lại AC-15.
+  PRD/SRS/ERD, không tạo Prisma schema/migration. ChatGPT kiểm tra lại
+  AC-15 ~15:16: vẫn FAIL (xem mục Revision 05 ở trên).
 
 ## 26/11/2026 — M01-03 IN_REVIEW (Revision 03 hoàn thành — ghi nhận trạng thái; AC-15 kiểm tra lại: vẫn FAIL)
 
