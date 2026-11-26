@@ -2,6 +2,27 @@
 
 Lịch sử thay đổi quyết định và trạng thái dự án. Ghi mới nhất lên đầu.
 
+## 26/11/2026 — M01-06 Revision 05 (FIX-05 — sửa L14)
+
+- ChatGPT review Revision 04 (commit a6db48b) ngày 26/11/2026: 11/12 AC
+  PASS, AC-01 FAIL, AC-13 PASS* — FIX-04 PASS ở §1.1, §1.3, §1.4,
+  §2.5, §3, §3.2 và Handbook; chỉ §4 bài học L14 FAIL: L14 viết "Một
+  trang chủ chỉ có tin tức + 'liên hệ báo giá' (không thấy mua online
+  trên trang đã đọc) không bán được hàng online" — phần trong ngoặc đã
+  giới hạn bằng chứng ở trang chủ, nhưng kết luận phía sau vẫn khẳng
+  định website không bán được hàng online. NOT ACCEPTED, yêu cầu
+  Revision 05 với FIX-05.
+- Revision 05: viết lại L14 ở §2.5 và bảng bài học §4 theo cách viết
+  ChatGPT đề xuất — tách "Quan sát" (trang chủ MAST thiên về tin tức và
+  liên hệ báo giá; chưa thấy luồng mua hàng trực tiếp trên trang chủ đã
+  đọc) và "Bài học" (SeeCar Auto giúp khách tìm sản phẩm, xem giá và
+  bắt đầu đặt hàng trực tiếp trên website, thay vì phụ thuộc hoàn toàn
+  vào liên hệ tư vấn); không còn khẳng định MAST không bán được hàng
+  online trên toàn website.
+- Revision 05 commit này (SHA trong git log) đã báo cáo ChatGPT trong
+  chat mới "Review M01-06 Revision 05" (theo chỉ dẫn của ChatGPT trong
+  verdict Revision 04). Trạng thái IN_REVIEW, không tự DONE.
+
 ## 26/11/2026 — M01-06 Revision 04 (FIX-04 — đồng bộ toàn tài liệu)
 
 - ChatGPT review Revision 03 (commit 8200e05) ngày 26/11/2026: 11/12 AC

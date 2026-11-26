@@ -140,7 +140,7 @@ Bảng này phân biệt bằng chứng quan sát thực tế với suy luận v
 
 **Bài học cho SeeCar Auto:**
 
-- **L14 (ĐỐI CHỨNG):** một trang chủ chỉ có tin tức + "liên hệ báo giá" (không thấy mua online trên trang đã đọc) không bán được hàng online — SeeCar Auto phải tránh mẫu này: trang chủ phải cho khách **tìm và mua được ngay** (tìm theo xe/mã → xem món → giỏ hàng → đặt hàng COD/chuyển khoản), không bắt khách gọi điện mới biết giá.
+- **L14 (ĐỐI CHỨNG):** Quan sát: trang chủ MAST thiên về tin tức và liên hệ báo giá; chưa thấy luồng mua hàng trực tiếp trên trang chủ đã đọc. Bài học: SeeCar Auto nên giúp khách tìm sản phẩm, xem giá và bắt đầu đặt hàng trực tiếp trên website (tìm theo xe/mã → xem món → giỏ hàng → đặt hàng COD/chuyển khoản), thay vì phụ thuộc hoàn toàn vào liên hệ tư vấn.
 - **L15:** uy tín nhà phân phối (số năm, thương hiệu phân phối, hotline miễn cước) vẫn đáng học cho mục "Về chúng tôi" + dải tin cậy — nhưng đặt sau luồng mua hàng, không thay luồng mua hàng.
 
 ## 3. Phân tích theo loại trang
@@ -224,7 +224,7 @@ Bảng này phân biệt bằng chứng quan sát thực tế với suy luận v
 | L11 | Hero P0 tập trung tìm phụ tùng (chưa có khuyến mãi ở P0) | AutoZone | UI_PROPOSAL §2 |
 | L12 | Blog hướng dẫn là kênh SEO + tin cậy | AutoZone, Quang Vũ | FR-067 → FR-074 |
 | L13 | "Xe phổ biến" là shortcut — chỉ khi có dữ liệu thật | AutoZone | UI_PROPOSAL §2 |
-| L14 | Trang chủ chỉ có tin tức + "liên hệ báo giá" (không thấy mua online trên trang đã đọc) không bán được hàng online | MAST (đối chứng) | UI_PROPOSAL §2 |
+| L14 | Quan sát: trang chủ MAST thiên về tin tức và liên hệ báo giá; chưa thấy luồng mua hàng trực tiếp trên trang chủ đã đọc. Bài học: SeeCar Auto giúp khách tìm sản phẩm, xem giá và bắt đầu đặt hàng trực tiếp trên website, thay vì phụ thuộc hoàn toàn vào liên hệ tư vấn | MAST (đối chứng) | UI_PROPOSAL §2 |
 | L15 | Uy tín nhà phân phối đặt sau luồng mua hàng, không thay luồng mua | MAST | UI_PROPOSAL §2 |
 
 ## 5. Lịch sử revision
