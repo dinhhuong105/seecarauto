@@ -94,6 +94,23 @@ enum ArticleStatus {
   @@map("article_status")
 }
 
+// M02-05 (D-15, Henry approved 27/11/2026) — reason a refresh session was revoked (FIX-09).
+// DB enum type name is the Prisma enum name (no @@map), per Task Brief D-15.
+enum RefreshSessionRevocationReason {
+  ROTATED
+  LOGOUT
+  LOGOUT_ALL
+  ADMIN_REVOKED
+  REUSE_DETECTED
+}
+
+// M02-05 (D-16, Henry approved 27/11/2026) — state of a refresh idempotency operation (FIX-23).
+// PostgreSQL native enum + Prisma enum (no TEXT + CHECK), per Task Brief D-16.
+enum RefreshOperationState {
+  PENDING
+  COMPLETED
+}
+
 // ---------------------------------------------------------------- Catalogue (ERD §4.1-§4.7)
 
 model Brand {
@@ -559,9 +576,32 @@ model AdminRefreshSession {
   tokenHash  String    @unique @map("token_hash") @db.VarChar(255)
   expiresAt  DateTime  @map("expires_at") @db.Timestamptz
   revokedAt  DateTime? @map("revoked_at") @db.Timestamptz
+  // D-15 (M02-05): revocation reason + replacement link (FIX-09). Both NULL ⇔ session ACTIVE.
+  revokedReason       RefreshSessionRevocationReason? @map("revoked_reason")
+  replacedBySessionId String?                         @map("replaced_by_session_id") @db.Uuid
+  replacedBySession   AdminRefreshSession?            @relation("SessionReplacement", fields: [replacedBySessionId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  replacedSessions    AdminRefreshSession[]           @relation("SessionReplacement")
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   @@index([userId])
   @@index([expiresAt])
   @@map("admin_refresh_sessions")
+}
+
+// Refresh idempotency operations (D-16, M02-05). PostgreSQL decides operation
+// ownership + atomic rotation; Redis only caches the encrypted response envelope.
+// expires_at is the operation row's retention deadline (created + refresh TTL
+// from config) — NOT a lease; no reclaim, no Redis PENDING claim.
+// Never stores plaintext tokens or encrypted responses — only hashes/keys/ids.
+model AuthRefreshOperation {
+  id             String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tokenHash      String                @map("token_hash") @db.Text
+  idempotencyKey String                @map("idempotency_key") @db.Text
+  ownerId        String                @map("owner_id") @db.Uuid
+  state          RefreshOperationState @default(PENDING)
+  expiresAt      DateTime              @map("expires_at") @db.Timestamptz
+  createdAt      DateTime              @default(now()) @map("created_at") @db.Timestamptz
+
+  @@unique([tokenHash, idempotencyKey])
+  @@map("auth_refresh_operations")
 }
