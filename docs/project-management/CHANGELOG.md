@@ -1,3 +1,11 @@
+## 27/11/2026 — M02-03 Revision 01 (FIX-01 + FIX-02 hoàn thành)
+
+- ChatGPT review bản đầu ngày 27/11/2026 ~12:41 (chat "Review M02-03"): NOT ACCEPTED — chỉ 2 vấn đề: FIX-01 (AC-11) test filter chưa kiểm chứng category; FIX-02 (AC-13) `job.opts.attempts = 3` chỉ chứng minh cấu hình, chưa chứng minh BullMQ retry thực tế.
+- FIX-01: test filter E2E mở rộng — `categorySlug = engine` trả về đúng 3 sản phẩm Engine (không chứa sản phẩm Brakes), `categorySlug = brakes` đúng 1 sản phẩm, `categorySlugs = cooling` đúng 1 sản phẩm có Cooling là category phụ; `seedProduct` thêm option `categoryId` / `extraCategoryIds`; không đổi implementation.
+- FIX-02: test E2E mới — queue + worker BullMQ thật trên Redis thật, processor thật `CatalogSyncProcessor.process`; lỗi transient giả lập 1 lần rồi retry thật: `attemptsMade = 2`, processor gọi 2 lần, job `completed`, `returnvalue = "upserted"`, index đúng 1 document. Queue/worker test dùng Redis DB 2 (DB 0/DB 1 bị FLUSHDB bởi suite song song). Lỗi thật tìm thấy: `new Worker` với ioredis mặc định throw "maxRetriesPerRequest must be null" — đã truyền `{ maxRetriesPerRequest: null }` và đưa khởi tạo vào try/finally (rò connection/timer từng làm jest treo).
+- Kiểm thử sau Revision 01: unit 39/39, e2e Meilisearch 11/11, full e2e 74/74; workspace typecheck 9/9, lint 9/9, test 9/9, build 5/5; `git diff --check` sạch; secret scan sạch. Chỉ 1 file test thay đổi (+145/−4); không đổi Prisma schema/migration hay code implementation.
+- Trạng thái: M02-03 IN_REVIEW, chờ ChatGPT review Revision 01 (AC-01 → AC-18 tự đánh giá PASS, AC-19 CHỜ XÁC MINH).
+
 ## 27/11/2026 — M02-03 bản đầu hoàn thành (IN_REVIEW)
 
 - ChatGPT giao brief M02-03 ngày 27/11/2026 ~12:18 (sau khi xác minh housekeeping M02-02): Meilisearch, Critical, dependency M02-01 DONE, 19 AC (AC-01 → AC-19); branch `feature/M02-03-meilisearch`, base `a77bbd9`.

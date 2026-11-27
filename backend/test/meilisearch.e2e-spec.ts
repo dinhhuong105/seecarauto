@@ -1,12 +1,18 @@
 import { INestApplication } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Test } from "@nestjs/testing";
+import { Queue, Worker } from "bullmq";
+import IORedis from "ioredis";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { QueueRegistryService } from "../src/queue/queue.service";
-import { QUEUE_NAMES } from "../src/queue/queue-definitions";
+import {
+  DEFAULT_JOB_OPTIONS,
+  QUEUE_NAMES,
+} from "../src/queue/queue-definitions";
 import { MeilisearchService } from "../src/search/meilisearch.service";
 import { ProductIndexService } from "../src/search/product-index.service";
+import { CatalogSyncProcessor } from "../src/search/catalog-sync.processor";
 import { buildMeilisearchConfig } from "../src/search/meilisearch.config";
 import type { CatalogSyncJobData } from "../src/queue/queue-definitions";
 
@@ -62,6 +68,10 @@ describe("Meilisearch (e2e, real server)", () => {
     status?: "DRAFT" | "PUBLISHED" | "HIDDEN";
     identifiers?: { type: string; value: string; normalized: string }[];
     withFitment?: boolean;
+    // Override the suite's default category, or add secondary categories
+    // (productCategories) — used by the AC-11 category filter tests.
+    categoryId?: string;
+    extraCategoryIds?: string[];
   }): Promise<string> {
     const product = await prisma.product.create({
       data: {
@@ -69,11 +79,18 @@ describe("Meilisearch (e2e, real server)", () => {
         name: data.name,
         slug: data.slug,
         brandId,
-        categoryId,
+        categoryId: data.categoryId ?? categoryId,
         status: data.status ?? "PUBLISHED",
         availabilityStatus: "IN_STOCK",
         price: data.price,
         publishedAt: new Date("2026-11-20T00:00:00Z"),
+        productCategories: data.extraCategoryIds?.length
+          ? {
+              create: data.extraCategoryIds.map((extraCategoryId) => ({
+                categoryId: extraCategoryId,
+              })),
+            }
+          : undefined,
         identifiers: {
           create: (data.identifiers ?? []).map((i) => ({
             identifierType: i.type as never,
@@ -299,6 +316,12 @@ describe("Meilisearch (e2e, real server)", () => {
   });
 
   it("filters by brand, category and fitment; sorts by price (AC-11)", async () => {
+    const brakes = await prisma.category.create({
+      data: { name: "Brakes", slug: "brakes" },
+    });
+    const cooling = await prisma.category.create({
+      data: { name: "Cooling", slug: "cooling" },
+    });
     const cheapId = await seedProduct({
       sku: "CHEAP001",
       name: "Cheap Gasket",
@@ -312,21 +335,62 @@ describe("Meilisearch (e2e, real server)", () => {
       slug: "expensive-turbo",
       price: 9000000,
     });
+    const brakeId = await seedProduct({
+      sku: "BRK001",
+      name: "Brake Pad",
+      slug: "brake-pad",
+      price: 300000,
+      categoryId: brakes.id,
+    });
+    // Primary category stays Engine; Cooling is a secondary category.
+    const cooledId = await seedProduct({
+      sku: "COOL001",
+      name: "Coolant Hose",
+      slug: "coolant-hose",
+      price: 120000,
+      extraCategoryIds: [cooling.id],
+    });
     await products.indexProduct(cheapId);
     await products.indexProduct(expensiveId);
+    await products.indexProduct(brakeId);
+    await products.indexProduct(cooledId);
 
     const byBrand = await search.search("", {
       filter: "brandSlug = aisin",
     });
     expect(byBrand.hits.map((h) => h.id)).toEqual(
-      expect.arrayContaining([cheapId, expensiveId]),
+      expect.arrayContaining([cheapId, expensiveId, brakeId, cooledId]),
     );
+    // categorySlug (primary category): Engine products only — the Brakes
+    // product must NOT appear.
+    const byCategory = await search.search("", {
+      filter: "categorySlug = engine",
+    });
+    expect(byCategory.hits.map((h) => h.id)).toEqual(
+      expect.arrayContaining([cheapId, expensiveId, cooledId]),
+    );
+    expect(byCategory.hits.map((h) => h.id)).not.toContain(brakeId);
+    const byBrakes = await search.search("", {
+      filter: "categorySlug = brakes",
+    });
+    expect(byBrakes.hits.map((h) => h.id)).toEqual([brakeId]);
+    // categorySlugs (primary + secondary): only the product with Cooling
+    // as a secondary category matches.
+    const bySecondary = await search.search("", {
+      filter: "categorySlugs = cooling",
+    });
+    expect(bySecondary.hits.map((h) => h.id)).toEqual([cooledId]);
     const byFitment = await search.search("", {
       filter: `vehicleApplicationIds = ${applicationId}`,
     });
     expect(byFitment.hits.map((h) => h.id)).toEqual([cheapId]);
     const sorted = await search.search("", { sort: ["price:asc"] });
-    expect(sorted.hits.map((h) => h.id)).toEqual([cheapId, expensiveId]);
+    expect(sorted.hits.map((h) => h.id)).toEqual([
+      cheapId,
+      cooledId,
+      brakeId,
+      expensiveId,
+    ]);
   });
 
   it("upsert, delete and rebuild work (AC-12)", async () => {
@@ -434,6 +498,83 @@ describe("Meilisearch (e2e, real server)", () => {
     const docs = await search.getIndex().getDocuments({ limit: 100 });
     expect(docs.results.filter((d) => d.id === id).length).toBe(1);
     expect(docs.total).toBe(1);
+  });
+
+  it("catalog-sync job really retries after a transient failure and completes with one document (AC-13, Revision 01)", async () => {
+    const id = await seedProduct({
+      sku: "RETRY001",
+      name: "Retry Part",
+      slug: "retry-part",
+      price: 80000,
+    });
+    // Real BullMQ queue + worker on the REAL test Redis, and the REAL
+    // CatalogSyncProcessor doing the work — the queue is not mocked. Only
+    // the failure itself is simulated: the first processor call throws a
+    // controlled transient error, then BullMQ must retry it.
+    // DB 2 on purpose: redis.e2e-spec.ts FLUSHDBs DB 0 and
+    // queue.e2e-spec.ts FLUSHDBs DB 1 in parallel jest workers, so neither
+    // is safe for a job that must survive across its retry window.
+    // maxRetriesPerRequest: null is REQUIRED by BullMQ for worker
+    // (blocking) connections — a plain `new IORedis(url)` (default 20)
+    // makes `new Worker` throw "maxRetriesPerRequest must be null".
+    // (Same option RedisService.createQueueConnection() applies.)
+    // Construction lives INSIDE the try/finally below: if `new Worker`
+    // throws, the queue + connections must still be closed, or their
+    // timers keep jest's event loop alive and the run never finishes.
+    let queueConnection: IORedis | undefined;
+    let workerConnection: IORedis | undefined;
+    let queue: Queue<CatalogSyncJobData> | undefined;
+    let worker: Worker<CatalogSyncJobData> | undefined;
+    try {
+      queueConnection = new IORedis("redis://127.0.0.1:6399/2", {
+        maxRetriesPerRequest: null,
+      });
+      workerConnection = new IORedis("redis://127.0.0.1:6399/2", {
+        maxRetriesPerRequest: null,
+      });
+      queue = new Queue<CatalogSyncJobData>("catalog-sync-retry-test", {
+        connection: queueConnection,
+        defaultJobOptions: { ...DEFAULT_JOB_OPTIONS },
+      });
+      let processorCalls = 0;
+      const processor = app.get(CatalogSyncProcessor);
+      worker = new Worker<CatalogSyncJobData>(
+        "catalog-sync-retry-test",
+        async (job) => {
+          processorCalls += 1;
+          if (processorCalls === 1) {
+            throw new Error("transient failure (controlled test)");
+          }
+          return processor.process(job);
+        },
+        { connection: workerConnection },
+      );
+      const job = await queue.add("catalog-sync", {
+        entityType: "product",
+        entityId: id,
+        action: "upsert",
+        updatedAt: new Date().toISOString(),
+      } satisfies CatalogSyncJobData);
+      await waitFor(async () => {
+        const current = await queue!.getJob(job.id as string);
+        return (await current?.getState()) === "completed" ? true : null;
+      }, "retry test job to complete");
+      const finished = await queue!.getJob(job.id as string);
+      // attemptsMade counts attempts performed: 1 failure + 1 success = 2.
+      // This proves BullMQ actually retried — it is not just the configured
+      // attempts: 3 on the job options.
+      expect(finished?.attemptsMade).toBe(2);
+      expect(processorCalls).toBe(2);
+      expect(finished?.returnvalue).toBe("upserted");
+      const docs = await search.getIndex().getDocuments({ limit: 100 });
+      expect(docs.results.filter((d) => d.id === id).length).toBe(1);
+      expect(docs.total).toBe(1);
+    } finally {
+      await worker?.close().catch(() => undefined);
+      await queue?.close().catch(() => undefined);
+      await queueConnection?.quit().catch(() => undefined);
+      await workerConnection?.quit().catch(() => undefined);
+    }
   });
 
   it("Meilisearch config validates the test environment (AC-02)", () => {

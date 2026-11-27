@@ -110,7 +110,8 @@ Cấu hình test nằm trong `backend/.env.test` (`MEILISEARCH_HOST=http://127.0
 ## 7. Kiểm thử
 
 - Unit (`backend/src/search/*.spec.ts`, 20 tests): config validation, document mapper, normalize code, settings builder.
-- E2E (`backend/test/meilisearch.e2e-spec.ts`, 10 tests): real Meilisearch 1.11.3 + real PostgreSQL test + real Redis 6399 — health up/down, settings đọc lại, SKU > name priority, OEM/MPN exact, OEM sai 1 ký tự không match, typo 1 ký tự ở tên, filter brand/category/fitment + sort giá, upsert/delete/rebuild, hidden/draft/soft-deleted exclusion, BullMQ catalog-sync end-to-end + idempotent, config test env.
+- E2E (`backend/test/meilisearch.e2e-spec.ts`, 11 tests): real Meilisearch 1.11.3 + real PostgreSQL test + real Redis 6399 — health up/down, settings đọc lại, SKU > name priority, OEM/MPN exact, OEM sai 1 ký tự không match, typo 1 ký tự ở tên, filter brand/category (categorySlug + categorySlugs)/fitment + sort giá, upsert/delete/rebuild, hidden/draft/soft-deleted exclusion, BullMQ catalog-sync end-to-end + idempotent, BullMQ retry thực tế (lỗi transient 1 lần → retry → completed, attemptsMade = 2, đúng 1 document — Revision 01), config test env.
+- Quy ước Redis DB cho test: DB 0 = `redis.e2e-spec.ts` (FLUSHDB), DB 1 = `queue.e2e-spec.ts` (FLUSHDB); job nào phải sống qua cửa sổ retry dùng **DB 2** (retry test dùng DB 2). Queue/worker BullMQ tạo tay trong test phải truyền `maxRetriesPerRequest: null` cho ioredis — nếu không `new Worker` throw ngay trong constructor; và việc khởi tạo phải nằm trong try/finally để không rò connection/timer khi throw (rò làm jest treo không in kết quả).
 
 ## 8. Giới hạn đã biết
 
