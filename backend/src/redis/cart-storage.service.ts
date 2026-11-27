@@ -181,7 +181,14 @@ export class CartStorageService {
       if (cart === null) {
         throw new CartValidationError("cart does not exist");
       }
-      cart.items = cart.items.filter((i) => i.itemId !== itemId);
+      const index = cart.items.findIndex((i) => i.itemId === itemId);
+      if (index === -1) {
+        // API_SPEC §11.1: DELETE /cart/items/{itemId} on a missing item
+        // must be 404 CART_ITEM_NOT_FOUND (mapped in M05 from
+        // CartValidationError). FIX-05, Revision 03.
+        throw new CartValidationError("cart item does not exist");
+      }
+      cart.items.splice(index, 1);
       cart.updatedAt = now;
       return cart;
     });

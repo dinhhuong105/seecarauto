@@ -283,6 +283,30 @@ describe("Redis integration (real Redis 7)", () => {
       await Promise.all(ids.map((itemId) => cart.removeItem(token, itemId)));
       expect((await cart.getCart(token))?.items).toHaveLength(0);
     });
+
+    it("removeItem throws CartValidationError for a missing item or missing cart (FIX-05)", async () => {
+      const token = cart.createToken();
+      await cart.createCart(token);
+      const afterAdd = await cart.addItem(token, {
+        productId: "prod-1",
+        quantity: 1,
+      });
+      const itemId = afterAdd.items[0].itemId;
+      // Missing item in an existing cart — API_SPEC §11.1: 404
+      // CART_ITEM_NOT_FOUND (mapped in M05 from CartValidationError).
+      await expect(cart.removeItem(token, "no-such-item")).rejects.toThrow(
+        CartValidationError,
+      );
+      // The failed remove leaves the cart unchanged.
+      expect((await cart.getCart(token))?.items).toHaveLength(1);
+      // Removing the real item still works.
+      const afterRemove = await cart.removeItem(token, itemId);
+      expect(afterRemove.items).toHaveLength(0);
+      // Missing cart.
+      await expect(
+        cart.removeItem(cart.createToken(), "no-such-item"),
+      ).rejects.toThrow(CartValidationError);
+    });
   });
 
   describe("RateLimitService (API_SPEC §16)", () => {
@@ -374,6 +398,9 @@ describe("Redis integration (real Redis 7)", () => {
       await expect(
         deadCart.addItem(token, { productId: "p-1", quantity: 1 }),
       ).rejects.toThrow(RedisUnavailableError);
+      await expect(deadCart.removeItem(token, "no-such-item")).rejects.toThrow(
+        RedisUnavailableError,
+      );
     });
 
     it("rate limit fail-open allows, fail-closed enforces in memory", async () => {

@@ -1,3 +1,10 @@
+## 27/11/2026 — M02-02 Revision 03 (FIX-05 hoàn thành)
+
+- ChatGPT review Revision 02 ngày 27/11/2026 (chat "Review bản đầu M02-02"): NOT ACCEPTED — FIX-01 → FIX-04 đều PASS (kiểm tra trực tiếp trên GitHub), chỉ còn FIX-05.
+- FIX-05: `removeItem()` không báo lỗi khi item không tồn tại — đã sửa: tìm item trước khi xóa, không tồn tại → throw `CartValidationError("cart item does not exist")` (M05 map thành 404 CART_ITEM_NOT_FOUND theo API_SPEC §11.1); giữ nguyên WATCH/MULTI/EXEC + retry.
+- Test: 1 test mới (removeItem item/cart không tồn tại → CartValidationError; giỏ không đổi sau lần xóa lỗi) + mở rộng test Redis chết (removeItem → RedisUnavailableError); xóa item tồn tại và xóa đồng thời đã có test từ trước.
+- Kiểm thử sau Revision 03: unit 19/19, e2e 63/63, workspace typecheck 9/9, lint 9/9, test 9/9, build 5/5.
+
 ## 27/11/2026 — M02-02 Revision 02 (FIX-01 → FIX-04 hoàn thành)
 
 - ChatGPT review bản đầu ngày 27/11/2026 (chat "Review bản đầu M02-02"): NOT ACCEPTED — yêu cầu Revision 02 (FIX-01 → FIX-04). Bản đầu commit d77c074 đã xác minh trên GitHub (Ahead 1, Behind 0, 28 file).
