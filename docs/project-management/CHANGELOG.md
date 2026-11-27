@@ -1,3 +1,9 @@
+## 27/11/2026 — M02-02 AC-15: Docker runtime đã xác minh trên CI (chờ ChatGPT ACCEPT)
+
+- ChatGPT review Revision 03 ngày 27/11/2026: FIX-05 PASS, không còn FIX nào về code — chỉ AC-15 vẫn UNVERIFIED nên chưa đủ điều kiện ACCEPT 17/17.
+- Bằng chứng Docker runtime lấy trên GitHub Actions (workflow `.github/workflows/docker-compose-redis.yml`, commit dee3a47): run https://github.com/dinhhuong105/seecarauto/actions/runs/45942446682 — completed, conclusion success. `docker compose config --quiet` exit 0; `docker compose up -d redis` — container seecarauto-redis Started; healthcheck starting → healthy (~10 giây); `docker compose ps` — Up 5 seconds (healthy), 0.0.0.0:6379->6379/tcp; `redis-cli ping` trong container — PONG; `docker compose down -v` dọn dẹp.
+- Task Brief §10.4 ghi bằng chứng đầy đủ; tự đánh giá AC sau bằng chứng CI: AC-01 → AC-15 PASS, AC-16 PASS, AC-17 CHỜ XÁC MINH (chờ ChatGPT xác minh trực tiếp run CI trên GitHub).
+
 ## 27/11/2026 — M02-02 Revision 03 (FIX-05 hoàn thành)
 
 - ChatGPT review Revision 02 ngày 27/11/2026 (chat "Review bản đầu M02-02"): NOT ACCEPTED — FIX-01 → FIX-04 đều PASS (kiểm tra trực tiếp trên GitHub), chỉ còn FIX-05.
