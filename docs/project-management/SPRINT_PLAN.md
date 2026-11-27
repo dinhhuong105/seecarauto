@@ -185,7 +185,7 @@ Kế hoạch Sprint cho roadmap 16–20 tuần. Nguồn: `MASTER_ROADMAP.md` +
 | Sprint | Tuần | Số task | Trạng thái |
 | --- | --- | --- | --- |
 | Sprint 1 | 1–2 | 8 (M00 7 + M01-01) | DONE |
-| Sprint 2 | 3–4 | 10 (M01 6 + M02 4) | CHƯA HOÀN THÀNH — 8/10 DONE (M01-02 → M01-07 + M02-01 + M02-02); M02-03/05 còn BACKLOG |
+| Sprint 2 | 3–4 | 10 (M01 6 + M02 4) | CHƯA HOÀN THÀNH — 9/10 DONE (M01-02 → M01-07 + M02-01 + M02-02 + M02-03); M02-05 còn BACKLOG |
 | Sprint 3 | 5–6 | 7 (M02 4 + M03 3) | BACKLOG |
 | Sprint 4 | 7–8 | 9 (M03 6 + M04 3) | BACKLOG |
 | Sprint 5 | 9–10 | 10 (M04 6 + M03-10 + M05 2 + M06-01) | BACKLOG |
