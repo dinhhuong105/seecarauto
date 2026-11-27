@@ -1,3 +1,9 @@
+## 27/11/2026 — M02-01 DONE (ChatGPT ACCEPT Revision 02, 12/12 PASS)
+
+- ChatGPT ACCEPT Revision 02 ngày 27/11/2026 ~09:16 (commit d9824ae, parent 2b3ec60): FIX-01 → FIX-05 đều PASS, AC-01 → AC-12 đều PASS, không yêu cầu Revision 03.
+- Housekeeping (commit riêng sau ACCEPT): Task Brief M02-01 → DONE (§11 kết quả nghiệm thu), CURRENT_STATE, TASK_BOARD, CHANGELOG, PRODUCT_BACKLOG (M02-01 → DONE; DONE 15, IN_PROGRESS 0, BACKLOG 73, BLOCKED 1), SPRINT_PLAN (Sprint 2: 7/10 DONE). Không sửa schema, migration hoặc code đã nghiệm thu.
+- Task tiếp theo: M02-02 (Redis + BullMQ) — chờ ChatGPT giao sau housekeeping.
+
 ## 26/11/2026 — M02-01 Revision 02 hoàn thành (IN_REVIEW, chờ ChatGPT review lại)
 
 - ChatGPT NOT ACCEPTED bản đầu M02-01 (commit 2b3ec60): AC-02 FAIL (thiếu UUID DB default), AC-06/08/09/11/12 CONDITIONAL; yêu cầu FIX-01 → FIX-05.

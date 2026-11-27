@@ -12,7 +12,7 @@ Wireframe, Admin Dashboard, UI/UX Research).
 | Tổng số mã task trong backlog này | **89** |
 | M00 | 7 — DONE 7/7 |
 | M01 | 7 — DONE 7/7 |
-| M02 | 8 — IN_PROGRESS 1/8, BACKLOG 7/8 |
+| M02 | 8 — DONE 1/8, BACKLOG 7/8 |
 | M03 | 10 — BACKLOG 10/10 |
 | M04 | 9 — BACKLOG 9/9 |
 | M05 | 10 — BACKLOG 10/10 |
@@ -20,8 +20,8 @@ Wireframe, Admin Dashboard, UI/UX Research).
 | M07 | 10 — BACKLOG 9/10, BLOCKED 1/10 (M07-05) |
 | M08 | 9 — BACKLOG 9/9 |
 | M09 | 10 — BACKLOG 10/10 |
-| DONE | 14 (M00 7 + M01 7) |
-| IN_PROGRESS | 1 (M02-01) |
+| DONE | 15 (M00 7 + M01 7 + M02-01) |
+| IN_PROGRESS | 0 |
 | BACKLOG | 73 |
 | BLOCKED | 1 (M07-05) |
 
@@ -119,7 +119,7 @@ chưa chốt nhưng không chặn thiết kế).
 
 | Task | Tên | Mục tiêu / Phạm vi | Priority | Phụ thuộc | Trạng thái |
 | --- | --- | --- | --- | --- | --- |
-| M02-01 | PostgreSQL + Prisma schema | Schema Prisma từ ERD (17 bảng); migration; G-02 Articles/ArticleSEO + G-04 Admin/RBAC; G-01 đóng theo PD-02; G-03 Redis cart decision | Critical | M01-02 | IN_PROGRESS |
+| M02-01 | PostgreSQL + Prisma schema | Schema Prisma từ ERD (17 bảng); migration; G-02 Articles/ArticleSEO + G-04 Admin/RBAC; G-01 đóng theo PD-02; G-03 Redis cart decision | Critical | M01-02 | DONE |
 | M02-02 | Redis cache + BullMQ | Redis cache (theo API_SPEC §41) + BullMQ cho job nền | High | M02-01 | BACKLOG |
 | M02-03 | Meilisearch | Cài Meilisearch; index products (SKU/OEM/tên/thương hiệu); cấu hình tìm kiếm theo ADR-010 | Critical | M02-01 | BACKLOG |
 | M02-04 | S3 / R2 object storage | Lưu ảnh sản phẩm/bài viết; URL tuyệt đối (theo quy tắc đã chốt ở M01-06) | High | D-06 | BACKLOG |
