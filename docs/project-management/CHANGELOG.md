@@ -1,3 +1,10 @@
+## 27/11/2026 — M02-03 DONE (ChatGPT ACCEPT 19/19 AC PASS)
+
+- ChatGPT verdict cuối cùng Revision 04 ngày 27/11/2026 ~13:32 (chat "Review M02-03"): ACCEPT — 19/19 AC PASS, M02-03 đủ điều kiện nghiệm thu. Commit được nghiệm thu: Revision 04 633cde1 (parent d3480e4, 1 file, +1/−1, đúng 1 dòng Status trong Task Brief). ChatGPT kiểm tra trực tiếp trên GitHub và xác nhận cách ghi "Revision 04" là đúng (Status phải phản ánh bản mới nhất đang chờ review).
+- Chuỗi M02-03: bản đầu 67daaa3 (Meilisearch module/service + Product Index + catalog-sync consumer) → e05cdbe (bằng chứng AC-16, CI run 45946634153 success) → Revision 01 04c9457 (FIX-01 category filter + FIX-02 retry) → Revision 02 f9daa92 (FIX-02 làm lại bằng spyOn process() + FIX-03 Handbook) → Revision 03 d3480e4 (FIX-04 Status + FIX-05 sửa lịch sử Revision 01, chỉ tài liệu) → Revision 04 633cde1 (FIX-06, đúng 1 dòng Status).
+- Kiểm thử (chạy thật ở Revision 02, được kế thừa nguyên vẹn qua Revision 03/04 vì không đổi code/test): unit 39/39, e2e Meilisearch 11/11, full e2e 74/74; workspace typecheck 9/9, lint 9/9, test 9/9, build 5/5. ChatGPT lưu ý: kết quả kiểm thử là do Muse báo cáo, ChatGPT chưa tự chạy lại; Docker runtime trên máy Muse vẫn UNVERIFIED (runtime CI đã có bằng chứng thành công).
+- Housekeeping: Task Brief → DONE + §11 kết quả nghiệm thu; backlog DONE 17 / IN_PROGRESS 0 / BACKLOG 71 / BLOCKED 1; Sprint 2 9/10 DONE (vẫn CHƯA HOÀN THÀNH — M02-05 BACKLOG); M02 3/8 DONE. Không tự merge; M03-08 chưa giao — ChatGPT kiểm tra commit housekeeping trước rồi mới chốt M02-03 DONE và điều phối task tiếp theo.
+
 ## 27/11/2026 — M02-03 Revision 03 (FIX-04 + FIX-05, chỉ tài liệu)
 
 - ChatGPT review Revision 02 ngày 27/11/2026 ~13:24 (chat "Review M02-03"): NOT ACCEPTED — FIX-01 / AC-11 PASS; FIX-02 / AC-13 PASS (ChatGPT đọc trực tiếp test Revision 02 trên GitHub, xác nhận spyOn khắc phục đúng lỗi Revision 01); FIX-03 / Handbook CHƯA HOÀN TẤT; AC-19 CHƯA PASS. ChatGPT giao Revision 03 chỉ 2 điểm tài liệu và sẽ đưa verdict cuối cùng sau khi kiểm tra commit.

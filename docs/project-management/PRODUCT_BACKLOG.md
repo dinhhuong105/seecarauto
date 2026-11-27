@@ -20,8 +20,8 @@ Wireframe, Admin Dashboard, UI/UX Research).
 | M07 | 10 — BACKLOG 9/10, BLOCKED 1/10 (M07-05) |
 | M08 | 9 — BACKLOG 9/9 |
 | M09 | 10 — BACKLOG 10/10 |
-| DONE | 16 (M00 7 + M01 7 + M02-01 + M02-02) |
-| IN_PROGRESS | 1 (M02-03) |
+| DONE | 17 (M00 7 + M01 7 + M02-01 + M02-02 + M02-03) |
+| IN_PROGRESS | 0 |
 | BACKLOG | 71 |
 | BLOCKED | 1 (M07-05) |
 
@@ -115,13 +115,13 @@ chưa chốt nhưng không chặn thiết kế).
 | M01-06 | Nghiên cứu mẫu UI/UX và đề xuất phương án | Nghiên cứu 5 website thật; Design System (màu/chữ/spacing/component); đề xuất Tailwind + shadcn/ui; D-07 chỉ là đề xuất | High | M01-01, M01-04, M01-05 | DONE |
 | M01-07 | Backlog và chia Sprint | Backlog 89 mã task + Sprint plan 10 Sprint × 2 tuần (tuần 1–20) | High | M01-01 → M01-06 | DONE |
 
-## 4. M02 — Infrastructure & Authentication (tuần 3–5) — IN_PROGRESS 1/8, BACKLOG 7/8
+## 4. M02 — Infrastructure & Authentication (tuần 3–5) — DONE 3/8, BACKLOG 5/8
 
 | Task | Tên | Mục tiêu / Phạm vi | Priority | Phụ thuộc | Trạng thái |
 | --- | --- | --- | --- | --- | --- |
 | M02-01 | PostgreSQL + Prisma schema | Schema Prisma từ ERD (17 bảng); migration; G-02 Articles/ArticleSEO + G-04 Admin/RBAC; G-01 đóng theo PD-02; G-03 Redis cart decision | Critical | M01-02 | DONE |
 | M02-02 | Redis cache + BullMQ | Redis cache (theo API_SPEC §41) + BullMQ cho job nền | High | M02-01 | DONE |
-| M02-03 | Meilisearch | Cài Meilisearch; index products (SKU/OEM/tên/thương hiệu); cấu hình tìm kiếm theo ADR-010 | Critical | M02-01 | IN_PROGRESS |
+| M02-03 | Meilisearch | Cài Meilisearch; index products (SKU/OEM/tên/thương hiệu); cấu hình tìm kiếm theo ADR-010 | Critical | M02-01 | DONE |
 | M02-04 | S3 / R2 object storage | Lưu ảnh sản phẩm/bài viết; URL tuyệt đối (theo quy tắc đã chốt ở M01-06) | High | D-06 | BACKLOG |
 | M02-05 | Auth JWT + Refresh Token | Đăng nhập admin (FR-090/FR-091 lockout); JWT + refresh; HttpOnly cookie | Critical | M02-01 | BACKLOG |
 | M02-06 | RBAC nền tảng | Bảng roles/permissions/role_permissions/user_roles/user_permissions; middleware kiểm tra permission; audit log nền | Critical | M02-01, M02-05; M01-05 | BACKLOG |
