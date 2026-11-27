@@ -500,7 +500,7 @@ describe("Meilisearch (e2e, real server)", () => {
     expect(docs.total).toBe(1);
   });
 
-  it("catalog-sync job really retries after a transient failure and completes with one document (AC-13, Revision 01)", async () => {
+  it("catalog-sync job really retries after a transient failure and completes with one document (AC-13, Revision 02)", async () => {
     const id = await seedProduct({
       sku: "RETRY001",
       name: "Retry Part",
@@ -508,9 +508,15 @@ describe("Meilisearch (e2e, real server)", () => {
       price: 80000,
     });
     // Real BullMQ queue + worker on the REAL test Redis, and the REAL
-    // CatalogSyncProcessor doing the work — the queue is not mocked. Only
-    // the failure itself is simulated: the first processor call throws a
-    // controlled transient error, then BullMQ must retry it.
+    // CatalogSyncProcessor doing the work — the queue and the processor are
+    // not mocked. Only the failure itself is controlled, and it happens
+    // INSIDE the first CatalogSyncProcessor.process() call (Revision 02):
+    // a jest.spyOn on the real processor instance overrides ONLY the
+    // first invocation with a transient throw; the retry invocation runs
+    // the original process() implementation (spyOn calls through by
+    // default). The Revision 01 version threw BEFORE calling process(),
+    // so process() was only ever called once — that did not prove the
+    // business processor itself is re-executed on retry.
     // DB 2 on purpose: redis.e2e-spec.ts FLUSHDBs DB 0 and
     // queue.e2e-spec.ts FLUSHDBs DB 1 in parallel jest workers, so neither
     // is safe for a job that must survive across its retry window.
@@ -525,6 +531,7 @@ describe("Meilisearch (e2e, real server)", () => {
     let workerConnection: IORedis | undefined;
     let queue: Queue<CatalogSyncJobData> | undefined;
     let worker: Worker<CatalogSyncJobData> | undefined;
+    let processSpy: jest.SpyInstance | undefined;
     try {
       queueConnection = new IORedis("redis://127.0.0.1:6399/2", {
         maxRetriesPerRequest: null,
@@ -536,16 +543,28 @@ describe("Meilisearch (e2e, real server)", () => {
         connection: queueConnection,
         defaultJobOptions: { ...DEFAULT_JOB_OPTIONS },
       });
-      let processorCalls = 0;
       const processor = app.get(CatalogSyncProcessor);
+      // First process() call fails inside process(); the retry call runs
+      // the real implementation. The spy is restored in the finally.
+      processSpy = jest
+        .spyOn(processor, "process")
+        .mockImplementationOnce(async () => {
+          throw new Error("transient failure (controlled test)");
+        });
+      // Record the outcome of each process() invocation, so the test
+      // proves the first call failed AND the second call succeeded.
+      const processOutcomes: string[] = [];
       worker = new Worker<CatalogSyncJobData>(
         "catalog-sync-retry-test",
         async (job) => {
-          processorCalls += 1;
-          if (processorCalls === 1) {
-            throw new Error("transient failure (controlled test)");
+          try {
+            const result = await processor.process(job);
+            processOutcomes.push(`success:${result}`);
+            return result;
+          } catch (error) {
+            processOutcomes.push(`failure:${(error as Error).message}`);
+            throw error;
           }
-          return processor.process(job);
         },
         { connection: workerConnection },
       );
@@ -560,16 +579,22 @@ describe("Meilisearch (e2e, real server)", () => {
         return (await current?.getState()) === "completed" ? true : null;
       }, "retry test job to complete");
       const finished = await queue!.getJob(job.id as string);
-      // attemptsMade counts attempts performed: 1 failure + 1 success = 2.
-      // This proves BullMQ actually retried — it is not just the configured
-      // attempts: 3 on the job options.
+      // CatalogSyncProcessor.process() itself was invoked twice: the first
+      // invocation failed inside process(), the retry invocation ran the
+      // real logic and succeeded. attemptsMade = 2 proves BullMQ actually
+      // retried — it is not just the configured attempts: 3.
+      expect(processSpy.mock.calls.length).toBe(2);
+      expect(processOutcomes).toEqual([
+        "failure:transient failure (controlled test)",
+        "success:upserted",
+      ]);
       expect(finished?.attemptsMade).toBe(2);
-      expect(processorCalls).toBe(2);
       expect(finished?.returnvalue).toBe("upserted");
       const docs = await search.getIndex().getDocuments({ limit: 100 });
       expect(docs.results.filter((d) => d.id === id).length).toBe(1);
       expect(docs.total).toBe(1);
     } finally {
+      processSpy?.mockRestore();
       await worker?.close().catch(() => undefined);
       await queue?.close().catch(() => undefined);
       await queueConnection?.quit().catch(() => undefined);
