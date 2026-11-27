@@ -1,7 +1,7 @@
 ## 27/11/2026 — M02-03 bản đầu hoàn thành (IN_REVIEW)
 
 - ChatGPT giao brief M02-03 ngày 27/11/2026 ~12:18 (sau khi xác minh housekeeping M02-02): Meilisearch, Critical, dependency M02-01 DONE, 19 AC (AC-01 → AC-19); branch `feature/M02-03-meilisearch`, base `a77bbd9`.
-- Bản đầu hoàn thành 27/11/2026: Meilisearch module/service + Product Index + catalog-sync consumer; client `meilisearch@0.44.1` pin exact; unit 20/20, e2e Meilisearch 10/10 (Meilisearch thật 1.11.3), full e2e 73/73; workspace typecheck 9/9, lint 9/9, test 9/9, build 5/5; docker compose config exit 0, runtime CI đang chờ run sau push (AC-16 CHỜ XÁC MINH).
+- Bản đầu hoàn thành 27/11/2026: Meilisearch module/service + Product Index + catalog-sync consumer; client `meilisearch@0.44.1` pin exact; unit 20/20, e2e Meilisearch 10/10 (Meilisearch thật 1.11.3), full e2e 73/73; workspace typecheck 9/9, lint 9/9, test 9/9, build 5/5; docker compose config exit 0, runtime CI đã xác minh: run 45946634153 success (job meilisearch healthy + `/health` available; job redis PONG) — AC-16 PASS (ghi ở Task Brief §10).
 - Trạng thái: M02-03 IN_PROGRESS; tổng DONE 16, IN_PROGRESS 1, BACKLOG 71, BLOCKED 1 (tổng 89).
 
 ## 27/11/2026 — M02-02 DONE (ChatGPT ACCEPT 17/17 AC PASS)
