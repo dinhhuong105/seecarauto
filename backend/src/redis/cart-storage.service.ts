@@ -15,11 +15,21 @@ import { RedisService, RedisUnavailableError } from "./redis.service";
 //   price; M05 must re-read prices from PostgreSQL at read/checkout time.
 // - TTL: 30 days by default (API_SPEC §11.1), configurable via
 //   REDIS_CART_TTL_DAYS; refreshed on every read and write.
+// - Atomicity (FIX-02, Revision 02): add/update/remove run as an
+//   optimistic-locking transaction — WATCH the cart key, read, mutate in
+//   memory, MULTI/SET, EXEC — on a DEDICATED duplicate connection (so a
+//   timed-out attempt can never leave a dangling WATCH on the shared
+//   client). When EXEC aborts (key changed mid-transaction) the operation
+//   retries on a fresh connection, up to 10 attempts. Without this, two
+//   concurrent addItem calls could both read quantity 1 and both write 2
+//   (lost update). A plain GET + SET is never used for mutations.
 // - Redis down: every method throws RedisUnavailableError. The HTTP layer
 //   (M05) maps it to a dependency error (503). We NEVER return a fake empty
-//   cart — that would silently discard the customer's items. (Note: this
-//   differs from the API_SPEC §11.1 fallback note "giỏ rỗng tạm thời";
-//   recorded as ISSUE-M02-02-01 in the Task Brief for ChatGPT to decide.)
+//   cart — that would silently discard the customer's items. (DECIDED —
+//   Henry approved 27/11/2026 per ChatGPT's FIX-04 proposal in the M02-02
+//   review: Redis down → 503, never a fake empty cart. API_SPEC §11.1 was
+//   updated to this decision; its old "temporary empty cart" note no
+//   longer applies.)
 
 export interface CartItem {
   itemId: string;
@@ -44,6 +54,9 @@ export class CartValidationError extends Error {
 }
 
 const CART_KEY_PREFIX = "seecarauto:v1:cart";
+
+/** Max WATCH/MULTI retries for one cart mutation under contention. */
+const MAX_CART_TX_RETRIES = 10;
 
 @Injectable()
 export class CartStorageService {
@@ -108,25 +121,33 @@ export class CartStorageService {
     if (!Number.isInteger(input.quantity) || input.quantity < 1) {
       throw new CartValidationError("quantity must be an integer >= 1");
     }
-    const cart = (await this.getCart(token)) ?? (await this.createCart(token));
-    const existing = cart.items.find((i) => i.productId === input.productId);
-    if (existing !== undefined) {
-      existing.quantity += input.quantity;
-      if (input.priceAtAdd !== undefined) {
-        existing.priceAtAdd = input.priceAtAdd;
+    const now = new Date().toISOString();
+    return this.mutateCart(token, "add", (cart) => {
+      const current: CartData = cart ?? {
+        items: [],
+        createdAt: now,
+        updatedAt: now,
+      };
+      const existing = current.items.find(
+        (i) => i.productId === input.productId,
+      );
+      if (existing !== undefined) {
+        existing.quantity += input.quantity;
+        if (input.priceAtAdd !== undefined) {
+          existing.priceAtAdd = input.priceAtAdd;
+        }
+      } else {
+        current.items.push({
+          itemId: randomUUID(),
+          productId: input.productId,
+          quantity: input.quantity,
+          priceAtAdd: input.priceAtAdd ?? null,
+          addedAt: now,
+        });
       }
-    } else {
-      cart.items.push({
-        itemId: randomUUID(),
-        productId: input.productId,
-        quantity: input.quantity,
-        priceAtAdd: input.priceAtAdd ?? null,
-        addedAt: new Date().toISOString(),
-      });
-    }
-    cart.updatedAt = new Date().toISOString();
-    await this.saveCart(token, cart);
-    return cart;
+      current.updatedAt = now;
+      return current;
+    });
   }
 
   /** Sets the quantity of one item (quantity >= 1; use removeItem to delete). */
@@ -138,30 +159,32 @@ export class CartStorageService {
     if (!Number.isInteger(quantity) || quantity < 1) {
       throw new CartValidationError("quantity must be an integer >= 1");
     }
-    const cart = await this.getCart(token);
-    if (cart === null) {
-      throw new CartValidationError("cart does not exist");
-    }
-    const item = cart.items.find((i) => i.itemId === itemId);
-    if (item === undefined) {
-      throw new CartValidationError("cart item does not exist");
-    }
-    item.quantity = quantity;
-    cart.updatedAt = new Date().toISOString();
-    await this.saveCart(token, cart);
-    return cart;
+    const now = new Date().toISOString();
+    return this.mutateCart(token, "update", (cart) => {
+      if (cart === null) {
+        throw new CartValidationError("cart does not exist");
+      }
+      const item = cart.items.find((i) => i.itemId === itemId);
+      if (item === undefined) {
+        throw new CartValidationError("cart item does not exist");
+      }
+      item.quantity = quantity;
+      cart.updatedAt = now;
+      return cart;
+    });
   }
 
   /** Removes one item from the cart. */
   async removeItem(token: string, itemId: string): Promise<CartData> {
-    const cart = await this.getCart(token);
-    if (cart === null) {
-      throw new CartValidationError("cart does not exist");
-    }
-    cart.items = cart.items.filter((i) => i.itemId !== itemId);
-    cart.updatedAt = new Date().toISOString();
-    await this.saveCart(token, cart);
-    return cart;
+    const now = new Date().toISOString();
+    return this.mutateCart(token, "remove", (cart) => {
+      if (cart === null) {
+        throw new CartValidationError("cart does not exist");
+      }
+      cart.items = cart.items.filter((i) => i.itemId !== itemId);
+      cart.updatedAt = now;
+      return cart;
+    });
   }
 
   /** Deletes the whole cart. */
@@ -188,6 +211,79 @@ export class CartStorageService {
     } catch {
       throw new RedisUnavailableError("cart ttl");
     }
+  }
+
+  /**
+   * Runs one cart mutation as an optimistic-locking transaction (FIX-02).
+   * `mutate` receives the current cart (null when it does not exist) and
+   * returns the new cart state to store; it may throw CartValidationError
+   * for domain errors, which is rethrown unchanged. When EXEC aborts
+   * because another writer changed the key mid-transaction, the whole
+   * attempt is retried on a fresh connection (up to MAX_CART_TX_RETRIES).
+   * Redis failures surface as RedisUnavailableError.
+   */
+  private async mutateCart(
+    token: string,
+    operation: string,
+    mutate: (cart: CartData | null) => CartData,
+  ): Promise<CartData> {
+    const key = this.keyForToken(token);
+    const ttlSeconds = this.redis.getConfig().cartTtlSeconds;
+    const timeoutMs = this.redis.getConfig().commandTimeoutMs;
+    for (let attempt = 0; attempt < MAX_CART_TX_RETRIES; attempt++) {
+      // A dedicated connection per attempt: a timed-out or aborted
+      // transaction can never leak a WATCH onto the shared client.
+      const txClient = this.redis.getClient().duplicate();
+      try {
+        const result = await this.redis.withTimeout(
+          this.runTransaction(txClient, key, ttlSeconds, mutate),
+          timeoutMs,
+          `cart ${operation}`,
+        );
+        if (result !== null) return result;
+        // EXEC aborted (watched key changed) — retry, with a small
+        // backoff so contending writers do not spin on each other.
+        await new Promise((resolve) => setTimeout(resolve, 5 * (attempt + 1)));
+      } catch (error) {
+        if (error instanceof CartValidationError) throw error;
+        throw new RedisUnavailableError(`cart ${operation}`);
+      } finally {
+        txClient.disconnect();
+      }
+    }
+    throw new RedisUnavailableError(
+      `cart ${operation} (too many concurrent retries)`,
+    );
+  }
+
+  /**
+   * One WATCH → GET → mutate → MULTI/SET → EXEC round. Returns the new
+   * cart when the transaction commits, null when EXEC aborted (caller
+   * retries). Throws CartValidationError on corrupt stored data.
+   */
+  private async runTransaction(
+    txClient: ReturnType<RedisService["getClient"]>,
+    key: string,
+    ttlSeconds: number,
+    mutate: (cart: CartData | null) => CartData,
+  ): Promise<CartData | null> {
+    await txClient.watch(key);
+    const raw = await txClient.get(key);
+    let cart: CartData | null = null;
+    if (raw !== null) {
+      try {
+        cart = JSON.parse(raw) as CartData;
+      } catch {
+        await txClient.unwatch();
+        throw new CartValidationError("stored cart data is corrupt");
+      }
+    }
+    const updated = mutate(cart);
+    const multi = txClient.multi();
+    multi.set(key, JSON.stringify(updated), "EX", ttlSeconds);
+    const execResult = await multi.exec();
+    if (execResult === null) return null;
+    return updated;
   }
 
   private async saveCart(token: string, cart: CartData): Promise<void> {

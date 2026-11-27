@@ -18,8 +18,8 @@ import { RedisService } from "./redis.service";
 //   door to login/order-code brute force.
 // - Which kinds are fail-closed: adminLoginIp, adminLoginAccount,
 //   orderLookupIp, orderLookupCode (explicit in §16), plus contact and
-//   createOrder (money/spam-adjacent; conservative assignment by M02-02 —
-//   the spec does not name them explicitly; see Task Brief §11).
+//   createOrder (DECIDED — Henry approved 27/11/2026 per ChatGPT's FIX-04
+//   proposal in the M02-02 review; API_SPEC §16 updated accordingly).
 
 export type RateLimitKind =
   | "publicGet"

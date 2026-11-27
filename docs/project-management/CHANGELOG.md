@@ -1,3 +1,12 @@
+## 27/11/2026 — M02-02 Revision 02 (FIX-01 → FIX-04 hoàn thành)
+
+- ChatGPT review bản đầu ngày 27/11/2026 (chat "Review bản đầu M02-02"): NOT ACCEPTED — yêu cầu Revision 02 (FIX-01 → FIX-04). Bản đầu commit d77c074 đã xác minh trên GitHub (Ahead 1, Behind 0, 28 file).
+- FIX-01: AC-15 từ PASS* (sai) thành UNVERIFIED — Task Brief §7 quy định không chạy được Docker runtime thì ghi UNVERIFIED, không báo PASS.
+- FIX-02: cart add/update/remove chuyển sang optimistic locking WATCH/MULTI trên connection duplicate riêng (tối đa 10 lần thử) — khắc phục lost update khi thêm giỏ đồng thời.
+- FIX-03: khóa stampede mang token ngẫu nhiên riêng cho từng owner + giải phóng bằng Lua check-and-delete — loader chậm quá TTL khóa không xóa nhầm khóa của instance khác.
+- Kiểm thử sau Revision 02: unit 19/19, e2e 62/62 (6 test mới: 3 cart concurrency + 1 slow-loader lock + 2 test bảo vệ quyết định FIX-04), workspace typecheck 9/9, lint 9/9, test 9/9, build 5/5.
+- FIX-04 hoàn thành: Henry phê duyệt cả hai hướng 27/11/2026 (ISSUE-01 chốt 503 cho cart khi Redis lỗi, ISSUE-02 fail-closed cho contact/createOrder); API_SPEC §11.1 + §16 + §23 mục 6, REDIS_BULLMQ.md §4 + §5, Task Brief §11 đã đồng bộ; 2 test bảo vệ quyết định đã bổ sung.
+
 ## 27/11/2026 — M02-02 bản đầu hoàn thành (IN_REVIEW, chờ ChatGPT review)
 
 - ChatGPT giao brief M02-02 ngày 27/11/2026 theo ủy quyền toàn quyền của Henry (không cần Henry duyệt kế hoạch): Redis cache + BullMQ, branch `feature/M02-02-redis-bullmq`, base `d850bfd`, 17 AC.

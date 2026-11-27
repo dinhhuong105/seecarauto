@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { Injectable, Logger } from "@nestjs/common";
 import { RedisService } from "./redis.service";
 import { moduleKeyPrefix } from "./cache-key";
@@ -10,7 +11,10 @@ import { moduleKeyPrefix } from "./cache-key";
 // - Stampede protection: in-process promise dedup (single instance) plus a
 //   short Redis lock (SET NX EX) so a second instance does not reload the
 //   same source at the same time. A lock holder that crashes leaves a lock
-//   that expires on its own (5s).
+//   that expires on its own (5s). The lock carries a per-owner random
+//   token (FIX-03, Revision 02) and is released only by an atomic Lua
+//   check-and-delete — a slow loader whose lock already expired can never
+//   delete the next owner's lock.
 // - Invalidation never uses KEYS — always SCAN with a match pattern.
 // - Never cache sensitive data (passwords, JWTs, refresh tokens, PII) —
 //   callers are responsible; this service cannot tell a value is sensitive.
@@ -18,6 +22,19 @@ import { moduleKeyPrefix } from "./cache-key";
 const STAMPEDE_LOCK_TTL_SECONDS = 5;
 const STAMPEDE_POLL_MS = 200;
 const STAMPEDE_POLL_ATTEMPTS = 10;
+
+/**
+ * Deletes a stampede lock ONLY when it is still owned by `token`
+ * (FIX-03). Without the ownership check, a loader that outlives the 5s
+ * lock TTL could DEL the next owner's lock.
+ */
+const LOCK_RELEASE_LUA_SCRIPT = `
+if redis.call('GET', KEYS[1]) == ARGV[1] then
+  return redis.call('DEL', KEYS[1])
+else
+  return 0
+end
+`;
 
 @Injectable()
 export class CacheService {
@@ -154,39 +171,62 @@ export class CacheService {
         if (cached !== null) return cached;
       }
     }
-    // lock === "acquired": we hold the lock; lock === "unavailable": Redis
-    // is down, load directly without waiting (nothing is cached either way).
+    // lock is an owner token: we hold the lock; lock === "unavailable":
+    // Redis is down, load directly without waiting (nothing is cached
+    // either way).
     try {
       const value = await loader();
       await this.set(key, value, ttlSeconds);
       return value;
     } finally {
-      if (lock === "acquired") {
-        await this.delete(lockKey);
+      if (typeof lock === "string") {
+        await this.releaseLock(lockKey, lock);
       }
     }
   }
 
   /**
-   * Tries to take the stampede lock. "acquired" = we hold it, "held" =
-   * another instance holds it, "unavailable" = Redis is down (caller must
-   * load immediately instead of polling).
+   * Tries to take the stampede lock. Returns the owner token when we hold
+   * it, "held" when another instance holds it, "unavailable" when Redis
+   * is down (caller must load immediately instead of polling).
    */
   private async tryAcquireLock(
     lockKey: string,
-  ): Promise<"acquired" | "held" | "unavailable"> {
+  ): Promise<string | "held" | "unavailable"> {
     try {
+      const token = randomUUID();
       const result = await this.redis.withTimeout(
         this.redis
           .getClient()
-          .set(lockKey, "1", "EX", STAMPEDE_LOCK_TTL_SECONDS, "NX"),
+          .set(lockKey, token, "EX", STAMPEDE_LOCK_TTL_SECONDS, "NX"),
         this.redis.getConfig().commandTimeoutMs,
         `cache lock ${lockKey}`,
       );
-      return result === "OK" ? "acquired" : "held";
+      return result === "OK" ? token : "held";
     } catch {
       // Redis down — no lock, but the load still proceeds (no caching).
       return "unavailable";
+    }
+  }
+
+  /**
+   * Releases a stampede lock only when we still own it (atomic Lua
+   * check-and-delete). Never throws — a lock that fails to release
+   * expires on its own (≤5s).
+   */
+  private async releaseLock(lockKey: string, token: string): Promise<void> {
+    try {
+      await this.redis.withTimeout(
+        this.redis.getClient().eval(LOCK_RELEASE_LUA_SCRIPT, 1, lockKey, token),
+        this.redis.getConfig().commandTimeoutMs,
+        `cache lock release ${lockKey}`,
+      );
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "unknown Redis error";
+      this.logger.warn(
+        `Cache lock release failed for ${lockKey} — lock will expire (${message})`,
+      );
     }
   }
 

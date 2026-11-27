@@ -63,7 +63,10 @@ M02-02 không cần sửa docker-compose.yml.
 
 - `remember(key, ttl, loader)`: cache-aside có chống stampede — dedup
   promise trong tiến trình (single instance) + khóa Redis `SET NX EX 5s`
-  (cross-instance). Khóa hết hạn tự động nếu holder crash.
+  (cross-instance). Khóa mang token ngẫu nhiên riêng cho từng owner và
+  chỉ được giải phóng bằng Lua script check-and-delete — loader chậm quá
+  TTL khóa không thể xóa nhầm khóa của instance khác (FIX-03, Revision
+  02). Khóa hết hạn tự động nếu holder crash.
 - Invalidation: `deleteByPattern()` dùng SCAN (COUNT 100), không bao giờ
   dùng `KEYS`. `invalidateModule(module)` xóa toàn bộ key của một module.
 - Redis lỗi: mọi thao tác cache trả về miss/`false`/`-1`, không throw —
@@ -83,11 +86,16 @@ M02-02 không cần sửa docker-compose.yml.
   làm giá chốt.
 - TTL 30 ngày (mặc định, cấu hình qua `REDIS_CART_TTL_DAYS`), làm mới mỗi
   lần đọc/ghi.
+- Cập nhật giỏ atomic (FIX-02, Revision 02): add/update/remove chạy bằng
+  optimistic locking WATCH → GET → mutate → MULTI/SET → EXEC trên một
+  connection duplicate riêng cho mỗi lần thử (tối đa 10 lần, backoff nhỏ);
+  hai request đồng thời không ghi đè lẫn nhau (không mất cập nhật).
 - Redis lỗi: mọi phương thức throw `RedisUnavailableError` — tầng HTTP (M05)
   map thành lỗi dependency (503). KHÔNG trả về giỏ rỗng giả (làm mất đồ của
-  khách). Lưu ý: điểm này khác với ghi chú fallback trong API_SPEC §11.1
-  ("giỏ rỗng tạm thời") — đã ghi nhận là ISSUE-M02-02-01 trong Task Brief
-  để ChatGPT quyết định câu chuẩn cho API Cart ở M05.
+  khách). **Quyết định đã chốt (Henry phê duyệt 27/11/2026, theo đề xuất
+  của ChatGPT ở review M02-02 — FIX-04): Redis lỗi → 503, không trả giỏ
+  rỗng giả. API_SPEC §11.1 đã cập nhật theo quyết định này; ghi chú
+  fallback cũ ("giỏ rỗng tạm thời") không còn hiệu lực.**
 
 ## 5. Rate limiting (API_SPEC §16)
 
@@ -114,10 +122,10 @@ thô trong keyspace. `check(kind, subject)` trả
 - fail-open: cho qua, `fallback: "none"` (rate limit tạm tắt).
 - fail-closed: đếm bằng Map trong bộ nhớ tiến trình (`fallback: "memory"`).
   Fallback này chỉ tạm thời và chỉ đúng trên một instance — không chia sẻ
-  trạng thái giữa nhiều backend. Spec chỉ nêu rõ fail-open cho public GET
-  và fail-closed cho login/lookup; `contact` và `createOrder` là lựa chọn
-  thận trọng của M02-02 (chống spam/tạo đơn ồ ạt khi Redis lỗi) — xem Task
-  Brief §11.
+  trạng thái giữa nhiều backend. Spec trước đây chỉ nêu rõ fail-open cho
+  public GET và fail-closed cho login/lookup; `contact` và `createOrder`
+  fail-closed là **quyết định đã chốt (Henry phê duyệt 27/11/2026, theo đề
+  xuất của ChatGPT ở review M02-02 — FIX-04)** — API_SPEC §16 đã cập nhật.
 
 ## 6. BullMQ
 

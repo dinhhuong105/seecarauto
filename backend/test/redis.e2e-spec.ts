@@ -150,6 +150,39 @@ describe("Redis integration (real Redis 7)", () => {
         await secondRedis.onModuleDestroy();
       }
     });
+
+    it("a slow loader never releases another instance's lock (FIX-03)", async () => {
+      const secondRedis = testRedisService(TEST_REDIS_URL);
+      const secondCache = new CacheService(secondRedis);
+      try {
+        const key = buildCacheKey("products", "detail", "p-lock");
+        const lockKey = `${key}:lock`;
+        const slowLoader = async () => {
+          await new Promise((resolve) => setTimeout(resolve, 6000));
+          return { id: "p-lock" };
+        };
+        // Instance A takes the lock (5s TTL) and loads slowly. Instance B
+        // starts 5.5s later — after A's lock expired — and takes the lock.
+        const aPromise = cache.remember(key, 60, slowLoader);
+        await new Promise((resolve) => setTimeout(resolve, 5500));
+        const bPromise = secondCache.remember(key, 60, slowLoader);
+        // At t≈7s A has finished (and attempted its release) while B is
+        // still loading: B's lock must still exist — A must not have
+        // deleted it. With the old fixed-value lock + DEL, A's release
+        // would have removed B's lock and this assertion would fail.
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        expect(await redis.getClient().exists(lockKey)).toBe(1);
+        const [a, b] = await Promise.all([aPromise, bPromise]);
+        expect(a).toEqual({ id: "p-lock" });
+        expect(b).toEqual({ id: "p-lock" });
+        // After B finishes, its own (ownership-checked) release removes
+        // the lock.
+        expect(await redis.getClient().exists(lockKey)).toBe(0);
+        expect(await cache.get(key)).toEqual({ id: "p-lock" });
+      } finally {
+        await secondRedis.onModuleDestroy();
+      }
+    });
   });
 
   describe("CartStorageService (G-03)", () => {
@@ -208,6 +241,47 @@ describe("Redis integration (real Redis 7)", () => {
       await cart.createCart(token);
       const keys = await redis.getClient().keys("seecarauto:v1:cart:*");
       expect(keys).toEqual([key]);
+    });
+
+    it("addItem is atomic under 10 concurrent adds of the same product (FIX-02)", async () => {
+      const token = cart.createToken();
+      await cart.createCart(token);
+      await Promise.all(
+        Array.from({ length: 10 }, () =>
+          cart.addItem(token, { productId: "prod-race", quantity: 1 }),
+        ),
+      );
+      const final = await cart.getCart(token);
+      expect(final?.items).toHaveLength(1);
+      expect(final?.items[0].quantity).toBe(10);
+    });
+
+    it("addItem is atomic under concurrent adds of different products (FIX-02)", async () => {
+      const token = cart.createToken();
+      await cart.createCart(token);
+      await Promise.all(
+        ["p-a", "p-b", "p-c", "p-d", "p-e"].map((productId) =>
+          cart.addItem(token, { productId, quantity: 2 }),
+        ),
+      );
+      const final = await cart.getCart(token);
+      expect(final?.items).toHaveLength(5);
+      expect(final?.items.reduce((sum, i) => sum + i.quantity, 0)).toBe(10);
+    });
+
+    it("removeItem is atomic under concurrent removes (FIX-02)", async () => {
+      const token = cart.createToken();
+      await cart.createCart(token);
+      const ids: string[] = [];
+      for (const p of ["p-1", "p-2", "p-3", "p-4", "p-5"]) {
+        const afterAdd = await cart.addItem(token, {
+          productId: p,
+          quantity: 1,
+        });
+        ids.push(afterAdd.items.find((i) => i.productId === p)!.itemId);
+      }
+      await Promise.all(ids.map((itemId) => cart.removeItem(token, itemId)));
+      expect((await cart.getCart(token))?.items).toHaveLength(0);
     });
   });
 
@@ -286,7 +360,7 @@ describe("Redis integration (real Redis 7)", () => {
       ).toBe("from-source");
     });
 
-    it("cart throws RedisUnavailableError (never a fake empty cart)", async () => {
+    it("cart throws RedisUnavailableError (never a fake empty cart) — ISSUE-M02-02-01, decided: 503", async () => {
       const deadCart = new CartStorageService(deadRedis);
       const token = deadCart.createToken();
       await expect(deadCart.getCart(token)).rejects.toThrow(
@@ -295,6 +369,11 @@ describe("Redis integration (real Redis 7)", () => {
       await expect(deadCart.createCart(token)).rejects.toThrow(
         RedisUnavailableError,
       );
+      // Mutations take the same path — a dead Redis must never silently
+      // pretend the cart is empty or accept an add.
+      await expect(
+        deadCart.addItem(token, { productId: "p-1", quantity: 1 }),
+      ).rejects.toThrow(RedisUnavailableError);
     });
 
     it("rate limit fail-open allows, fail-closed enforces in memory", async () => {
@@ -309,6 +388,32 @@ describe("Redis integration (real Redis 7)", () => {
         expect(result.fallback).toBe("memory");
       }
       const blocked = await deadRateLimit.check("adminLoginIp", subject);
+      expect(blocked.allowed).toBe(false);
+      expect(blocked.fallback).toBe("memory");
+    });
+
+    it("rate limit contact fail-closed in memory when Redis is down (ISSUE-M02-02-02, decided)", async () => {
+      const deadRateLimit = new RateLimitService(deadRedis);
+      const subject = "203.0.113.22";
+      for (let i = 0; i < 5; i++) {
+        const result = await deadRateLimit.check("contact", subject);
+        expect(result.allowed).toBe(true);
+        expect(result.fallback).toBe("memory");
+      }
+      const blocked = await deadRateLimit.check("contact", subject);
+      expect(blocked.allowed).toBe(false);
+      expect(blocked.fallback).toBe("memory");
+    });
+
+    it("rate limit createOrder fail-closed in memory when Redis is down (ISSUE-M02-02-02, decided)", async () => {
+      const deadRateLimit = new RateLimitService(deadRedis);
+      const subject = "cart-token-1";
+      for (let i = 0; i < 10; i++) {
+        const result = await deadRateLimit.check("createOrder", subject);
+        expect(result.allowed).toBe(true);
+        expect(result.fallback).toBe("memory");
+      }
+      const blocked = await deadRateLimit.check("createOrder", subject);
       expect(blocked.allowed).toBe(false);
       expect(blocked.fallback).toBe("memory");
     });
