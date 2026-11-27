@@ -268,6 +268,16 @@ export class AuthService {
     if (session === null) {
       throw AuthException.invalidRefreshToken();
     }
+    // FIX-33: the refresh JWT's claims must match the session row found by
+    // token hash — `sid` is that session's id and `sub` is its owner
+    // (Task Brief §2.2: "sid phải khớp row session còn hiệu lực"). A
+    // token minted for another session/user is not this session's token:
+    // answer 401 INVALID_REFRESH_TOKEN, run no transaction, create no new
+    // session, and do NOT revoke-all — this is not a replay of this
+    // session (a replayed token's claims still match its own row).
+    if (payload.sid !== session.id || payload.sub !== session.userId) {
+      throw AuthException.invalidRefreshToken();
+    }
     if (session.revokedReason === "REUSE_DETECTED") {
       throw AuthException.tokenReuseDetected();
     }

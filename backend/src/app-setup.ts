@@ -7,7 +7,8 @@ import { AuthException, type ValidationDetail } from "./auth/auth.errors";
 // app behaves exactly like production): global /api/v1 prefix, global
 // validation (API_SPEC §9: DTO violations -> 400 VALIDATION_ERROR with
 // per-field details, unknown fields stripped), and the auth exception
-// filter (copies `retryAfter` onto the `Retry-After` response header).
+// filter (copies `retryAfter` onto the `Retry-After` header for 429/503
+// only — 423 carries retryAfter in the body only, Error Catalog).
 export function configureApp(app: INestApplication): INestApplication {
   app.setGlobalPrefix("api/v1");
   app.useGlobalPipes(

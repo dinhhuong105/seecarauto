@@ -103,17 +103,27 @@ export function buildAuthConfig(
       "REFRESH_IDEMPOTENCY_ENCRYPTION_KEY is required — base64 of exactly 32 random bytes",
     );
   }
-  let idempotencyEncryptionKey: Buffer;
-  try {
-    idempotencyEncryptionKey = Buffer.from(encryptionKeyRaw, "base64");
-  } catch {
+  // FIX-35: Node's Buffer.from(x, "base64") is lenient — it silently drops
+  // characters outside the base64 alphabet, so a key with junk characters
+  // can still decode to exactly 32 bytes (e.g. a valid 44-char key with
+  // one character replaced by "!" still yields 32 bytes). Length alone
+  // therefore does not prove the input is valid base64. Require strict
+  // canonical base64 (alphabet + correct padding, re-encode equality)
+  // and exactly 32 decoded bytes. The key value is never logged.
+  const BASE64_CANONICAL_PATTERN =
+    /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+  if (!BASE64_CANONICAL_PATTERN.test(encryptionKeyRaw)) {
     throw new Error(
-      "REFRESH_IDEMPOTENCY_ENCRYPTION_KEY must be valid base64 of exactly 32 bytes",
+      "REFRESH_IDEMPOTENCY_ENCRYPTION_KEY must be valid canonical base64 of exactly 32 bytes",
     );
   }
-  if (idempotencyEncryptionKey.length !== 32) {
+  const idempotencyEncryptionKey = Buffer.from(encryptionKeyRaw, "base64");
+  if (
+    idempotencyEncryptionKey.length !== 32 ||
+    idempotencyEncryptionKey.toString("base64") !== encryptionKeyRaw
+  ) {
     throw new Error(
-      `REFRESH_IDEMPOTENCY_ENCRYPTION_KEY must decode to exactly 32 bytes, got ${idempotencyEncryptionKey.length}`,
+      "REFRESH_IDEMPOTENCY_ENCRYPTION_KEY must decode to exactly 32 bytes",
     );
   }
   return {

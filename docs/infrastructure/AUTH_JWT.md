@@ -135,6 +135,8 @@ chỉ các row `auth_refresh_operations` đã quá `expires_at`, dùng
 hay BullMQ repeatable job trong M02-05; việc lên lịch cleanup là quyết định
 vận hành (ops) — xem ghi chú trong Task Brief.
 
+**Kế hoạch vận hành cleanup (quyết định review Giai đoạn 2, 27/11/2026 — bắt buộc trước production):** nếu không có scheduler nào gọi `cleanupExpiredOperations()`, các row `auth_refresh_operations` sẽ tích lũy vô hạn (mỗi lần refresh thành công tạo 1 row, `expires_at` = thời điểm tạo + TTL refresh 7 ngày). Cơ chế dự kiến: một cron ngoài ứng dụng (VD: cron hệ thống gọi một endpoint/script vận hành, hoặc một scheduled worker riêng) chạy `cleanupExpiredOperations()` **mỗi ngày một lần** (tần suất này đủ vì `expires_at` tính theo ngày — row hết hạn chậm nhất 7 ngày sau khi tạo; chạy hàng ngày giữ bảng gọn mà không tạo tải đáng kể, mỗi lần chạy chỉ xóa các row đã quá hạn). Giám sát lỗi: lần chạy cleanup phải ghi log số row đã xóa; nếu hàm ném lỗi (PostgreSQL không trả lời) thì log lỗi + cảnh báo cho vận hành — lỗi cleanup KHÔNG được làm gián đoạn login/refresh (cleanup chạy ngoài request path). Cơ chế cụ thể (cron job nào, ai sở hữu, cảnh báo đi đâu) do đội vận hành chốt khi triển khai production; M02-05 chỉ cung cấp hàm cleanup idempotent, an toàn khi chạy đồng thời (SKIP LOCKED) và chỉ xóa row đã hết hạn.
+
 ## 5. Login, lockout, audit
 
 - Mật khẩu verify Argon2id OWASP (19 MiB, t=2, p=1, hashLen 32 — D-07);

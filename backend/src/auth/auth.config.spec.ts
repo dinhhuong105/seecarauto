@@ -113,6 +113,34 @@ describe("Auth configuration validation (AC-13)", () => {
     ).toThrow(/exactly 32 bytes/);
   });
 
+  it("rejects an encryption key with invalid base64 characters even when the valid part decodes to 32 bytes (FIX-35)", () => {
+    // Node's Buffer.from(x, "base64") silently drops "!", so the valid
+    // part of each string below still decodes to exactly 32 bytes — the
+    // old length-only check accepted them. Strict canonical base64 must
+    // fail fast instead, without logging the key value.
+    const withJunkAppended = `${ENCRYPTION_KEY_32}!`;
+    expect(() =>
+      buildAuthConfig({
+        ...validEnv(),
+        REFRESH_IDEMPOTENCY_ENCRYPTION_KEY: withJunkAppended,
+      }),
+    ).toThrow(/valid canonical base64/);
+    const withJunkInside = `${ENCRYPTION_KEY_32.slice(0, 10)}!${ENCRYPTION_KEY_32.slice(11)}`;
+    expect(() =>
+      buildAuthConfig({
+        ...validEnv(),
+        REFRESH_IDEMPOTENCY_ENCRYPTION_KEY: withJunkInside,
+      }),
+    ).toThrow(/valid canonical base64/);
+    // Missing padding is not canonical either.
+    expect(() =>
+      buildAuthConfig({
+        ...validEnv(),
+        REFRESH_IDEMPOTENCY_ENCRYPTION_KEY: ENCRYPTION_KEY_32.slice(0, -1),
+      }),
+    ).toThrow(/valid canonical base64/);
+  });
+
   it("rejects a malformed duration", () => {
     expect(() =>
       buildAuthConfig({ ...validEnv(), JWT_EXPIRES_IN: "soon" }),

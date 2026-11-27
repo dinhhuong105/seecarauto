@@ -101,7 +101,11 @@ export class AuthController {
   @ApiResponse({ status: 204, description: "Đã đăng xuất" })
   @ApiResponse({ status: 401, description: "Chưa đăng nhập" })
   async logout(
-    @Body() body: LogoutDto,
+    // FIX-34: the body may be absent entirely (a logout-all client sends
+    // no JSON body at all) — treat it as "no refreshToken" instead of
+    // assuming `body` always exists. With a refreshToken -> revoke that
+    // one session; without -> revoke ALL sessions (FIX-06, unchanged).
+    @Body() body: LogoutDto | undefined,
     @Req() req: RequestWithAdmin,
   ): Promise<void> {
     const admin = req.admin;
@@ -113,7 +117,7 @@ export class AuthController {
       admin.userId,
       admin.accessToken,
       admin.accessTokenExp,
-      body.refreshToken,
+      body?.refreshToken,
     );
   }
 

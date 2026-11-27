@@ -270,6 +270,9 @@ describe("Auth (e2e)", () => {
     );
     expect(third.body.retryAfter).toBeGreaterThanOrEqual(1);
     expect(third.body.retryAfter).toBeLessThanOrEqual(2);
+    // Error Catalog: 423 carries retryAfter in the BODY only — no
+    // Retry-After header (Revision 02 decision on question 6).
+    expect(third.headers["retry-after"]).toBeUndefined();
     assertNoLeak(third.body);
 
     const locked = await loginReq(username, PASSWORD, ip);
@@ -406,6 +409,85 @@ describe("Auth (e2e)", () => {
     expect(audits[0].entityId).toBe(user.id);
     expect(audits[0].after).toMatchObject({ revokedSessions: 2 });
     expect(JSON.stringify(audits[0].after)).not.toContain(pair1.refreshToken);
+  });
+
+  // -------------------------------------------------------------- FIX-33
+
+  it("FIX-33: refresh with a token whose sub does not match the session's owner is 401, no rotation, no revoke-all", async () => {
+    const username = freshUsername();
+    const user = await createUser(username);
+    const other = await createUser(freshUsername());
+    const pair = await loginOk(username);
+    const otherPair = await loginOk(username); // second ACTIVE session
+    const sessionId = (
+      jwtService.decode(pair.refreshToken) as Record<string, unknown>
+    ).sid as string;
+    // Move the session row to another owner (DB-level tamper): the
+    // token's sub (user.id) no longer matches the session's userId.
+    await prisma.adminRefreshSession.update({
+      where: { id: sessionId },
+      data: { userId: other.id },
+    });
+    const key = freshKey();
+    const res = await refreshReq(pair.refreshToken, key);
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe("INVALID_REFRESH_TOKEN");
+    assertNoLeak(res.body);
+    // No rotation: no new session, no COMPLETED operation.
+    expect(await sessionCount(user.id)).toBe(1); // only otherPair's session
+    expect(await sessionCount(other.id)).toBe(1); // the moved row
+    const moved = await prisma.adminRefreshSession.findUnique({
+      where: { id: sessionId },
+    });
+    expect(moved?.revokedAt).toBeNull(); // still ACTIVE, untouched
+    expect(await operationCount(tokens.hashToken(pair.refreshToken), key)).toBe(
+      0,
+    );
+    // No revoke-all: the other session is untouched, no reuse audit.
+    const otherSession = await prisma.adminRefreshSession.findUnique({
+      where: { tokenHash: tokens.hashToken(otherPair.refreshToken) },
+    });
+    expect(otherSession?.revokedAt).toBeNull();
+    expect(await auditRows("auth.refresh_reuse_detected")).toHaveLength(0);
+  });
+
+  it("FIX-33: refresh with a token whose sid does not match the session row is 401, no rotation, no revoke-all", async () => {
+    const username = freshUsername();
+    const user = await createUser(username);
+    const pair = await loginOk(username);
+    const otherPair = await loginOk(username);
+    const oldSessionId = (
+      jwtService.decode(pair.refreshToken) as Record<string, unknown>
+    ).sid as string;
+    const tokenHash = tokens.hashToken(pair.refreshToken);
+    // Replace the session row with a row carrying the same token hash
+    // but a different id: the token's sid no longer matches the row.
+    await prisma.adminRefreshSession.delete({ where: { id: oldSessionId } });
+    const newSessionId = randomUUID();
+    await prisma.adminRefreshSession.create({
+      data: {
+        id: newSessionId,
+        userId: user.id,
+        tokenHash,
+        expiresAt: new Date(Date.now() + 7 * 24 * 3600 * 1000),
+      },
+    });
+    const key = freshKey();
+    const res = await refreshReq(pair.refreshToken, key);
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe("INVALID_REFRESH_TOKEN");
+    assertNoLeak(res.body);
+    expect(await sessionCount(user.id)).toBe(2);
+    const kept = await prisma.adminRefreshSession.findUnique({
+      where: { id: newSessionId },
+    });
+    expect(kept?.revokedAt).toBeNull();
+    expect(await operationCount(tokenHash, key)).toBe(0);
+    const otherSession = await prisma.adminRefreshSession.findUnique({
+      where: { tokenHash: tokens.hashToken(otherPair.refreshToken) },
+    });
+    expect(otherSession?.revokedAt).toBeNull();
+    expect(await auditRows("auth.refresh_reuse_detected")).toHaveLength(0);
   });
 
   // -------------------------------------------------------------- AC-06
@@ -561,6 +643,37 @@ describe("Auth (e2e)", () => {
       .send({ refreshToken: pairB.refreshToken });
     expect(res.status).toBe(401);
     expect(res.body.error).toBe("INVALID_REFRESH_TOKEN");
+  });
+
+  // -------------------------------------------------------------- FIX-34
+
+  it("FIX-34: logout with NO body at all is logout-all (204, all sessions revoked, access blacklisted)", async () => {
+    const username = freshUsername();
+    const user = await createUser(username);
+    await loginOk(username); // first session — revoked by the logout-all call
+    const otherPair = await loginOk(username);
+
+    // No .send() — no JSON body, no Content-Type.
+    const res = await request(app.getHttpServer())
+      .post("/api/v1/auth/admin/logout")
+      .set("Authorization", `Bearer ${otherPair.accessToken}`);
+    expect(res.status).toBe(204);
+    expect(res.text).toBe("");
+
+    const sessions = await sessionsOf(user.id);
+    expect(sessions).toHaveLength(2);
+    expect(sessions.every((s) => s.revokedReason === "LOGOUT_ALL")).toBe(true);
+    const auditsAll = await auditRows("auth.logout_all_sessions");
+    expect(auditsAll).toHaveLength(1);
+    expect(auditsAll[0].after).toMatchObject({ revokedSessions: 2 });
+
+    // The access token used for the call is blacklisted too.
+    const meAfter = await meReq(otherPair.accessToken);
+    expect(meAfter.status).toBe(401);
+    expect(meAfter.body.error).toBe("UNAUTHENTICATED");
+    const refreshAfter = await refreshReq(otherPair.refreshToken, freshKey());
+    expect(refreshAfter.status).toBe(401);
+    expect(refreshAfter.body.error).toBe("INVALID_REFRESH_TOKEN");
   });
 
   // -------------------------------------------------------------- AC-08

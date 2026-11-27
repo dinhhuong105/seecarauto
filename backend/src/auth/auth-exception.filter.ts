@@ -20,7 +20,13 @@ export class AuthExceptionFilter implements ExceptionFilter {
     const body = exception.getResponse();
     if (typeof body === "object" && body !== null) {
       const retryAfter = (body as { retryAfter?: unknown }).retryAfter;
-      if (typeof retryAfter === "number") {
+      // Error Catalog: only 429 RATE_LIMITED and 503 SERVICE_UNAVAILABLE
+      // carry the Retry-After header; 423 ACCOUNT_LOCKED carries
+      // retryAfter in the BODY only (Revision 02 decision on question 6).
+      if (
+        typeof retryAfter === "number" &&
+        (status === 429 || status === 503)
+      ) {
         response.setHeader("Retry-After", String(retryAfter));
       }
       response.status(status).json(body);
