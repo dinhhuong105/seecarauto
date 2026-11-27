@@ -16,7 +16,7 @@ M02_IMPLEMENTATION_DECISIONS.md (D-01→D-16).
 | JwtAuthGuard | `backend/src/auth/jwt-auth.guard.ts` | Bearer → verify → blacklist → session → rate limit |
 | auth.config.ts | `backend/src/auth/auth.config.ts` | `validateAuthEnv` fail-fast (theo mẫu `validateRedisEnv`) |
 | auth.errors.ts | `backend/src/auth/auth.errors.ts` | `AuthException` — mọi lỗi auth đúng Error Catalog |
-| auth-exception.filter.ts | `backend/src/auth/auth-exception.filter.ts` | Copy `retryAfter` trong body lên header `Retry-After` |
+| auth-exception.filter.ts | `backend/src/auth/auth-exception.filter.ts` | Copy `retryAfter` trong body lên header `Retry-After` — chỉ HTTP 429/503; HTTP 423 không có header |
 | app-setup.ts | `backend/src/app-setup.ts` | Setup chung (prefix `/api/v1` + ValidationPipe + filter) cho `main.ts` và e2e |
 
 `AuthModule` import `PrismaModule` + `RedisModule` (đều `@Global`) và
