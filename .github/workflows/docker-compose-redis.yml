@@ -1,0 +1,52 @@
+# Docker Compose smoke test — Redis runtime + healthcheck (M02-02, AC-15).
+# Runs `docker compose up -d redis` on a real runner (GitHub-hosted Ubuntu,
+# which has Docker) because Muse's dev VM cannot run containers (no cgroup
+# controllers delegated — see DOCKER_STANDARDS.md).
+# Evidence for AC-15: compose config valid + Redis container healthy +
+# redis-cli PONG inside the container.
+
+name: Docker Compose — Redis smoke test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  redis-smoke:
+    name: docker compose up redis + healthcheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate docker-compose file
+        run: docker compose config --quiet
+
+      - name: Start Redis
+        run: docker compose up -d redis
+
+      - name: Wait for Redis to become healthy
+        run: |
+          for i in $(seq 1 24); do
+            status=$(docker inspect --format='{{.State.Health.Status}}' seecarauto-redis)
+            echo "health: $status (attempt $i/24)"
+            if [ "$status" = "healthy" ]; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Redis did not become healthy in time" >&2
+          docker compose ps
+          docker compose logs redis
+          exit 1
+
+      - name: Show container status
+        run: docker compose ps
+
+      - name: Ping Redis inside the container
+        run: docker compose exec -T redis redis-cli ping
+
+      - name: Stop Redis
+        if: always()
+        run: docker compose down -v
