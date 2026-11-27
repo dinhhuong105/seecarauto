@@ -3,10 +3,10 @@
 Cập nhật sau mỗi task. Đây là nơi cuộc chat task mới đọc đầu tiên để biết
 dự án đang ở đâu.
 
-## Trạng thái hiện tại (sau M00, M01-01 → M01-07 DONE — Milestone M01 CLOSED; M02-01 IN_REVIEW (bản đầu hoàn thành) — 26/11/2026)
+## Trạng thái hiện tại (sau M00, M01-01 → M01-07 DONE — Milestone M01 CLOSED; M02-01 IN_REVIEW (Revision 02 hoàn thành 27/11/2026, chờ ChatGPT review lại))
 
 - **Milestone đã hoàn tất:** M01 — Architecture & UI/UX (7/7 ACCEPT, housekeeping CLOSED; đã tích hợp vào main tại commit 7d1041f).
-- **Milestone đang làm:** M02 — Infrastructure & Authentication; M02-01 IN_REVIEW — bản đầu hoàn thành 26/11/2026 (Prisma 6.19.3, schema 27 bảng / 8 enum, migration 20261126152122_init, test e2e 26/26, chờ ChatGPT review) trên branch `feature/M02-01-postgres-prisma-schema`.
+- **Milestone đang làm:** M02 — Infrastructure & Authentication; M02-01 IN_REVIEW — Revision 02 hoàn thành 27/11/2026 (bản đầu NOT ACCEPTED 26/11: AC-02 FAIL; đã sửa UUID DB default + updated_at default + test vòng đời session; 2 migration, test e2e 33/33, chờ ChatGPT review lại) trên branch `feature/M02-01-postgres-prisma-schema`.
 - **Trạng thái M00:** DONE (7/7 task, nghiệm thu đầy đủ 26/11/2026:
   `pnpm typecheck` 9/9, `pnpm lint` 9/9, `pnpm test` 9/9, `pnpm build`
   5/5, `docker compose config --quiet` exit 0). Commit feea4d4 đã push

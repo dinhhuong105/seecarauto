@@ -4,11 +4,11 @@
 | --- | --- |
 | Task | M02-01 — PostgreSQL + Prisma Schema |
 | Milestone | M02 — Database, Infrastructure |
-| Trạng thái tài liệu | IN_REVIEW (đã báo cáo ChatGPT review ngày 26/11/2026) |
-| Ngày | 26/11/2026 |
+| Trạng thái tài liệu | IN_REVIEW (bản đầu báo cáo ChatGPT 26/11/2026 — NOT ACCEPTED, yêu cầu Revision 02; Revision 02 hoàn thành 27/11/2026, chờ review lại) |
+| Ngày | 26/11/2026 (Revision 02: 27/11/2026) |
 | Nguồn | `docs/database/ERD.md` (M01-02 ACCEPT), `docs/database/DATA_DICTIONARY.md`, `docs/api/API_SPEC.md` + `openapi.yaml` (M01-03 ACCEPT), `docs/api/API_SECURITY.md`, `docs/ui-ux/RBAC_MATRIX.md` (M01-05 ACCEPT), `docs/project-management/M02_IMPLEMENTATION_DECISIONS.md` (PD-01 → PD-06 decided, G-02/G-03/G-04) |
 | Schema | `backend/prisma/schema.prisma` |
-| Migration | `backend/prisma/migrations/20261126152122_init/migration.sql` (638 dòng) |
+| Migration | `backend/prisma/migrations/20261126152122_init/migration.sql` (638 dòng) + `backend/prisma/migrations/20261127020636_add_uuid_and_updated_at_defaults/migration.sql` (47 dòng, Revision 02 — 22 id defaults + 15 updated_at defaults) |
 | Prisma | **6.19.3** — `prisma` và `@prisma/client` đều pin exact `6.19.3` trong `backend/package.json` (không dùng `latest`, không dùng caret cho 2 package này) |
 | PostgreSQL | 16 (local baseline; hệ thống kiểm chứng: PostgreSQL 16.15) |
 
@@ -23,7 +23,7 @@
 | --- | --- |
 | Bảng `snake_case` số nhiều (vd: `product_identifiers`) | Model PascalCase số ít (`ProductIdentifier`) + `@@map("product_identifiers")` |
 | Cột `snake_case` (vd: `brand_id`) | Field camelCase (`brandId`) + `@map("brand_id")` |
-| PK `UUID DEFAULT gen_random_uuid()` | `String @id @default(uuid()) @db.Uuid` (Prisma sinh `DEFAULT gen_random_uuid()` trong migration) |
+| PK `UUID DEFAULT gen_random_uuid()` | `String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid` — DB default nằm trong migration bổ sung `20261127020636_add_uuid_and_updated_at_defaults` (Revision 02, xem §5.5). **Đính chính (FIX-01/FIX-02):** `@default(uuid())` chỉ sinh UUID ở Prisma Client, KHÔNG tạo DB default — bản đầu mô tả sai điểm này. |
 | `TIMESTAMPTZ` | `DateTime @db.Timestamptz` |
 | `DECIMAL(12,2)` | `Decimal @db.Decimal(12, 2)` |
 | `SMALLINT` (năm) | `Int @db.SmallInt` |
@@ -31,7 +31,7 @@
 | `TEXT` | `String @db.Text` |
 | Enum DB (vd: `product_status`) | Enum Prisma PascalCase (`ProductStatus`) + `@@map("product_status")` — tên type trong DB giữ đúng ERD |
 | FK `ON DELETE RESTRICT / CASCADE`, `ON UPDATE CASCADE` | `onDelete: Restrict / Cascade`, `onUpdate: Cascade` trên mọi relation (ERD §2.3) |
-| `updated_at` | `@updatedAt` — Prisma Client tự cập nhật khi update qua Client (xem §6) |
+| `updated_at` | `@updatedAt` — Prisma Client tự cập nhật khi update qua Client (xem §6); DB default `CURRENT_TIMESTAMP` được thêm bằng raw SQL trong migration bổ sung (Revision 02, xem §5.5) |
 | `created_at` | `@default(now())` |
 | `TEXT[]` (SEO keywords) | `String[]` (PostgreSQL `text[]`) |
 | `JSONB` (audit before/after) | `Json @db.JsonB` |
@@ -203,6 +203,19 @@ Tất cả nằm ở cuối `20261126152122_init/migration.sql`, sau phần SQL 
 
 Tất cả 26 index đã có trong migration do Prisma sinh (`@@unique` / `@@index` trong schema), trừ I-06, I-09 và I-18 (xem §5.3). Đối chiếu: I-01 `products_sku_key`, I-02 `products_slug_key`, I-03 `products_brand_id_status_idx`, I-04 `products_category_id_status_idx`, I-05 `products_status_published_at_idx`, I-07 `product_identifiers_normalized_value_identifier_type_idx`, I-08 `product_identifiers_product_id_idx`, I-10 `brands_slug_key`, I-11 `categories_slug_key`, I-12 `categories_parent_id_idx`, I-13 `product_categories_category_id_idx`, I-14 `product_images_product_id_sort_order_idx`, I-15 `vehicle_models_make_id_slug_key`, I-16 `vehicle_generations_model_id_idx`, I-17 `vehicle_variants_generation_id_idx`, I-19 `vehicle_applications_make_id_model_id_idx`, I-20 `product_vehicle_fitments_product_id_idx`, I-21 `product_vehicle_fitments_vehicle_application_id_idx`, I-22 `product_vehicle_fitments_product_id_vehicle_application_id_key`, I-23 `orders_order_code_key`, I-24 `order_items_order_id_idx`, I-25 `url_redirects_entity_type_old_slug_key`, I-26 `fitment_change_logs_product_id_created_at_idx`. (Các unique mặc định của PK không liệt kê lại, đúng ERD §6.)
 
+### 5.5 Database defaults bổ sung (Revision 02 — migration `20261127020636_add_uuid_and_updated_at_defaults`, 47 dòng)
+
+Migration bổ sung này KHÔNG sửa migration `20261126152122_init` đã áp dụng (giữ nguyên migration history — yêu cầu của ChatGPT khi review bản đầu). Nó chỉ thêm `ALTER TABLE ... SET DEFAULT` cho các cột đã tồn tại.
+
+| Nhóm | Số lượng | Nội dung | Vì sao là raw SQL |
+| --- | --- | --- | --- |
+| `id` DEFAULT `gen_random_uuid()` | 22 bảng (mọi bảng có PK `id` đơn) | `ALTER TABLE "<bảng>" ALTER COLUMN "id" SET DEFAULT gen_random_uuid();` | `@default(uuid())` chỉ sinh UUID ở Prisma Client, không tạo DB default (FIX-01). Schema dùng `@default(dbgenerated("gen_random_uuid()"))` để khai báo default ở tầng DB — đúng gợi ý của ERD §2.1 ("nếu M02 cần v7 thì dùng `dbgenerated()`"). 5 model không có cột này: 4 bảng junction (PK kép) + `article_seo` (PK là FK `article_id`). |
+| `updated_at` DEFAULT `CURRENT_TIMESTAMP` | 15 bảng (mọi bảng có cột `updated_at`) | `ALTER TABLE "<bảng>" ALTER COLUMN "updated_at" SET DEFAULT CURRENT_TIMESTAMP;` | Prisma 6.19.3: `@updatedAt` KHÔNG sinh DB default (migration bản đầu có `"updated_at" TIMESTAMPTZ NOT NULL` không DEFAULT) nên INSERT trực tiếp thiếu `updated_at` sẽ lỗi (FIX-03). `created_at` đã có DEFAULT từ migration init (23 cột) nên không cần sửa. |
+
+Kiểm chứng (27/11/2026, cả dev + test): 22/22 cột `id` có default `gen_random_uuid()`; 15/15 cột `updated_at` có default; `prisma migrate status` sạch. INSERT trực tiếp vào `brands` chỉ với `name` + `slug` nhận đủ `id`, `created_at`, `updated_at` (§9.3).
+
+**Cảnh báo cho lần `migrate dev` sau:** migration này được viết tay (không qua `migrate dev --create-only`) vì diff engine của Prisma có thể đề xuất XÓA các phần tử raw-SQL (CHECK, partial unique, các default này) mà schema không biểu diễn được. Khi chạy `migrate dev` lần sau, phải đọc kỹ migration nó sinh ra và loại bỏ mọi lệnh DROP các ràng buộc raw-SQL trước khi apply.
+
 ## 6. Ghi chú ERD §12 cho M02 — đã xử lý
 
 | Ghi chú ERD §12 | Cách xử lý ở M02-01 |
@@ -211,7 +224,7 @@ Tất cả 26 index đã có trong migration do Prisma sinh (`@@unique` / `@@ind
 | 2. PostgreSQL 16 local baseline | Hệ thống kiểm chứng: PostgreSQL 16.15, cluster local port 5432. |
 | 3. Partial unique index + CHECK không biểu diễn được bằng `@@unique` — viết raw SQL trong migration | Đã làm (xem §5). |
 | 4. "`@@check` (Prisma 6 hỗ trợ)" | **Đã đính chính bằng kiểm chứng**: Prisma 6.19.3 KHÔNG hỗ trợ `@@check` (P1012). Mọi CHECK đều là raw SQL trong migration (§5.1). |
-| 5. `updated_at` tự động cập nhật qua Prisma middleware HOẶC PostgreSQL trigger — chọn MỘT cách và ghi vào M02 | **Đã chọn: Prisma Client `@updatedAt`.** Không dùng trigger. Lưu ý: `@updatedAt` chỉ có hiệu lực khi update qua Prisma Client — update bằng SQL thô sẽ không tự cập nhật `updated_at`. |
+| 5. `updated_at` tự động cập nhật qua Prisma middleware HOẶC PostgreSQL trigger — chọn MỘT cách và ghi vào M02 | **Đã chọn: Prisma Client `@updatedAt`.** Không dùng trigger. **Revision 02 (FIX-03) đã kiểm chứng thêm:** `@updatedAt` không sinh DB default (migration bản đầu có `"updated_at" TIMESTAMPTZ NOT NULL` không DEFAULT) nên INSERT trực tiếp thiếu `updated_at` sẽ lỗi — đã bổ sung `DEFAULT CURRENT_TIMESTAMP` cho 15 cột `updated_at` bằng raw SQL (migration `20261127020636`, §5.5) và kiểm chứng bằng INSERT trực tiếp + test tự động. Lưu ý: `@updatedAt` chỉ tự bump khi update qua Prisma Client — update bằng SQL thô không tự bump `updated_at` (test chứng minh; người viết SQL trực tiếp phải tự set nếu cần). |
 
 Các ghi chú khác của ERD §12: `fitment_change_logs.changed_by_admin_id` đã có FK → `users.id` (§2, bảng 14); `orders.customer_id` không có FK (P1, §2 bảng 16); đúng 7 enum ERD + 1 enum G-02 (§3).
 
@@ -233,6 +246,18 @@ Các ghi chú khác của ERD §12: `fitment_change_logs.changed_by_admin_id` đ
 | PD-08 (order_status lifecycle) | PENDING | Enum `order_status` giữ đúng giá trị đề xuất của ERD; M05 xác nhận vòng đời cuối. |
 | PD-09 (fitment source/verification) | PENDING | Không thêm cột `source`/`verification_status` vào `product_vehicle_fitments`. |
 | D-01 → D-09 | PENDING | Không tự quyết. Không có giá trị nào trong schema phụ thuộc vào các quyết định này. |
+
+### 7.1 Revision 02 (27/11/2026 — ChatGPT NOT ACCEPTED bản đầu)
+
+ChatGPT review bản đầu (commit 2b3ec60, 26/11/2026): AC-01/03/04/05/07/10 PASS; AC-02 FAIL; AC-06/08/09/11/12 CONDITIONAL. Yêu cầu FIX-01 → FIX-05 (tất cả bắt buộc), đã thực hiện:
+
+| Fix | Nội dung | Đã làm |
+| --- | --- | --- |
+| FIX-01 | Bổ sung UUID DB default `gen_random_uuid()` theo ERD §2.1 | Schema: 22 `@id` → `@default(dbgenerated("gen_random_uuid()"))`; migration bổ sung `20261127020636` (22 ALTER); kiểm chứng 22/22 cột có default trên cả dev + test |
+| FIX-02 | Đồng bộ mapping doc với migration thực tế | §1 + §5.5 + §6 + §9 trong tài liệu này đã sửa theo đúng migration thực tế (bản đầu mô tả sai: `@default(uuid())` không tạo DB default) |
+| FIX-03 | Kiểm tra `updated_at` (DEFAULT now() + cách cập nhật) | `created_at` đã có DEFAULT từ init; `updated_at` thiếu DEFAULT → đã bổ sung 15 cột bằng raw SQL; INSERT trực tiếp + Prisma bump + SQL thô không bump đều có test |
+| FIX-04 | Bổ sung test vòng đời refresh session (schema-level); ghi rõ rotation/reuse enforcement thuộc M02-05 | 4 tests mới (expiry / revoke / rotation capability / revoke-all); không triển khai Auth |
+| FIX-05 | Đồng bộ Task Brief + Handbook, ghi lại kết quả Revision 02 | Task Brief M02-01 §10, CURRENT_STATE, TASK_BOARD, CHANGELOG, M02_IMPLEMENTATION_DECISIONS §12 |
 
 ## 8. Ngoài phạm vi (không có trong schema này)
 
@@ -270,7 +295,10 @@ Các ghi chú khác của ERD §12: `fitment_change_logs.changed_by_admin_id` đ
 | `pnpm lint` (workspace) | 9/9 thành công |
 | `pnpm test` (workspace) | 9/9 thành công (backend unit 2/2) |
 | `pnpm build` (workspace) | 5/5 thành công |
-| `pnpm --filter backend test:e2e` | 2 suites PASS, **26/26 tests** — `test/prisma-constraints.e2e-spec.ts` (25 tests) + `test/app.e2e-spec.ts` (1 test) |
+| `pnpm --filter backend test:e2e` | 2 suites PASS, **33/33 tests** (Revision 02, 27/11/2026) — `test/prisma-constraints.e2e-spec.ts` (32 tests: 25 bản đầu + 7 mới FIX-03/FIX-04) + `test/app.e2e-spec.ts` (1 test) |
+| Revision 02 — schema `@default(dbgenerated("gen_random_uuid()"))` (22 id) + migration bổ sung `20261127020636` (47 dòng) | Viết tay (không dùng `migrate dev --create-only` để tránh diff engine đề xuất xóa các raw-SQL extras của migration init); `prisma validate` hợp lệ |
+| Revision 02 — `prisma migrate deploy` (dev + test, DB rebuild sau VM replacement) | "All migrations have been successfully applied." (cả hai DB; 2 migration finished) |
+| Revision 02 — `prisma generate` | Generated Prisma Client v6.19.3 (schema mới) |
 | `git diff --check` | Sạch (chạy trước commit — xem Task Brief) |
 | Secret scan | Sạch (chạy trước commit — xem Task Brief; không có `.env`/secret/credential/hash mẫu trong diff) |
 
@@ -282,10 +310,12 @@ Các ghi chú khác của ERD §12: `fitment_change_logs.changed_by_admin_id` đ
 - 8 enum types với đúng tên ERD (§3).
 - FK `fitment_change_logs.changed_by_admin_id` → `users.id` tồn tại.
 - Test CHECK bằng tay (trước khi viết test tự động): `INSERT` giá âm vào `widgets` thử nghiệm bị từ chối bởi CHECK; cùng cách kiểm chứng đã áp dụng cho migration thật qua test tự động.
+- Revision 02: 22/22 cột `id` có `DEFAULT gen_random_uuid()`; 15/15 cột `updated_at` có `DEFAULT CURRENT_TIMESTAMP`; 2 migration finished (`20261126152122_init` + `20261127020636_add_uuid_and_updated_at_defaults`); `prisma migrate status` sạch (dev + test).
+- Revision 02: INSERT trực tiếp vào `brands` (chỉ `name`, `slug`) thành công — nhận đủ `id` (UUID), `created_at`, `updated_at` từ DB default (đã xóa dòng thử ngay sau đó).
 
 ### 9.4 Test tự động (`backend/test/prisma-constraints.e2e-spec.ts`)
 
-Chạy bằng `pnpm --filter backend test:e2e`. Dùng TEST DB (`seecarauto_test`, load từ `backend/.env.test` qua `backend/test/setup.ts`). Mỗi test truncate toàn bộ bảng trước khi chạy. 25 tests bao phủ: SKU unique + blank + giá âm; toàn bộ ma trận issuer (4 loại × các trường hợp issuer); OEM không unique toàn cục / MPN unique theo issuer / trùng (product, type, normalized); một primary identifier cho mỗi product+type; NULLS NOT DISTINCT (trùng NULL); variant-requires-generation; year 1900–2100 (application + generation); year_to >= year_from; RESTRICT (brand/category/product có đơn/make/model) / CASCADE (product children, fitment logs) / soft delete; primary image; article slug unique + `manualOverride` round-trip; RBAC joins (user → roles → permissions + user deny exception) + `failed_login_attempts >= 0`; refresh session (chỉ lưu hash, hash unique, revoked row tìm được để phát hiện reuse); fitment log FK + RESTRICT xóa admin; audit log JSONB before/after + RESTRICT xóa actor.
+Chạy bằng `pnpm --filter backend test:e2e`. Dùng TEST DB (`seecarauto_test`, load từ `backend/.env.test` qua `backend/test/setup.ts`). Mỗi test truncate toàn bộ bảng trước khi chạy. **33 tests** (Revision 02: 32 tests trong spec này + 1 app e2e). 25 tests bản đầu bao phủ: SKU unique + blank + giá âm; toàn bộ ma trận issuer (4 loại × các trường hợp issuer); OEM không unique toàn cục / MPN unique theo issuer / trùng (product, type, normalized); một primary identifier cho mỗi product+type; NULLS NOT DISTINCT (trùng NULL); variant-requires-generation; year 1900–2100 (application + generation); year_to >= year_from; RESTRICT (brand/category/product có đơn/make/model) / CASCADE (product children, fitment logs) / soft delete; primary image; article slug unique + `manualOverride` round-trip; RBAC joins (user → roles → permissions + user deny exception) + `failed_login_attempts >= 0`; refresh session (chỉ lưu hash, hash unique, revoked row tìm được để phát hiện reuse); fitment log FK + RESTRICT xóa admin; audit log JSONB before/after + RESTRICT xóa actor. **7 tests mới (Revision 02):** FIX-03 — INSERT trực tiếp thiếu id/created_at/updated_at nhận đủ default; Prisma update bump `updated_at` (created_at không đổi); SQL thô UPDATE không bump `updated_at`. FIX-04 — session hết hạn / đã revoke bị loại khỏi truy vấn phiên hợp lệ; rotation capability (session mới thay session cũ đã revoke, dòng cũ còn lại); revoke-all capability (updateMany 3 session cùng lúc).
 
 ## 10. Ghi chú môi trường local (máy Muse) — không phải quyết định sản phẩm
 
@@ -294,3 +324,5 @@ Chạy bằng `pnpm --filter backend test:e2e`. Dùng TEST DB (`seecarauto_test`
 - **Prisma engines trên máy này**: postinstall của `@prisma/engines` không tải được engine (proxy chặn fetch của Node). Engine đã có sẵn trong cache từ công việc trước (`~/.cache/prisma/master/c2990dca.../debian-openssl-3.0.x/`); đã copy từ cache đó vào thư mục package của pnpm store (`@prisma+engines@6.19.3` và `prisma@6.19.3`) để `prisma --version` / `generate` / `migrate` chạy được. Sau `pnpm install` mới (hoặc VM replacement), cần copy lại từ cache — xem `~/AGENTS.md` (mục Prisma engines). Trên máy Henry/CI, Prisma tự tải engine bình thường, không cần bước này.
 - **CHECK violation qua Prisma Client 6.19.3**: lỗi PostgreSQL 23514 hiện ra dưới dạng `PrismaClientUnknownRequestError` KHÔNG có code (không phải P2004 như tài liệu Prisma mô tả chung) — message chứa tên constraint trong dạng Debug của Rust (dấu ngoặc kép bị escape). Test tự động assert theo tên constraint (§9.4).
 - **Test DB tách biệt**: dev dùng `seecarauto_dev`, test dùng `seecarauto_test` (cùng cluster local, role `seecarauto`, mật khẩu dev-only mặc định theo `.env.example` — chỉ dùng local, không commit). `backend/.env` và `backend/.env.test` đều gitignored.
+- **VM replacement 26→27/11/2026**: PostgreSQL cluster local bị reset (role `seecarauto` + 2 DB `seecarauto_dev`/`seecarauto_test` mất). Đã khôi phục hoàn toàn từ migration: tạo lại role + 2 DB, `migrate deploy` áp dụng cả 2 migration trên DB trống, kiểm chứng lại 22 id defaults + 15 updated_at defaults + status sạch. Đây là bằng chứng thực tế rằng migration là đường khôi phục DB (chưa có dữ liệu thật nên không mất gì).
+- **Cảnh báo `migrate dev` tương lai**: xem §5.5 — đọc kỹ migration do `migrate dev` sinh ra và loại bỏ mọi lệnh DROP các ràng buộc raw-SQL trước khi apply.

@@ -97,7 +97,7 @@ enum ArticleStatus {
 // ---------------------------------------------------------------- Catalogue (ERD §4.1-§4.7)
 
 model Brand {
-  id          String   @id @default(uuid()) @db.Uuid
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name        String   @db.VarChar(255)
   slug        String   @unique @db.VarChar(255)
   description String?  @db.Text
@@ -113,7 +113,7 @@ model Brand {
 }
 
 model Category {
-  id           String   @id @default(uuid()) @db.Uuid
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   parentId     String?  @map("parent_id") @db.Uuid
   parent       Category? @relation("CategoryChildren", fields: [parentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   children     Category[] @relation("CategoryChildren")
@@ -132,7 +132,7 @@ model Category {
 }
 
 model Product {
-  id                  String             @id @default(uuid()) @db.Uuid
+  id                  String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   sku                 String             @unique @db.VarChar(64)
   name                String             @db.VarChar(255)
   slug                String             @unique @db.VarChar(255)
@@ -165,7 +165,7 @@ model Product {
 }
 
 model ProductIdentifier {
-  id               String         @id @default(uuid()) @db.Uuid
+  id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   productId        String         @map("product_id") @db.Uuid
   product          Product        @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   identifierType   IdentifierType @map("identifier_type")
@@ -198,7 +198,7 @@ model ProductCategory {
 }
 
 model ProductImage {
-  id         String   @id @default(uuid()) @db.Uuid
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   productId  String   @map("product_id") @db.Uuid
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   imageUrl   String   @map("image_url") @db.VarChar(1024)
@@ -213,7 +213,7 @@ model ProductImage {
 
 // P1 table (FR-013) — designed in the ERD so M03 needs no structural change; P0 carries no rows.
 model ProductSpecification {
-  id           String   @id @default(uuid()) @db.Uuid
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   productId    String   @map("product_id") @db.Uuid
   product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   specKey      String   @map("spec_key") @db.VarChar(128)
@@ -228,7 +228,7 @@ model ProductSpecification {
 // ---------------------------------------------------------------- Vehicles (ERD §4.8-§4.12)
 
 model VehicleMake {
-  id        String   @id @default(uuid()) @db.Uuid
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name      String   @db.VarChar(255)
   slug      String   @unique @db.VarChar(255)
   logoUrl   String?  @map("logo_url") @db.VarChar(1024)
@@ -244,7 +244,7 @@ model VehicleMake {
 }
 
 model VehicleModel {
-  id        String   @id @default(uuid()) @db.Uuid
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   makeId    String   @map("make_id") @db.Uuid
   make      VehicleMake @relation(fields: [makeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   name      String   @db.VarChar(255)
@@ -260,7 +260,7 @@ model VehicleModel {
 }
 
 model VehicleGeneration {
-  id        String   @id @default(uuid()) @db.Uuid
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   modelId   String   @map("model_id") @db.Uuid
   model     VehicleModel @relation(fields: [modelId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   name      String   @db.VarChar(255)
@@ -279,7 +279,7 @@ model VehicleGeneration {
 }
 
 model VehicleVariant {
-  id           String   @id @default(uuid()) @db.Uuid
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   generationId String   @map("generation_id") @db.Uuid
   generation   VehicleGeneration @relation(fields: [generationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   name         String   @db.VarChar(255)
@@ -296,7 +296,7 @@ model VehicleVariant {
 }
 
 model VehicleApplication {
-  id           String   @id @default(uuid()) @db.Uuid
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   makeId       String   @map("make_id") @db.Uuid
   make         VehicleMake @relation(fields: [makeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   modelId      String   @map("model_id") @db.Uuid
@@ -319,7 +319,7 @@ model VehicleApplication {
 // ---------------------------------------------------------------- Fitment (ERD §4.13-§4.14)
 
 model ProductVehicleFitment {
-  id                   String             @id @default(uuid()) @db.Uuid
+  id                   String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   productId            String             @map("product_id") @db.Uuid
   product              Product            @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   vehicleApplicationId String             @map("vehicle_application_id") @db.Uuid
@@ -335,7 +335,7 @@ model ProductVehicleFitment {
 }
 
 model FitmentChangeLog {
-  id                   String             @id @default(uuid()) @db.Uuid
+  id                   String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   productId            String             @map("product_id") @db.Uuid
   product              Product            @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   vehicleApplicationId String             @map("vehicle_application_id") @db.Uuid
@@ -353,7 +353,7 @@ model FitmentChangeLog {
 // ---------------------------------------------------------------- Redirects (ERD §4.15)
 
 model UrlRedirect {
-  id         String         @id @default(uuid()) @db.Uuid
+  id         String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   entityType RedirectEntity @map("entity_type")
   // Polymorphic target id — no FK by design (ERD §4.15); existence checked at application level.
   entityId   String         @map("entity_id") @db.Uuid
@@ -369,7 +369,7 @@ model UrlRedirect {
 // Full order design belongs to M05. order_status values are the ERD proposal (PD-08 pending).
 
 model Order {
-  id              String        @id @default(uuid()) @db.Uuid
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   orderCode       String        @unique @map("order_code") @db.VarChar(32)
   customerName    String        @map("customer_name") @db.VarChar(255)
   customerPhone   String        @map("customer_phone") @db.VarChar(32)
@@ -388,7 +388,7 @@ model Order {
 }
 
 model OrderItem {
-  id                  String   @id @default(uuid()) @db.Uuid
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   orderId             String   @map("order_id") @db.Uuid
   order               Order    @relation(fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   productId           String   @map("product_id") @db.Uuid
@@ -410,7 +410,7 @@ model OrderItem {
 // the fields edited by hand. D-04 blocks only the AI provider/analysis, not these tables.
 
 model Article {
-  id            String        @id @default(uuid()) @db.Uuid
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title         String        @db.VarChar(255)
   slug          String        @unique @db.VarChar(255)
   content       String        @db.Text
@@ -447,7 +447,7 @@ model ArticleSeo {
 // No default admin account is created here — secure Super Admin bootstrap belongs to M06-01.
 
 model User {
-  id                  String    @id @default(uuid()) @db.Uuid
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username            String    @unique @db.VarChar(255)
   // Argon2id encoded hash only (NFR-006, API_SECURITY §1). Never a plaintext password.
   passwordHash        String    @map("password_hash") @db.VarChar(255)
@@ -468,7 +468,7 @@ model User {
 }
 
 model Role {
-  id          String   @id @default(uuid()) @db.Uuid
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name        String   @unique @db.VarChar(255)
   description String?  @db.Text
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
@@ -481,7 +481,7 @@ model Role {
 }
 
 model Permission {
-  id          String   @id @default(uuid()) @db.Uuid
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   module      String   @db.VarChar(128)
   action      String   @db.VarChar(128)
   // Permission code is module + "." + action (e.g. "products.create") — derived, not stored twice.
@@ -531,7 +531,7 @@ model UserPermission {
 
 // FR-084 audit log for permission changes (and other admin actions). Append-only.
 model AuditLog {
-  id         String   @id @default(uuid()) @db.Uuid
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   actorId    String   @map("actor_id") @db.Uuid
   actor      User     @relation("AuditActor", fields: [actorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   action     String   @db.VarChar(255)
@@ -553,7 +553,7 @@ model AuditLog {
 // Rotation: a new row per rotation; the old row gets revoked_at set. Reuse detection: a presented
 // token whose hash matches a revoked/expired row revokes all sessions of that account (M02-05).
 model AdminRefreshSession {
-  id         String    @id @default(uuid()) @db.Uuid
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId     String    @map("user_id") @db.Uuid
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   tokenHash  String    @unique @map("token_hash") @db.VarChar(255)

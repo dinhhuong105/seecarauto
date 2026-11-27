@@ -966,3 +966,132 @@ describe("audit log (AC-05)", () => {
     );
   });
 });
+
+describe("updated_at contract — direct insert + Prisma bump (AC-02/AC-03, FIX-03)", () => {
+  it("direct SQL INSERT omitting id/created_at/updated_at gets all DB defaults", async () => {
+    await prisma.$executeRaw`INSERT INTO "brands" ("name", "slug") VALUES ('Direct Brand', 'direct-brand')`;
+    const rows =
+      (await prisma.$queryRaw`SELECT "id", "created_at", "updated_at" FROM "brands" WHERE "slug" = 'direct-brand'`) as {
+        id: string;
+        created_at: Date;
+        updated_at: Date;
+      }[];
+    expect(rows).toHaveLength(1);
+    expect(rows[0].id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+    );
+    expect(rows[0].created_at).toBeInstanceOf(Date);
+    expect(rows[0].updated_at).toBeInstanceOf(Date);
+  });
+
+  it("Prisma update bumps updated_at and leaves created_at unchanged", async () => {
+    const brand = await makeBrand();
+    await new Promise((r) => setTimeout(r, 50));
+    const updated = await prisma.brand.update({
+      where: { id: brand.id },
+      data: { name: "Test Brand Renamed" },
+    });
+    expect(updated.updatedAt.getTime()).toBeGreaterThan(
+      brand.updatedAt.getTime(),
+    );
+    expect(updated.createdAt.getTime()).toBe(brand.createdAt.getTime());
+  });
+
+  it("direct SQL UPDATE does not bump updated_at (only Prisma Client does)", async () => {
+    // Documents the chosen mechanism (ERD §12: @updatedAt, not a DB trigger):
+    // direct-SQL writers must set updated_at themselves if they need it bumped.
+    const brand = await makeBrand();
+    await prisma.$executeRaw`UPDATE "brands" SET "name" = 'Direct Renamed' WHERE "id" = ${brand.id}::uuid`;
+    const fetched = await prisma.brand.findUnique({ where: { id: brand.id } });
+    expect(fetched!.updatedAt.getTime()).toBe(brand.updatedAt.getTime());
+  });
+});
+
+// FIX-04 boundary: these tests prove the SCHEMA stores everything the M02-05
+// rotation/reuse logic needs (expiresAt, revokedAt, tokenHash unique,
+// per-user session list). The enforcement itself — deciding WHEN to rotate,
+// detecting reuse, revoking all sessions on reuse — is application logic
+// that belongs to M02-05, not to this schema task. No Auth code is added here.
+describe("refresh session lifecycle — schema capability (AC-06, FIX-04)", () => {
+  const validSessions = (userId: string, now: Date) =>
+    prisma.adminRefreshSession.findMany({
+      where: { userId, expiresAt: { gt: now }, revokedAt: null },
+    });
+
+  async function makeSession(userId: string, token: string, expiresAt: Date) {
+    return prisma.adminRefreshSession.create({
+      data: {
+        userId,
+        tokenHash: createHash("sha256").update(token).digest("hex"),
+        expiresAt,
+      },
+    });
+  }
+
+  it("an expired session is excluded from the valid-session query", async () => {
+    const admin = await makeUser();
+    await makeSession(
+      admin.id,
+      "expired-token",
+      new Date(Date.now() - 3600_000),
+    );
+    expect(await validSessions(admin.id, new Date())).toHaveLength(0);
+    expect(
+      await prisma.adminRefreshSession.count({
+        where: { userId: admin.id },
+      }),
+    ).toBe(1);
+  });
+
+  it("a revoked session is excluded from the valid-session query", async () => {
+    const admin = await makeUser();
+    const session = await makeSession(
+      admin.id,
+      "revoked-token",
+      new Date(Date.now() + 3600_000),
+    );
+    await prisma.adminRefreshSession.update({
+      where: { id: session.id },
+      data: { revokedAt: new Date() },
+    });
+    expect(await validSessions(admin.id, new Date())).toHaveLength(0);
+  });
+
+  it("rotation capability: a new session replaces a revoked one, old row kept", async () => {
+    const admin = await makeUser();
+    const oldSession = await makeSession(
+      admin.id,
+      "old-token",
+      new Date(Date.now() + 3600_000),
+    );
+    const newSession = await makeSession(
+      admin.id,
+      "new-token",
+      new Date(Date.now() + 3600_000),
+    );
+    await prisma.adminRefreshSession.update({
+      where: { id: oldSession.id },
+      data: { revokedAt: new Date() },
+    });
+    const valid = await validSessions(admin.id, new Date());
+    expect(valid).toHaveLength(1);
+    expect(valid[0].id).toBe(newSession.id);
+    const oldRow = await prisma.adminRefreshSession.findUnique({
+      where: { id: oldSession.id },
+    });
+    expect(oldRow!.revokedAt).not.toBeNull();
+  });
+
+  it("reuse-response capability: all sessions of a user can be revoked at once", async () => {
+    const admin = await makeUser();
+    await makeSession(admin.id, "token-a", new Date(Date.now() + 3600_000));
+    await makeSession(admin.id, "token-b", new Date(Date.now() + 3600_000));
+    await makeSession(admin.id, "token-c", new Date(Date.now() + 3600_000));
+    const revoked = await prisma.adminRefreshSession.updateMany({
+      where: { userId: admin.id },
+      data: { revokedAt: new Date() },
+    });
+    expect(revoked.count).toBe(3);
+    expect(await validSessions(admin.id, new Date())).toHaveLength(0);
+  });
+});

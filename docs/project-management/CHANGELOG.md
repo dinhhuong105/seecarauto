@@ -1,3 +1,12 @@
+## 26/11/2026 — M02-01 Revision 02 hoàn thành (IN_REVIEW, chờ ChatGPT review lại)
+
+- ChatGPT NOT ACCEPTED bản đầu M02-01 (commit 2b3ec60): AC-02 FAIL (thiếu UUID DB default), AC-06/08/09/11/12 CONDITIONAL; yêu cầu FIX-01 → FIX-05.
+- FIX-01: 22 `@id` → `@default(dbgenerated("gen_random_uuid()"))`; migration bổ sung `20261127020636_add_uuid_and_updated_at_defaults` (47 dòng, không sửa migration init đã áp dụng).
+- FIX-03: bổ sung `DEFAULT CURRENT_TIMESTAMP` cho 15 cột `updated_at` (Prisma `@updatedAt` không sinh DB default).
+- FIX-04: 4 tests vòng đời refresh session (schema-level); rotation/reuse enforcement thuộc M02-05.
+- Test e2e 33/33; workspace typecheck 9/9, lint 9/9, test 9/9, build 5/5 (chạy lại 27/11/2026). VM replacement 26→27/11 reset PostgreSQL local — DB khôi phục hoàn toàn từ 2 migration.
+- Tự đánh giá AC-02/06/08/09/11 PASS sau sửa, AC-12 chờ xác minh sau push (xem Task Brief M02-01 §10.4).
+
 ## 26/11/2026 — M02-01 bản đầu hoàn thành (IN_REVIEW)
 
 - Bản đầu M02-01 hoàn thành 26/11/2026, chờ ChatGPT review (chat "Review M02-01"); không tự DONE.
