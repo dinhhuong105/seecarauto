@@ -21,8 +21,8 @@ Wireframe, Admin Dashboard, UI/UX Research).
 | M08 | 9 — BACKLOG 9/9 |
 | M09 | 10 — BACKLOG 10/10 |
 | DONE | 16 (M00 7 + M01 7 + M02-01 + M02-02) |
-| IN_PROGRESS | 0 |
-| BACKLOG | 72 |
+| IN_PROGRESS | 1 (M02-03) |
+| BACKLOG | 71 |
 | BLOCKED | 1 (M07-05) |
 
 ### ISSUE-01 — Mâu thuẫn tổng số task: 87 hay 89? — ĐÃ QUYẾT ĐỊNH (89)
@@ -121,7 +121,7 @@ chưa chốt nhưng không chặn thiết kế).
 | --- | --- | --- | --- | --- | --- |
 | M02-01 | PostgreSQL + Prisma schema | Schema Prisma từ ERD (17 bảng); migration; G-02 Articles/ArticleSEO + G-04 Admin/RBAC; G-01 đóng theo PD-02; G-03 Redis cart decision | Critical | M01-02 | DONE |
 | M02-02 | Redis cache + BullMQ | Redis cache (theo API_SPEC §41) + BullMQ cho job nền | High | M02-01 | DONE |
-| M02-03 | Meilisearch | Cài Meilisearch; index products (SKU/OEM/tên/thương hiệu); cấu hình tìm kiếm theo ADR-010 | Critical | M02-01 | BACKLOG |
+| M02-03 | Meilisearch | Cài Meilisearch; index products (SKU/OEM/tên/thương hiệu); cấu hình tìm kiếm theo ADR-010 | Critical | M02-01 | IN_PROGRESS |
 | M02-04 | S3 / R2 object storage | Lưu ảnh sản phẩm/bài viết; URL tuyệt đối (theo quy tắc đã chốt ở M01-06) | High | D-06 | BACKLOG |
 | M02-05 | Auth JWT + Refresh Token | Đăng nhập admin (FR-090/FR-091 lockout); JWT + refresh; HttpOnly cookie | Critical | M02-01 | BACKLOG |
 | M02-06 | RBAC nền tảng | Bảng roles/permissions/role_permissions/user_roles/user_permissions; middleware kiểm tra permission; audit log nền | Critical | M02-01, M02-05; M01-05 | BACKLOG |

@@ -6,15 +6,25 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { QueueModule } from "./queue/queue.module";
 import { RedisModule } from "./redis/redis.module";
 import { validateRedisEnv } from "./redis/redis.config";
+import { SearchModule } from "./search/search.module";
+import { validateMeilisearchEnv } from "./search/meilisearch.config";
 
 @Module({
   imports: [
     // Loads .env (local) — real secrets never enter git; see .env.example.
-    // validateRedisEnv fails fast on malformed Redis variables (M02-02).
-    ConfigModule.forRoot({ isGlobal: true, validate: validateRedisEnv }),
+    // validateRedisEnv + validateMeilisearchEnv fail fast on malformed
+    // variables (M02-02, M02-03).
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validate: (config) => {
+        validateRedisEnv(config);
+        return validateMeilisearchEnv(config);
+      },
+    }),
     PrismaModule,
     RedisModule,
     QueueModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

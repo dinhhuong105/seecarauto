@@ -96,6 +96,9 @@ importers:
       ioredis:
         specifier: 5.11.1
         version: 5.11.1
+      meilisearch:
+        specifier: 0.44.1
+        version: 0.44.1
       reflect-metadata:
         specifier: ^0.2.0
         version: 0.2.2
@@ -3458,6 +3461,9 @@ packages:
   media-typer@0.3.0:
     resolution: {integrity: sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==}
     engines: {node: '>= 0.6'}
+
+  meilisearch@0.44.1:
+    resolution: {integrity: sha512-ZTZYBmomtRwjaWbvU8U8ct04g/YnrNOlvchogJOPgHcQIQBfjdbAvMJ8mLhuZEzpioYXIT6Cv+FcE150pc2+nw==}
 
   memfs@3.5.3:
     resolution: {integrity: sha512-UERzLsxzllchadvbPs5aolHh65ISpKpM+ccLbOJ8/vvpBKmAWf+la7dXFy7Mr0ySHbdHrFv5kGFCUHHe6GFEmw==}
@@ -8591,6 +8597,8 @@ snapshots:
   math-intrinsics@1.1.0: {}
 
   media-typer@0.3.0: {}
+
+  meilisearch@0.44.1: {}
 
   memfs@3.5.3:
     dependencies:

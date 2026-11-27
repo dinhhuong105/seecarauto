@@ -1,11 +1,12 @@
-# Docker Compose smoke test — Redis runtime + healthcheck (M02-02, AC-15).
-# Runs `docker compose up -d redis` on a real runner (GitHub-hosted Ubuntu,
-# which has Docker) because Muse's dev VM cannot run containers (no cgroup
-# controllers delegated — see DOCKER_STANDARDS.md).
-# Evidence for AC-15: compose config valid + Redis container healthy +
-# redis-cli PONG inside the container.
+# Docker Compose smoke test — Redis + Meilisearch runtime + healthcheck
+# (M02-02 AC-15, M02-03 AC-16).
+# Runs `docker compose up -d redis` / `up -d meilisearch` on a real runner
+# (GitHub-hosted Ubuntu, which has Docker) because Muse's dev VM cannot run
+# containers (no cgroup controllers delegated — see DOCKER_STANDARDS.md).
+# Evidence: compose config valid + container healthy + redis-cli PONG /
+# GET /health available inside the container.
 
-name: Docker Compose — Redis smoke test
+name: Docker Compose — Redis + Meilisearch smoke test
 
 on:
   push:
@@ -48,5 +49,43 @@ jobs:
         run: docker compose exec -T redis redis-cli ping
 
       - name: Stop Redis
+        if: always()
+        run: docker compose down -v
+
+  meilisearch-smoke:
+    name: docker compose up meilisearch + healthcheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate docker-compose file
+        run: docker compose config --quiet
+
+      - name: Start Meilisearch
+        run: docker compose up -d meilisearch
+
+      - name: Wait for Meilisearch to become healthy
+        run: |
+          for i in $(seq 1 24); do
+            status=$(docker inspect --format='{{.State.Health.Status}}' seecarauto-meilisearch)
+            echo "health: $status (attempt $i/24)"
+            if [ "$status" = "healthy" ]; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Meilisearch did not become healthy in time" >&2
+          docker compose ps
+          docker compose logs meilisearch
+          exit 1
+
+      - name: Show container status
+        run: docker compose ps
+
+      - name: Check Meilisearch health endpoint
+        run: curl -fsS http://localhost:7700/health
+
+      - name: Stop Meilisearch
         if: always()
         run: docker compose down -v
