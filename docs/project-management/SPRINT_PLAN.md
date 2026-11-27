@@ -69,7 +69,7 @@ Kế hoạch Sprint cho roadmap 16–20 tuần. Nguồn: `MASTER_ROADMAP.md` +
 | Dependency | Không có |
 | Trạng thái | DONE (M00 commit feea4d4, ChatGPT ACCEPT có điều kiện; M01-01 commit 4a86da0, ChatGPT ACCEPT 9/9 — cả 8 task đã nghiệm thu; Sprint 1 là Sprint chịu trách nhiệm nghiệm thu M01-01) |
 
-## 4. Sprint 2 — Tuần 3–4: Kiến trúc + Hạ tầng dữ liệu bắt đầu — CHƯA HOÀN THÀNH (đã hết khung tuần; 7/10 DONE)
+## 4. Sprint 2 — Tuần 3–4: Kiến trúc + Hạ tầng dữ liệu bắt đầu — CHƯA HOÀN THÀNH (đã hết khung tuần; 8/10 DONE)
 
 | Mục | Nội dung |
 | --- | --- |
@@ -79,7 +79,7 @@ Kế hoạch Sprint cho roadmap 16–20 tuần. Nguồn: `MASTER_ROADMAP.md` +
 | Deliverables | ERD (17 bảng); API Spec (96 operations); Sitemap/Wireframe; Admin Dashboard; UI Research + Design System + UI Proposal; Backlog + Sprint Plan (M01-07); Prisma schema nháp; Redis + BullMQ; Meilisearch index; JWT login admin |
 | Điều kiện hoàn thành | ChatGPT ACCEPT M01-02 → M01-07; migration chạy (phần không phụ thuộc PD); login admin được; Meilisearch trả kết quả đúng ADR-010 |
 | Dependency | M00 DONE; PD-01 → PD-06 (gate M02-01) |
-| Trạng thái | CHƯA HOÀN THÀNH — đã hết khung tuần (tuần 3–4) nhưng chưa thỏa quy tắc hoàn thành §1: M02-01 DONE; M02-02/03/05 còn BACKLOG. 7/10 task DONE (M01-02 → M01-07 + M02-01). Sprint chỉ ghi DONE khi các task M02 đủ điều kiện đạt điều kiện hoàn thành. |
+| Trạng thái | CHƯA HOÀN THÀNH — đã hết khung tuần (tuần 3–4) nhưng chưa thỏa quy tắc hoàn thành §1: M02-01 + M02-02 DONE; M02-03/05 còn BACKLOG. 8/10 task DONE (M01-02 → M01-07 + M02-01 + M02-02). Sprint chỉ ghi DONE khi các task M02 đủ điều kiện đạt điều kiện hoàn thành. |
 
 ## 5. Sprint 3 — Tuần 5–6: RBAC nền + Catalog bắt đầu — BACKLOG
 
@@ -185,7 +185,7 @@ Kế hoạch Sprint cho roadmap 16–20 tuần. Nguồn: `MASTER_ROADMAP.md` +
 | Sprint | Tuần | Số task | Trạng thái |
 | --- | --- | --- | --- |
 | Sprint 1 | 1–2 | 8 (M00 7 + M01-01) | DONE |
-| Sprint 2 | 3–4 | 10 (M01 6 + M02 4) | CHƯA HOÀN THÀNH — 7/10 DONE (M01-02 → M01-07 + M02-01); M02-02/03/05 còn BACKLOG |
+| Sprint 2 | 3–4 | 10 (M01 6 + M02 4) | CHƯA HOÀN THÀNH — 8/10 DONE (M01-02 → M01-07 + M02-01 + M02-02); M02-03/05 còn BACKLOG |
 | Sprint 3 | 5–6 | 7 (M02 4 + M03 3) | BACKLOG |
 | Sprint 4 | 7–8 | 9 (M03 6 + M04 3) | BACKLOG |
 | Sprint 5 | 9–10 | 10 (M04 6 + M03-10 + M05 2 + M06-01) | BACKLOG |
