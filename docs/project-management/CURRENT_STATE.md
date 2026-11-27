@@ -3,10 +3,10 @@
 Cập nhật sau mỗi task. Đây là nơi cuộc chat task mới đọc đầu tiên để biết
 dự án đang ở đâu.
 
-## Trạng thái hiện tại (sau M00, M01-01 → M01-07 DONE — Milestone M01 CLOSED; M02-01 DONE (ACCEPT Revision 02, 12/12) — 27/11/2026)
+## Trạng thái hiện tại (sau M00, M01-01 → M01-07 DONE — Milestone M01 CLOSED; M02-01 DONE (ACCEPT Revision 02, 12/12) — 27/11/2026; M02-02 IN_PROGRESS)
 
 - **Milestone đã hoàn tất:** M01 — Architecture & UI/UX (7/7 ACCEPT, housekeeping CLOSED; đã tích hợp vào main tại commit 7d1041f).
-- **Milestone đang làm:** M02 — Infrastructure & Authentication; M02-01 DONE 27/11/2026 (ChatGPT ACCEPT Revision 02, 12/12 PASS — Prisma 6.19.3, schema 27 bảng / 8 enum, 2 migration, test e2e 33/33) trên branch `feature/M02-01-postgres-prisma-schema`. Task tiếp theo: M02-02 (Redis + BullMQ) — chờ ChatGPT giao sau housekeeping.
+- **Milestone đang làm:** M02 — Infrastructure & Authentication; M02-01 DONE 27/11/2026 (ChatGPT ACCEPT Revision 02, 12/12 PASS — Prisma 6.19.3, schema 27 bảng / 8 enum, 2 migration, test e2e 33/33) trên branch `feature/M02-01-postgres-prisma-schema`. M02-02 (Redis + BullMQ) đang làm — bản đầu hoàn thành 27/11/2026, IN_REVIEW, chờ ChatGPT review (branch `feature/M02-02-redis-bullmq`, base `d850bfd`).
 - **Trạng thái M00:** DONE (7/7 task, nghiệm thu đầy đủ 26/11/2026:
   `pnpm typecheck` 9/9, `pnpm lint` 9/9, `pnpm test` 9/9, `pnpm build`
   5/5, `docker compose config --quiet` exit 0). Commit feea4d4 đã push

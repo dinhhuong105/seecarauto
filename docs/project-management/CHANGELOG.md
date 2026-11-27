@@ -1,3 +1,9 @@
+## 27/11/2026 — M02-02 bản đầu hoàn thành (IN_REVIEW, chờ ChatGPT review)
+
+- ChatGPT giao brief M02-02 ngày 27/11/2026 theo ủy quyền toàn quyền của Henry (không cần Henry duyệt kế hoạch): Redis cache + BullMQ, branch `feature/M02-02-redis-bullmq`, base `d850bfd`, 17 AC.
+- Bản đầu: BullMQ 5.81.6 + ioredis 5.11.1 (pin exact); RedisModule/RedisService, CacheService (cache-aside + chống stampede), CartStorageService (G-03, TTL 30 ngày), RateLimitService (Lua atomic, 10 loại giới hạn theo API_SPEC §16), QueueRegistryService + 3 queue (catalog-sync, seo-jobs, queue-test); tài liệu `docs/infrastructure/REDIS_BULLMQ.md`; unit 19/19, e2e 56/56 (Redis thật 7.0.15 native, port 6399); workspace typecheck 9/9, lint 9/9, test 9/9, build 5/5; docker compose config exit 0, compose runtime UNVERIFIED (máy Muse không chạy được container).
+- 2 vấn đề ghi nhận cho ChatGPT: ISSUE-M02-02-01 (cart fallback: API_SPEC §11.1 "giỏ rỗng tạm thời" vs brief §2.4 "trả lỗi dependency"), ISSUE-M02-02-02 (fail-closed cho contact/createOrder chưa được spec nêu rõ).
+
 ## 27/11/2026 — M02-01 DONE (ChatGPT ACCEPT Revision 02, 12/12 PASS)
 
 - ChatGPT ACCEPT Revision 02 ngày 27/11/2026 ~09:16 (commit d9824ae, parent 2b3ec60): FIX-01 → FIX-05 đều PASS, AC-01 → AC-12 đều PASS, không yêu cầu Revision 03.
