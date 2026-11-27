@@ -1,3 +1,7 @@
+## 27/11/2026 — M02-05 Giai đoạn 1 (chuẩn bị Task Brief, chưa triển khai code)
+
+- ChatGPT giao M02-05 (Auth JWT + Refresh Token, Critical) ngày 27/11/2026 ~13:52 sau khi ACCEPT housekeeping M02-03 Revision 03; branch `feature/M02-05-auth-jwt-refresh-token`, base `a77bbd9`, dependency M02-01 DONE. Giai đoạn 1 chỉ chuẩn bị: đọc Task Board/Backlog, API_SPEC, API_SECURITY, API_ERROR_CATALOG, M02_IMPLEMENTATION_DECISIONS; kiểm tra Prisma schema/migration (`users.failed_login_attempts`/`locked_until` + `admin_refresh_sessions` đã có sẵn — không thiếu cột, không cần sửa migration); tạo Task Brief `tasks/M02-05.md` (16 AC, bảng đối chiếu §11, 13 điểm chưa quyết định §12). Backlog trên branch này: DONE 16 / IN_PROGRESS 1 (M02-05) / BACKLOG 71 / BLOCKED 1; Sprint 2 8/10 DONE (M02-05 là task đang làm). Lưu ý base: branch base `a77bbd9` theo brief ChatGPT giao nên chưa chứa M02-03 — M02-03 DONE chính thức ngày 27/11/2026 ~13:52 nằm trên branch `feature/M02-03-meilisearch` (chưa merge); thứ tự merge/rebase do ChatGPT quyết định. Báo cáo ChatGPT review brief trong chat mới, chờ lệnh triển khai mới code.
+
 ## 27/11/2026 — M02-03 DONE (ChatGPT ACCEPT 19/19 AC PASS)
 
 - ChatGPT verdict cuối cùng Revision 04 ngày 27/11/2026 ~13:32 (chat "Review M02-03"): ACCEPT — 19/19 AC PASS, M02-03 đủ điều kiện nghiệm thu. Commit được nghiệm thu: Revision 04 633cde1 (parent d3480e4, 1 file, +1/−1, đúng 1 dòng Status trong Task Brief). ChatGPT kiểm tra trực tiếp trên GitHub và xác nhận cách ghi "Revision 04" là đúng (Status phải phản ánh bản mới nhất đang chờ review).
