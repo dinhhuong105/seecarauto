@@ -24,7 +24,22 @@ const TEST_REDIS_URL = process.env.REDIS_TEST_URL ?? "redis://127.0.0.1:6399";
 const DEAD_REDIS_URL = "redis://127.0.0.1:6398";
 
 function testRedisService(url: string): RedisService {
-  return new RedisService(new ConfigService({ REDIS_URL: url }));
+  // ConfigService.get() prefers process.env over the internal config, and
+  // setup.ts loads .env.test (REDIS_URL=...:6399/3) into process.env — so
+  // passing the URL only via the internal config is silently ignored and
+  // the "dead" service would connect to the live test Redis instead
+  // (regression 27/11/2026: all 5 dead-port tests failed after REDIS_URL
+  // was added to .env.test for the auth suite). RedisService reads its
+  // config synchronously in the constructor, so swap process.env for the
+  // construction call only, then restore it.
+  const prev = process.env.REDIS_URL;
+  process.env.REDIS_URL = url;
+  try {
+    return new RedisService(new ConfigService({ REDIS_URL: url }));
+  } finally {
+    if (prev === undefined) delete process.env.REDIS_URL;
+    else process.env.REDIS_URL = prev;
+  }
 }
 
 describe("Redis integration (real Redis 7)", () => {
@@ -359,6 +374,10 @@ describe("Redis integration (real Redis 7)", () => {
 
     beforeEach(() => {
       deadRedis = testRedisService(DEAD_REDIS_URL);
+      // Regression guard: the service must really point at the dead port —
+      // if process.env.REDIS_URL shadows the URL again, every test below
+      // silently runs against the live test Redis.
+      expect(deadRedis.getConfig().url).toBe(DEAD_REDIS_URL);
     });
 
     afterEach(async () => {

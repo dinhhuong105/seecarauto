@@ -884,9 +884,11 @@ describe("admin refresh sessions (AC-06, G-04)", () => {
       "P2002",
     );
     // Revoke, then the row is still findable by hash (reuse detection, M02-05).
+    // D-15: revoking requires a reason (CHECK (revoked_at IS NULL) =
+    // (revoked_reason IS NULL)) — a bare revokedAt is rejected by the DB.
     const revoked = await prisma.adminRefreshSession.update({
       where: { id: session.id },
-      data: { revokedAt: new Date() },
+      data: { revokedAt: new Date(), revokedReason: "LOGOUT" },
     });
     expect(revoked.revokedAt).not.toBeNull();
     const found = await prisma.adminRefreshSession.findUnique({
@@ -1050,9 +1052,10 @@ describe("refresh session lifecycle — schema capability (AC-06, FIX-04)", () =
       "revoked-token",
       new Date(Date.now() + 3600_000),
     );
+    // D-15: revoking requires a reason (see the CHECK note above).
     await prisma.adminRefreshSession.update({
       where: { id: session.id },
-      data: { revokedAt: new Date() },
+      data: { revokedAt: new Date(), revokedReason: "LOGOUT" },
     });
     expect(await validSessions(admin.id, new Date())).toHaveLength(0);
   });
@@ -1071,7 +1074,11 @@ describe("refresh session lifecycle — schema capability (AC-06, FIX-04)", () =
     );
     await prisma.adminRefreshSession.update({
       where: { id: oldSession.id },
-      data: { revokedAt: new Date() },
+      data: {
+        revokedAt: new Date(),
+        revokedReason: "ROTATED",
+        replacedBySessionId: newSession.id,
+      },
     });
     const valid = await validSessions(admin.id, new Date());
     expect(valid).toHaveLength(1);
@@ -1089,7 +1096,7 @@ describe("refresh session lifecycle — schema capability (AC-06, FIX-04)", () =
     await makeSession(admin.id, "token-c", new Date(Date.now() + 3600_000));
     const revoked = await prisma.adminRefreshSession.updateMany({
       where: { userId: admin.id },
-      data: { revokedAt: new Date() },
+      data: { revokedAt: new Date(), revokedReason: "LOGOUT_ALL" },
     });
     expect(revoked.count).toBe(3);
     expect(await validSessions(admin.id, new Date())).toHaveLength(0);

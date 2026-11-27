@@ -17,15 +17,18 @@ import { RedisService } from "./redis.service";
 //   and documented as such; it exists so a Redis outage cannot open the
 //   door to login/order-code brute force.
 // - Which kinds are fail-closed: adminLoginIp, adminLoginAccount,
-//   orderLookupIp, orderLookupCode (explicit in §16), plus contact and
-//   createOrder (DECIDED — Henry approved 27/11/2026 per ChatGPT's FIX-04
-//   proposal in the M02-02 review; API_SPEC §16 updated accordingly).
+//   adminRefreshIp, adminRefreshAccount (M02-05 D-05), orderLookupIp,
+//   orderLookupCode (explicit in §16), plus contact and createOrder
+//   (DECIDED — Henry approved 27/11/2026 per ChatGPT's FIX-04 proposal
+//   in the M02-02 review; API_SPEC §16 updated accordingly).
 
 export type RateLimitKind =
   | "publicGet"
   | "publicWrite"
   | "adminLoginIp"
   | "adminLoginAccount"
+  | "adminRefreshIp"
+  | "adminRefreshAccount"
   | "orderLookupIp"
   | "orderLookupCode"
   | "search"
@@ -45,6 +48,14 @@ export const RATE_LIMIT_RULES: Record<RateLimitKind, RateLimitRule> = {
   publicWrite: { limit: 30, windowSeconds: 60, policy: "fail-open" },
   adminLoginIp: { limit: 5, windowSeconds: 60, policy: "fail-closed" },
   adminLoginAccount: { limit: 10, windowSeconds: 60, policy: "fail-closed" },
+  // Refresh limits (M02-05, D-05): refresh tokens are credentials, so both
+  // kinds are fail-closed like login.
+  adminRefreshIp: { limit: 30, windowSeconds: 60, policy: "fail-closed" },
+  adminRefreshAccount: {
+    limit: 10,
+    windowSeconds: 60,
+    policy: "fail-closed",
+  },
   orderLookupIp: { limit: 10, windowSeconds: 60, policy: "fail-closed" },
   orderLookupCode: { limit: 5, windowSeconds: 60, policy: "fail-closed" },
   search: { limit: 60, windowSeconds: 60, policy: "fail-open" },
