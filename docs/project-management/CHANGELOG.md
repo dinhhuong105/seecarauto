@@ -1,3 +1,11 @@
+## 27/11/2026 — M02-03 Revision 03 (FIX-04 + FIX-05, chỉ tài liệu)
+
+- ChatGPT review Revision 02 ngày 27/11/2026 ~13:24 (chat "Review M02-03"): NOT ACCEPTED — FIX-01 / AC-11 PASS; FIX-02 / AC-13 PASS (ChatGPT đọc trực tiếp test Revision 02 trên GitHub, xác nhận spyOn khắc phục đúng lỗi Revision 01); FIX-03 / Handbook CHƯA HOÀN TẤT; AC-19 CHƯA PASS. ChatGPT giao Revision 03 chỉ 2 điểm tài liệu và sẽ đưa verdict cuối cùng sau khi kiểm tra commit.
+- FIX-04: Task Brief Status đồng bộ lại — "Revision 02 đã gửi ChatGPT review ngày 27/11/2026, đang chờ verdict" (trước đây ghi "bản đầu + Revision 01... chờ verdict" đã lỗi thời).
+- FIX-05: sửa mô tả lịch sử Revision 01 trong Task Brief §10.2, mục CHANGELOG Revision 01 và bullet TASK_BOARD — phân biệt số lần worker handler được gọi (2 lần) với số lần CatalogSyncProcessor.process() thực sự được gọi (1 lần ở Revision 01); attemptsMade = 2 chứng minh BullMQ retry job nhưng không chứng minh process() được thực thi lại (bằng chứng đó chỉ có ở Revision 02).
+- Revision 03 chỉ thay đổi tài liệu; không sửa test/implementation, không đổi Prisma schema/migration. Kết quả kiểm thử không đổi so với Revision 02 (unit 39/39, e2e Meilisearch 11/11, full e2e 74/74; workspace 9/9 · 9/9 · 9/9 · 5/5).
+- Trạng thái: M02-03 IN_REVIEW, chờ ChatGPT review Revision 03 — verdict cuối cùng (AC-01 → AC-18 tự đánh giá PASS, AC-19 CHỜ XÁC MINH).
+
 ## 27/11/2026 — M02-03 Revision 02 (FIX-02 làm lại + FIX-03 hoàn thành)
 
 - ChatGPT review Revision 01 ngày 27/11/2026 ~13:15 (chat "Review M02-03"): NOT ACCEPTED — FIX-01 / AC-11 PASS; FIX-02 / AC-13 CHƯA PASS; FIX-03 / Handbook CẦN CHỈNH. Lỗi ở Revision 01: lỗi transient ném bên ngoài `CatalogSyncProcessor.process()` nên process() chỉ được gọi 1 lần, không phải 2 lần như báo cáo mô tả; báo cáo ghi sai split diff file test (+149/−4, thực tế +145/−4).
@@ -10,7 +18,7 @@
 
 - ChatGPT review bản đầu ngày 27/11/2026 ~12:41 (chat "Review M02-03"): NOT ACCEPTED — chỉ 2 vấn đề: FIX-01 (AC-11) test filter chưa kiểm chứng category; FIX-02 (AC-13) `job.opts.attempts = 3` chỉ chứng minh cấu hình, chưa chứng minh BullMQ retry thực tế.
 - FIX-01: test filter E2E mở rộng — `categorySlug = engine` trả về đúng 3 sản phẩm Engine (không chứa sản phẩm Brakes), `categorySlug = brakes` đúng 1 sản phẩm, `categorySlugs = cooling` đúng 1 sản phẩm có Cooling là category phụ; `seedProduct` thêm option `categoryId` / `extraCategoryIds`; không đổi implementation.
-- FIX-02: test E2E mới — queue + worker BullMQ thật trên Redis thật, processor thật `CatalogSyncProcessor.process`; lỗi transient giả lập 1 lần rồi retry thật: `attemptsMade = 2`, processor gọi 2 lần, job `completed`, `returnvalue = "upserted"`, index đúng 1 document. Queue/worker test dùng Redis DB 2 (DB 0/DB 1 bị FLUSHDB bởi suite song song). Lỗi thật tìm thấy: `new Worker` với ioredis mặc định throw "maxRetriesPerRequest must be null" — đã truyền `{ maxRetriesPerRequest: null }` và đưa khởi tạo vào try/finally (rò connection/timer từng làm jest treo).
+- FIX-02: test E2E mới — queue + worker BullMQ thật trên Redis thật, processor thật `CatalogSyncProcessor.process`; lỗi transient giả lập 1 lần rồi retry thật: `attemptsMade = 2`, worker handler gọi 2 lần (process() thực tế chỉ gọi 1 lần — điểm sai đã được sửa ở Revision 02; xem mục Revision 03), job `completed`, `returnvalue = "upserted"`, index đúng 1 document. Queue/worker test dùng Redis DB 2 (DB 0/DB 1 bị FLUSHDB bởi suite song song). Lỗi thật tìm thấy: `new Worker` với ioredis mặc định throw "maxRetriesPerRequest must be null" — đã truyền `{ maxRetriesPerRequest: null }` và đưa khởi tạo vào try/finally (rò connection/timer từng làm jest treo).
 - Kiểm thử sau Revision 01: unit 39/39, e2e Meilisearch 11/11, full e2e 74/74; workspace typecheck 9/9, lint 9/9, test 9/9, build 5/5; `git diff --check` sạch; secret scan sạch. 1 file test thay đổi (+145/−4) và 5 file tài liệu; tổng commit Revision 01 là 6 files +167/−7; không đổi Prisma schema/migration hay code implementation.
 - Trạng thái: M02-03 IN_REVIEW, chờ ChatGPT review Revision 01 (AC-01 → AC-18 tự đánh giá PASS, AC-19 CHỜ XÁC MINH).
 
