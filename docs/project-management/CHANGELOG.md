@@ -1,3 +1,9 @@
+## 28/11/2026 — M02-06 DONE (ChatGPT ACCEPT Stage 2 Revision 02)
+
+- ChatGPT **ACCEPT Stage 2 Revision 02 ngày 28/11/2026 ~17:44 — FIX verified** (commit bd928f0, parent aea8801, 2 file +49/−1; FIX-M02-06-S2-01 PASS: removeUserRole() kiểm tra role tồn tại → 404 ROLE_NOT_FOUND, giữ idempotent khi role tồn tại chưa gán; 3 case e2e). Stage 1 ACCEPTED Revision 03 (44e1a37, 12/12 endpoint). Chuỗi Stage 2: f555035 (Step 0 docs-only) → 2a0263b (G1) → 8104dad (G2) → 82d9afe (G3) → 76016d3 (G4) → a127e4f (G5) → b40f939 (G6) → 5e8781e (G6-fix Reflector @Optional) → aea8801 (G6b) → bd928f0 (FIX-M02-06-S2-01). Kiểm tra thật trên bd928f0 (main agent chạy lại): RBAC e2e 31/31, full e2e tuần tự 10 suites / 175 test PASS trong 240.325s, unit 114/114, typecheck/lint 9/9, build 5/5; Docker runtime UNVERIFIED, parallel e2e không chạy lại, AC-17 kill-process chưa thử, CI chưa chạy.
+- Housekeeping (commit này, SHA trong git log): Task Brief M02-06 → DONE + §10 kết quả nghiệm thu; CURRENT_STATE + TASK_BOARD + CHANGELOG đồng bộ; PRODUCT_BACKLOG — M02-06 DONE, tổng DONE 19 (M00 7 + M01 7 + M02-01 + M02-02 + M02-03 + M02-05 + M02-06), IN_PROGRESS 0, BACKLOG 69, BLOCKED 1; SPRINT_PLAN — Sprint 3 1/7 DONE (M02-06), M03-01 đủ dependency (M02-01/M02-05/M02-06 đều DONE).
+- Tiếp theo: ChatGPT chọn M06-02 Roles CRUD API/UI làm task tiếp theo — sau housekeeping sẽ giao lập Task Brief M06-02 bản đầu để review, chưa cho code.
+
 ## 28/11/2026 — M02-05 rebase lên main 23e3268 (INT-M02-05-01)
 
 - Rebase nhánh `feature/M02-05-auth-jwt-refresh-token` từ base `a77bbd9` lên main `23e3268` (35 commit được replay; commit này, SHA trong git log): M02-03 + FIX-CI-01 nay nằm trong nhánh; §10.18/§10.19/§10.20 giữ nguyên từng byte; xung đột chỉ ở Handbook + hợp nhất `package.json`/`app.module.ts` (giữ cả meilisearch 0.44.1, @nestjs/jwt 10.2.0, argon2 0.45.2).
