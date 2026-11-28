@@ -69,17 +69,17 @@ Kế hoạch Sprint cho roadmap 16–20 tuần. Nguồn: `MASTER_ROADMAP.md` +
 | Dependency | Không có |
 | Trạng thái | DONE (M00 commit feea4d4, ChatGPT ACCEPT có điều kiện; M01-01 commit 4a86da0, ChatGPT ACCEPT 9/9 — cả 8 task đã nghiệm thu; Sprint 1 là Sprint chịu trách nhiệm nghiệm thu M01-01) |
 
-## 4. Sprint 2 — Tuần 3–4: Kiến trúc + Hạ tầng dữ liệu bắt đầu — CHƯA HOÀN THÀNH (đã hết khung tuần; 9/10 DONE)
+## 4. Sprint 2 — Tuần 3–4: Kiến trúc + Hạ tầng dữ liệu bắt đầu — DONE (10/10)
 
 | Mục | Nội dung |
 | --- | --- |
 | Mục tiêu | Hoàn thành toàn bộ tài liệu kiến trúc và UI/UX; bắt đầu schema + auth (M02 mở đầu tuần 3 theo roadmap) |
 | Task | M01-02, M01-03, M01-04, M01-05, M01-06, M01-07, M02-01, M02-02, M02-03, M02-05 (10 task) |
-| Trạng thái task | Đủ điều kiện: M01-02 → M01-07 (DONE); M02-01 (DONE 27/11/2026 — ChatGPT ACCEPT Revision 02, 12/12 PASS); M02-02 (DONE 27/11/2026 — ChatGPT ACCEPT, 17/17 AC PASS); M02-03 (DONE 27/11/2026 — ChatGPT ACCEPT Revision 04, 19/19 AC PASS). M02-05 IN_PROGRESS — Stage 1 ACCEPTED 27/11/2026 (Revision 14, D-14 ACCEPT), Stage 2 chưa triển khai, chờ lệnh riêng. Không còn gate PD-01 → PD-06 cho M02-01 |
+| Trạng thái task | Đủ điều kiện: M01-02 → M01-07 (DONE); M02-01 (DONE 27/11/2026 — ChatGPT ACCEPT Revision 02, 12/12 PASS); M02-02 (DONE 27/11/2026 — ChatGPT ACCEPT, 17/17 AC PASS); M02-03 (DONE 27/11/2026 — ChatGPT ACCEPT Revision 04, 19/19 AC PASS); M02-05 (DONE 28/11/2026 — ChatGPT ACCEPT G4, 18/18 AC PASS, Revision 04, bf84951; chờ Henry xác nhận cuối cùng để đóng task). Không còn gate PD-01 → PD-06 cho M02-01 |
 | Deliverables | ERD (17 bảng); API Spec (96 operations); Sitemap/Wireframe; Admin Dashboard; UI Research + Design System + UI Proposal; Backlog + Sprint Plan (M01-07); Prisma schema nháp; Redis + BullMQ; Meilisearch index; JWT login admin |
 | Điều kiện hoàn thành | ChatGPT ACCEPT M01-02 → M01-07; migration chạy (phần không phụ thuộc PD); login admin được; Meilisearch trả kết quả đúng ADR-010 |
 | Dependency | M00 DONE; PD-01 → PD-06 (gate M02-01) |
-| Trạng thái | CHƯA HOÀN THÀNH — đã hết khung tuần (tuần 3–4) nhưng chưa thỏa quy tắc hoàn thành §1: M02-01 + M02-02 + M02-03 DONE; M02-05 IN_PROGRESS — Stage 1 ACCEPTED 27/11/2026 (Revision 14), Stage 2 chưa triển khai. 9/10 task DONE (M01-02 → M01-07 + M02-01 + M02-02 + M02-03). Sprint chỉ ghi DONE khi các task M02 đủ điều kiện đạt điều kiện hoàn thành. |
+| Trạng thái | DONE — 10/10 task DONE (M01-02 → M01-07 + M02-01 + M02-02 + M02-03 + M02-05); tất cả task đủ điều kiện đã đạt điều kiện hoàn thành (§1). |
 
 ## 5. Sprint 3 — Tuần 5–6: RBAC nền + Catalog bắt đầu — BACKLOG
 
@@ -185,7 +185,7 @@ Kế hoạch Sprint cho roadmap 16–20 tuần. Nguồn: `MASTER_ROADMAP.md` +
 | Sprint | Tuần | Số task | Trạng thái |
 | --- | --- | --- | --- |
 | Sprint 1 | 1–2 | 8 (M00 7 + M01-01) | DONE |
-| Sprint 2 | 3–4 | 10 (M01 6 + M02 4) | CHƯA HOÀN THÀNH — 9/10 DONE (M01-02 → M01-07 + M02-01 + M02-02 + M02-03); M02-05 IN_PROGRESS — Stage 1 ACCEPTED 27/11/2026, Stage 2 chưa triển khai |
+| Sprint 2 | 3–4 | 10 (M01 6 + M02 4) | DONE — 10/10 DONE (M01-02 → M01-07 + M02-01 + M02-02 + M02-03 + M02-05) |
 | Sprint 3 | 5–6 | 7 (M02 4 + M03 3) | BACKLOG |
 | Sprint 4 | 7–8 | 9 (M03 6 + M04 3) | BACKLOG |
 | Sprint 5 | 9–10 | 10 (M04 6 + M03-10 + M05 2 + M06-01) | BACKLOG |

@@ -1,3 +1,10 @@
+## 28/11/2026 — M02-05 DONE (ChatGPT ACCEPT G4, 18/18 AC PASS)
+
+- ChatGPT **ACCEPT G4 ngày 28/11/2026 — 18/18 AC PASS, 0 FAIL** (G4 Revision 04, commit bf84951, parent 09afcaa, 2 files docs only +11/−10; FIX-G4-06/07/08 đều PASS; §10.18 byte-identical). Gate đầy đủ: G0 PASS; G1 ACCEPTED; G2 ACCEPTED (Revision 03, 011a461); G3 ACCEPTED (Revision 04, e1b7b91); FIX-38 ACCEPTED (d356c92); FIX-39 ACCEPTED (bc1f803); G4 ACCEPTED (Revision 04, bf84951). Caveat: kết quả runtime ghi nhận theo báo cáo Muse, ChatGPT không tự chạy lại các suite trên môi trường của Muse; Docker runtime UNVERIFIED, parallel e2e không chạy lại.
+- Chuỗi commit Stage 2 đã nghiệm thu (branch `feature/M02-05-auth-jwt-refresh-token`, base `a77bbd9`): `ce82268` (Phase 1) → `2c36c06` → `e4c1c6d` → `011a461` (G2 ACCEPT) → `e3ac77f` → `e1b7b91` (G3 ACCEPT) → `d356c92` (FIX-38) → `bc1f803` (FIX-39) → `3b7a367` (G4) → `aec557b` (Revision 02) → `09afcaa` (Revision 03) → `bf84951` (Revision 04, G4 ACCEPT).
+- Housekeeping (commit này, SHA trong git log): Task Brief M02-05 → DONE + §10.20 bàn giao (đã xác minh / chưa xác minh / còn lại); CURRENT_STATE + TASK_BOARD + CHANGELOG đồng bộ; PRODUCT_BACKLOG — M02-05 DONE, tổng DONE 17 (M00 7 + M01 7 + M02-01 + M02-02 + M02-05), IN_PROGRESS 0, BACKLOG 71, BLOCKED 1; SPRINT_PLAN — Sprint 2 9/10 DONE, vẫn CHƯA HOÀN THÀNH (M02-03 còn BACKLOG).
+- Tiếp theo: M02-05 chưa đóng cuối cùng — chờ Henry xác nhận cuối cùng để ghi nhận DONE. Tích hợp KHÔNG mặc định — trình Henry quyết định với commit cụ thể (hiện tại: `bf84951`); sau khi M02-03 được tích hợp chính thức, rebase M02-05 lên commit tích hợp mới nhất và kiểm tra lại Handbook.
+
 ## 27/11/2026 — M02-05 Stage 1 ACCEPTED (ChatGPT ACCEPT Revision 14, Task Brief)
 
 - ChatGPT ACCEPT Stage 1 ngày 27/11/2026 ~15:46 (Revision 14, commit bbe2cd4, parent ba452be, 1 file, +11/−7, DOCS ONLY): FIX-32 PASS (cả kịch bản leader idle độc lập và có follower cạnh tranh); FIX-31, FIX-30, FIX-29, FIX-25, FIX-26/FIX-28, FIX-27 PASS; D-16 PASS; D-14 ACCEPT. Không yêu cầu Revision 15.
