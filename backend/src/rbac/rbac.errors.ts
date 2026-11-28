@@ -20,6 +20,8 @@ export type RbacErrorCode =
   | "ROLE_NOT_FOUND"
   | "VALIDATION_ERROR"
   | "ROLE_NAME_DUPLICATE"
+  | "ROLE_HAS_USERS"
+  | "PRECONDITION_FAILED"
   | "SERVICE_UNAVAILABLE";
 
 export interface RbacValidationDetail {
@@ -83,6 +85,35 @@ export class RbacException extends HttpException {
     message = "Tên vai trò này đã tồn tại.",
   ): RbacException {
     return new RbacException(409, "ROLE_NAME_DUPLICATE", message);
+  }
+
+  /**
+   * Role still assigned to accounts (M06-02, GAP-03, Error Catalog §5).
+   * The count is the number of UserRole rows for the role (including
+   * inactive accounts) so the admin knows how many accounts to move.
+   */
+  static roleHasUsers(count: number): RbacException {
+    return new RbacException(
+      409,
+      "ROLE_HAS_USERS",
+      `Vai trò đang được gán cho ${count} tài khoản. Vui lòng chuyển các tài khoản sang vai trò khác trước khi xóa.`,
+      {
+        details: [
+          {
+            field: "count",
+            code: "ROLE_HAS_USERS",
+            message: `Vai trò đang được gán cho ${count} tài khoản.`,
+          },
+        ],
+      },
+    );
+  }
+
+  /** If-Match (etag) does not match (M06-02, Error Catalog §6). */
+  static preconditionFailed(
+    message = "Dữ liệu đã thay đổi, vui lòng tải lại rồi thử lại.",
+  ): RbacException {
+    return new RbacException(412, "PRECONDITION_FAILED", message);
   }
 
   static serviceUnavailable(retryAfter = 5): RbacException {

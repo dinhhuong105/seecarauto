@@ -9,6 +9,7 @@ import { QueueModule } from "./queue/queue.module";
 import { RbacModule } from "./rbac/rbac.module";
 import { RedisModule } from "./redis/redis.module";
 import { validateRedisEnv } from "./redis/redis.config";
+import { RolesModule } from "./roles/roles.module";
 import { SearchModule } from "./search/search.module";
 import { validateMeilisearchEnv } from "./search/meilisearch.config";
 
@@ -31,6 +32,8 @@ import { validateMeilisearchEnv } from "./search/meilisearch.config";
     // imported but no controller is registered here — admin endpoints
     // attach PermissionsGuard explicitly in their own modules (M03+).
     RbacModule,
+    // M06-02: Roles CRUD endpoints (6 operations, RB-15).
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
