@@ -576,11 +576,20 @@ export class AuthService {
     key: string,
     userId: string,
   ): Promise<AuthResponseData> {
-    const operation = await this.prisma.authRefreshOperation.findUnique({
-      where: {
-        tokenHash_idempotencyKey: { tokenHash, idempotencyKey: key },
-      },
-    });
+    // FIX-38 (E7d): the operation row must be verified before the stored
+    // response may be returned. If the DB read itself fails, the state
+    // cannot be verified — fail closed with 503, never infer a DB error
+    // as a replay and never return a token unverified.
+    let operation;
+    try {
+      operation = await this.prisma.authRefreshOperation.findUnique({
+        where: {
+          tokenHash_idempotencyKey: { tokenHash, idempotencyKey: key },
+        },
+      });
+    } catch {
+      throw AuthException.serviceUnavailable(5);
+    }
     if (operation === null || operation.state !== "COMPLETED") {
       throw AuthException.serviceUnavailable(5);
     }

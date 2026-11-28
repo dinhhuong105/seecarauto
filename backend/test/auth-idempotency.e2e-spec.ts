@@ -862,4 +862,93 @@ describe("Auth idempotency (e2e) — Phase 3 E1–E7", () => {
     expect(operation?.state).toBe("COMPLETED");
     expect(await sessionCount(user.id)).toBe(2);
   });
+
+  // ------------------------------------------------------------ FIX-38 (E7d)
+
+  it("FIX-38: follower cannot read the operation row (Prisma read rejects) -> 503 fail-closed, no new session, no rotation, no replay conclusion", async () => {
+    const username = freshUsername();
+    const user = await createUser(username);
+    const pair = await loginOk(username);
+    const key = freshKey();
+    const oldHash = tokens.hashToken(pair.refreshToken);
+    const hooks = {
+      onClaimed: async (tx: Prisma.TransactionClient) => {
+        // Hold the leader transaction open (~3s, no idle gap > 5s) so the
+        // follower's INSERT must wait on the unique index and only then
+        // take the follower path into followCompletedOperation.
+        const started = Date.now();
+        while (Date.now() - started < 3000) {
+          await tx.$executeRaw`SELECT 1`;
+          await sleep(500);
+        }
+      },
+    };
+    // Fail the operation-row read inside followCompletedOperation only.
+    // The leader's rotation uses raw SQL, so the first
+    // authRefreshOperation.findUnique call in this test is the follower's
+    // read inside followCompletedOperation.
+    const spy = jest
+      .spyOn(prisma.authRefreshOperation, "findUnique")
+      .mockRejectedValueOnce(new Error("simulated DB read failure"));
+    const leaderPromise = authService.refresh(
+      pair.refreshToken,
+      key,
+      "127.0.0.1",
+      hooks,
+    );
+    // Attach the outcome handler NOW so a leader rejection cannot become
+    // an unhandled rejection while the follower request is in flight.
+    const leaderSettled = leaderPromise.then(
+      (value) => ({ ok: true as const, value }),
+      (error: unknown) => ({ ok: false as const, error }),
+    );
+    await sleep(500); // the leader has claimed by now
+    let follower: request.Response;
+    try {
+      follower = await refreshReq(pair.refreshToken, key);
+    } finally {
+      spy.mockRestore();
+    }
+    const leaderResult = await leaderSettled;
+    expect(leaderResult.ok).toBe(true);
+    if (!leaderResult.ok) {
+      throw leaderResult.error;
+    }
+    const leader = leaderResult.value;
+    expect(follower.status).toBe(503);
+    expect(follower.body.error).toBe("SERVICE_UNAVAILABLE");
+    expect(follower.body.retryAfter).toBe(5);
+    expect(follower.headers["retry-after"]).toBe("5");
+    expect(follower.body).not.toHaveProperty("data");
+    // The leader rotated exactly once; the follower created nothing and
+    // rotated nothing more.
+    expect(await sessionCount(user.id)).toBe(2);
+    await assertOldRotatedOnce(oldHash, leader.refreshToken);
+    expect(await operationCount(oldHash, key)).toBe(1);
+    const operation = await prisma.authRefreshOperation.findUnique({
+      where: {
+        tokenHash_idempotencyKey: { tokenHash: oldHash, idempotencyKey: key },
+      },
+    });
+    expect(operation?.state).toBe("COMPLETED");
+    // No replay conclusion: no session revoked as REUSE_DETECTED, no
+    // reuse audit event, no revoke-all side effect on the leader's session.
+    const sessions = await prisma.adminRefreshSession.findMany({
+      where: { userId: user.id },
+    });
+    expect(
+      sessions.filter((s) => s.revokedReason === "REUSE_DETECTED"),
+    ).toHaveLength(0);
+    const newSession = sessions.find((s) => s.revokedAt === null);
+    expect(newSession).toBeDefined();
+    expect(newSession?.tokenHash).toBe(tokens.hashToken(leader.refreshToken));
+    const audits = await prisma.auditLog.findMany({
+      where: { action: "auth.refresh_reuse_detected" },
+    });
+    expect(audits).toHaveLength(0);
+    console.log(
+      "[FIX-38] follower DB-read failure -> 503 fail-closed; 1 new " +
+        "session (leader only), old ROTATED once, no replay conclusion",
+    );
+  }, 30_000);
 });
