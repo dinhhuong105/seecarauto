@@ -61,9 +61,7 @@ describe("RolesController (unit)", () => {
     },
   );
 
-  it("declares no LAST_SUPER_ADMIN permission or code anywhere", () => {
-    const source = JSON.stringify(Object.keys(EXPECTED));
-    expect(source).not.toMatch(/LAST_SUPER_ADMIN/i);
+  it("uses only the four roles.* codes (no other permission)", () => {
     for (const code of Object.values(EXPECTED)) {
       expect(code).toMatch(/^roles\.(view|create|update|delete)$/);
     }

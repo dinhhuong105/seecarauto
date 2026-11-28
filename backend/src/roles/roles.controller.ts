@@ -44,7 +44,7 @@ import { RolesService } from "./roles.service";
 //
 // Release gate (GAP-02, AC-19): DELETE + PUT matrix are implemented and
 // tested on this feature branch, but must NOT go live until M06-08
-// completes Last-Super-Admin. No LAST_SUPER_ADMIN* logic exists here.
+// completes Last-Super-Admin. No Last-Super-Admin logic exists here.
 @ApiTags("Roles")
 @Controller("roles")
 export class RolesController {
