@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Optional,
+} from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import type { RequestWithAdmin } from "../auth/jwt-auth.guard";
 import { PermissionService } from "../permissions/permission.service";
@@ -27,7 +32,13 @@ import { RBAC_REQUIRED_PERMISSION_KEY } from "./require-permission.decorator";
 @Injectable()
 export class PermissionsGuard implements CanActivate {
   constructor(
-    private readonly reflector: Reflector,
+    // Reflector is @Optional with a local default: Nest's global
+    // InternalCoreModule provides it in a normal app, but a context that
+    // re-requires the module graph (jest.resetModules, auth-config AC-13)
+    // loads a second copy of the Reflector class token, which the
+    // framework's provider cannot satisfy. The guard then builds its own
+    // Reflector — stateless, same behaviour — instead of failing boot.
+    @Optional() private readonly reflector: Reflector = new Reflector(),
     private readonly permissions: PermissionService,
   ) {}
 
