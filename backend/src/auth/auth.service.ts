@@ -296,11 +296,21 @@ export class AuthService {
       // retried — return the stored response (or 503 when the envelope is
       // gone), NOT a replay. A different key with no COMPLETED operation
       // is a replay: revoke-all + 401 TOKEN_REUSE_DETECTED (FIX-12/AC-05).
-      const operation = await this.prisma.authRefreshOperation.findUnique({
-        where: {
-          tokenHash_idempotencyKey: { tokenHash, idempotencyKey: key },
-        },
-      });
+      // FIX-39: the operation row must be read before deciding replay vs
+      // retry. If the DB read itself fails, the state cannot be verified
+      // — fail closed with 503 BEFORE any fall-through. A failed read
+      // must NOT be treated as "no COMPLETED operation" (that would
+      // revoke-all and report a replay that never happened).
+      let operation;
+      try {
+        operation = await this.prisma.authRefreshOperation.findUnique({
+          where: {
+            tokenHash_idempotencyKey: { tokenHash, idempotencyKey: key },
+          },
+        });
+      } catch {
+        throw AuthException.serviceUnavailable(5);
+      }
       if (operation !== null && operation.state === "COMPLETED") {
         return this.followCompletedOperation(tokenHash, key, session.userId);
       }
@@ -721,12 +731,23 @@ export class AuthService {
     }
     if (operation !== null && operation.state === "COMPLETED") {
       if (operation.ownerId === ownerId && heldPair !== null) {
-        const oldSession = await this.prisma.adminRefreshSession.findUnique({
-          where: { tokenHash },
-        });
-        const newSession = await this.prisma.adminRefreshSession.findUnique({
-          where: { id: heldPair.newSessionId },
-        });
+        // FIX-39: both session rows must be verified before the held
+        // pair may be returned. If either DB read fails, the relation
+        // cannot be verified — fail closed with 503. A failed read
+        // proves nothing about commit vs rollback: never infer rollback,
+        // replay or success from it, and never return a token unverified.
+        let oldSession;
+        let newSession;
+        try {
+          oldSession = await this.prisma.adminRefreshSession.findUnique({
+            where: { tokenHash },
+          });
+          newSession = await this.prisma.adminRefreshSession.findUnique({
+            where: { id: heldPair.newSessionId },
+          });
+        } catch {
+          throw AuthException.serviceUnavailable(5);
+        }
         if (
           oldSession?.revokedReason === "ROTATED" &&
           oldSession.replacedBySessionId === heldPair.newSessionId &&

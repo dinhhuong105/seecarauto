@@ -951,4 +951,336 @@ describe("Auth idempotency (e2e) — Phase 3 E1–E7", () => {
         "session (leader only), old ROTATED once, no replay conclusion",
     );
   }, 30_000);
+
+  // ------------------------------------------------------------ FIX-39 (E7d, continued)
+
+  it("FIX-39-A: ROTATED branch cannot read the operation row (Prisma read rejects) -> 503 fail-closed, no token, no replay conclusion", async () => {
+    const username = freshUsername();
+    const user = await createUser(username);
+    const pair = await loginOk(username);
+    const key1 = freshKey();
+    const first = await refreshReq(pair.refreshToken, key1);
+    expect(first.status).toBe(200);
+    const oldHash = tokens.hashToken(pair.refreshToken);
+    // The old session is now ROTATED; the new session is ACTIVE.
+    const key2 = freshKey();
+    // Fail ONLY the operation-row read in the ROTATED branch. The
+    // session lookup in refresh() uses adminRefreshSession (a different
+    // delegate), so the first authRefreshOperation.findUnique call in
+    // this request is the ROTATED-branch read.
+    const spy = jest
+      .spyOn(prisma.authRefreshOperation, "findUnique")
+      .mockRejectedValueOnce(new Error("simulated DB read failure"));
+    let retry: request.Response;
+    let findUniqueCalls = 0;
+    try {
+      retry = await refreshReq(pair.refreshToken, key2);
+      // Snapshot the call count BEFORE restoring: mockRestore() clears
+      // the mock state, so asserting on spy.mock.calls afterwards would
+      // always see 0 calls.
+      findUniqueCalls = spy.mock.calls.length;
+    } finally {
+      spy.mockRestore();
+    }
+    expect(findUniqueCalls).toBe(1); // the fault hit the ROTATED read
+    expect(retry.status).toBe(503);
+    expect(retry.body.error).toBe("SERVICE_UNAVAILABLE");
+    expect(retry.body.retryAfter).toBe(5);
+    expect(retry.headers["retry-after"]).toBe("5");
+    expect(retry.body).not.toHaveProperty("data");
+    // No second rotation: still exactly 2 sessions (login + first rotation).
+    expect(await sessionCount(user.id)).toBe(2);
+    await assertOldRotatedOnce(oldHash, first.body.data.refreshToken);
+    // No replay conclusion: no REUSE_DETECTED, no reuse audit, the
+    // session from the first rotation is still ACTIVE, and no operation
+    // row was created for the failed key (the read failed before any claim).
+    const sessions = await prisma.adminRefreshSession.findMany({
+      where: { userId: user.id },
+    });
+    expect(
+      sessions.filter((s) => s.revokedReason === "REUSE_DETECTED"),
+    ).toHaveLength(0);
+    const active = sessions.find((s) => s.revokedAt === null);
+    expect(active).toBeDefined();
+    expect(active?.tokenHash).toBe(
+      tokens.hashToken(first.body.data.refreshToken),
+    );
+    const audits = await prisma.auditLog.findMany({
+      where: { action: "auth.refresh_reuse_detected" },
+    });
+    expect(audits).toHaveLength(0);
+    expect(await operationCount(oldHash, key2)).toBe(0);
+    console.log(
+      "[FIX-39-A] ROTATED-branch DB-read failure -> 503 fail-closed; " +
+        "no second rotation, no replay conclusion",
+    );
+  }, 30_000);
+
+  /**
+   * Second app instance whose PostgreSQL traffic goes through the
+   * PgCommitDropProxy (same setup as E6). Shares the test database and
+   * JWT secrets, so the tokens it issues verify against the same DB rows.
+   * On setup failure the proxy is stopped and the client disconnected so
+   * no listener holds the port for the next run.
+   */
+  async function startProxyApp(): Promise<{
+    proxy: PgCommitDropProxy;
+    proxyPrisma: PrismaService;
+    proxyApp: INestApplication;
+  }> {
+    const proxy = new PgCommitDropProxy(5432, PROXY_LISTEN_PORT);
+    let proxyPrisma: PrismaService | null = null;
+    try {
+      await proxy.start();
+      const proxyUrl = process.env.DATABASE_URL!.replace(
+        /@(localhost|127\.0\.0\.1):5432\//,
+        `@127.0.0.1:${PROXY_LISTEN_PORT}/`,
+      );
+      expect(proxyUrl).toContain(`:${PROXY_LISTEN_PORT}/`);
+      expect(proxyUrl).not.toBe(process.env.DATABASE_URL);
+      const plainUrl = proxyUrl.includes("?")
+        ? `${proxyUrl}&sslmode=disable`
+        : `${proxyUrl}?sslmode=disable`;
+      proxyPrisma = new PrismaService({
+        datasources: { db: { url: plainUrl } },
+      });
+      await proxyPrisma.$connect();
+      const moduleFixture: TestingModule = await Test.createTestingModule({
+        imports: [AppModule],
+      })
+        .overrideProvider(PrismaService)
+        .useValue(proxyPrisma)
+        .compile();
+      const proxyApp = moduleFixture.createNestApplication();
+      configureApp(proxyApp);
+      proxyApp.getHttpAdapter().getInstance().set("trust proxy", true);
+      await proxyApp.init();
+      return { proxy, proxyPrisma, proxyApp };
+    } catch (error) {
+      if (proxyPrisma !== null) {
+        await proxyPrisma.$disconnect().catch(() => undefined);
+      }
+      await proxy.stop().catch(() => undefined);
+      throw error;
+    }
+  }
+
+  async function stopProxyApp(parts: {
+    proxy: PgCommitDropProxy;
+    proxyPrisma: PrismaService;
+    proxyApp: INestApplication;
+  }): Promise<void> {
+    parts.proxy.disarm();
+    await parts.proxyApp.close();
+    await parts.proxyPrisma.$disconnect().catch(() => undefined);
+    await parts.proxy.stop();
+  }
+
+  it("FIX-39-B: old-session read rejects in resolveAmbiguousCommit (lost COMMIT ack) -> 503 fail-closed, no token, no inference", async () => {
+    // The COMMIT ack is lost (the proxy forwards the COMMIT, then drops
+    // the client connection), so the server DID commit the rotation —
+    // the 503 below is a verification failure, not a rollback. What the
+    // read error does NOT prove is the session relation; this test
+    // therefore asserts the response plus the DB state it can know (via
+    // real queries), and never infers rollback, replay or success from
+    // the read error itself.
+    const { proxy, proxyPrisma, proxyApp } = await startProxyApp();
+    try {
+      const username = freshUsername();
+      const passwordHash = await new PasswordService().hash(PASSWORD);
+      const user = await proxyPrisma.user.create({
+        data: { username, passwordHash },
+      });
+      const login = await request(proxyApp.getHttpServer())
+        .post("/api/v1/auth/admin/login")
+        .send({ username, password: PASSWORD });
+      expect(login.status).toBe(200);
+      const pair = login.body.data as {
+        accessToken: string;
+        refreshToken: string;
+      };
+      const key = freshKey();
+      const oldHash = tokens.hashToken(pair.refreshToken);
+
+      // Fail ONLY the old-session read inside resolveAmbiguousCommit.
+      // In this request the adminRefreshSession.findUnique calls are,
+      // in order: (1) the session lookup at the start of refresh() —
+      // must succeed; (2) the old-session verification read — must
+      // reject; the new-session read never runs. The transaction
+      // internals use the tx client, not this delegate, so the spy
+      // never sees them.
+      const original = proxyPrisma.adminRefreshSession.findUnique.bind(
+        proxyPrisma.adminRefreshSession,
+      );
+      const spy = jest.spyOn(proxyPrisma.adminRefreshSession, "findUnique");
+      spy.mockImplementationOnce((args) => original(args));
+      spy.mockRejectedValueOnce(
+        new Error("simulated old-session DB read failure"),
+      );
+      proxy.arm();
+      let res: request.Response;
+      // Snapshot the mock calls BEFORE restoring: mockRestore() clears
+      // the mock state, so asserting on spy.mock.calls afterwards would
+      // always see 0 calls.
+      let spyCalls: unknown[] = [];
+      try {
+        res = await request(proxyApp.getHttpServer())
+          .post("/api/v1/auth/admin/refresh")
+          .set("Idempotency-Key", key)
+          .send({ refreshToken: pair.refreshToken });
+        spyCalls = spy.mock.calls.map((call) => call[0]);
+      } finally {
+        spy.mockRestore();
+      }
+      expect(proxy.wasDropped).toBe(true); // the fault really fired
+      expect(spyCalls).toHaveLength(2); // lookup + old-session read
+      expect(spyCalls[1]).toEqual({ where: { tokenHash: oldHash } });
+      expect(res.status).toBe(503);
+      expect(res.body.error).toBe("SERVICE_UNAVAILABLE");
+      expect(res.body.retryAfter).toBe(5);
+      expect(res.headers["retry-after"]).toBe("5");
+      expect(res.body).not.toHaveProperty("data");
+      // The server committed (the COMMIT was forwarded, only its ack was
+      // lost): exactly 1 new session, old ROTATED once, 1 COMPLETED
+      // operation — verified by real DB queries, not assumed from the
+      // read error. The 503 means the held pair was NOT returned despite
+      // the commit, because the session relation was unverifiable.
+      expect(await sessionCount(user.id)).toBe(2);
+      const oldSession = await prisma.adminRefreshSession.findUnique({
+        where: { tokenHash: oldHash },
+      });
+      expect(oldSession?.revokedReason).toBe("ROTATED");
+      expect(oldSession?.replacedBySessionId).not.toBeNull();
+      const newSession = await prisma.adminRefreshSession.findUnique({
+        where: { id: oldSession!.replacedBySessionId! },
+      });
+      expect(newSession).not.toBeNull();
+      expect(newSession?.revokedAt).toBeNull();
+      const operation = await prisma.authRefreshOperation.findUnique({
+        where: {
+          tokenHash_idempotencyKey: { tokenHash: oldHash, idempotencyKey: key },
+        },
+      });
+      expect(operation?.state).toBe("COMPLETED");
+      // No replay conclusion and no revoke-all side effect.
+      const sessions = await prisma.adminRefreshSession.findMany({
+        where: { userId: user.id },
+      });
+      expect(
+        sessions.filter((s) => s.revokedReason === "REUSE_DETECTED"),
+      ).toHaveLength(0);
+      const audits = await prisma.auditLog.findMany({
+        where: { action: "auth.refresh_reuse_detected" },
+      });
+      expect(audits).toHaveLength(0);
+      console.log(
+        "[FIX-39-B] old-session DB-read failure in resolveAmbiguousCommit " +
+          "-> 503 fail-closed; commit happened, held pair NOT returned",
+      );
+    } finally {
+      await stopProxyApp({ proxy, proxyPrisma, proxyApp });
+    }
+  }, 60_000);
+
+  it("FIX-39-C: new-session read rejects in resolveAmbiguousCommit (lost COMMIT ack) -> 503 fail-closed, no token, no inference", async () => {
+    // Same drive and same "committed but unverifiable" distinction as
+    // FIX-39-B, except the fault hits the NEW-session read: the
+    // old-session read succeeds, the new-session read rejects.
+    const { proxy, proxyPrisma, proxyApp } = await startProxyApp();
+    try {
+      const username = freshUsername();
+      const passwordHash = await new PasswordService().hash(PASSWORD);
+      const user = await proxyPrisma.user.create({
+        data: { username, passwordHash },
+      });
+      const login = await request(proxyApp.getHttpServer())
+        .post("/api/v1/auth/admin/login")
+        .send({ username, password: PASSWORD });
+      expect(login.status).toBe(200);
+      const pair = login.body.data as {
+        accessToken: string;
+        refreshToken: string;
+      };
+      const key = freshKey();
+      const oldHash = tokens.hashToken(pair.refreshToken);
+
+      // Fail ONLY the new-session read inside resolveAmbiguousCommit.
+      // In this request the adminRefreshSession.findUnique calls are,
+      // in order: (1) the session lookup at the start of refresh();
+      // (2) the old-session verification read; (3) the new-session
+      // verification read — must reject. Transaction internals use the
+      // tx client, not this delegate.
+      const original = proxyPrisma.adminRefreshSession.findUnique.bind(
+        proxyPrisma.adminRefreshSession,
+      );
+      const spy = jest.spyOn(proxyPrisma.adminRefreshSession, "findUnique");
+      spy.mockImplementationOnce((args) => original(args));
+      spy.mockImplementationOnce((args) => original(args));
+      spy.mockRejectedValueOnce(
+        new Error("simulated new-session DB read failure"),
+      );
+      proxy.arm();
+      let res: request.Response;
+      // Snapshot the mock calls BEFORE restoring: mockRestore() clears
+      // the mock state, so asserting on spy.mock.calls afterwards would
+      // always see 0 calls.
+      let spyCalls: unknown[] = [];
+      try {
+        res = await request(proxyApp.getHttpServer())
+          .post("/api/v1/auth/admin/refresh")
+          .set("Idempotency-Key", key)
+          .send({ refreshToken: pair.refreshToken });
+        spyCalls = spy.mock.calls.map((call) => call[0]);
+      } finally {
+        spy.mockRestore();
+      }
+      expect(proxy.wasDropped).toBe(true); // the fault really fired
+      expect(spyCalls).toHaveLength(3); // lookup + old + new reads
+      expect(spyCalls[1]).toEqual({ where: { tokenHash: oldHash } });
+      const thirdCallArgs = spyCalls[2] as {
+        where?: { id?: unknown; tokenHash?: unknown };
+      };
+      expect(typeof thirdCallArgs.where?.id).toBe("string");
+      expect(res.status).toBe(503);
+      expect(res.body.error).toBe("SERVICE_UNAVAILABLE");
+      expect(res.body.retryAfter).toBe(5);
+      expect(res.headers["retry-after"]).toBe("5");
+      expect(res.body).not.toHaveProperty("data");
+      // The server committed; the 503 is a verification failure, not a
+      // rollback — same DB evidence as FIX-39-B, verified by real queries.
+      expect(await sessionCount(user.id)).toBe(2);
+      const oldSession = await prisma.adminRefreshSession.findUnique({
+        where: { tokenHash: oldHash },
+      });
+      expect(oldSession?.revokedReason).toBe("ROTATED");
+      expect(oldSession?.replacedBySessionId).not.toBeNull();
+      const newSession = await prisma.adminRefreshSession.findUnique({
+        where: { id: oldSession!.replacedBySessionId! },
+      });
+      expect(newSession).not.toBeNull();
+      expect(newSession?.revokedAt).toBeNull();
+      const operation = await prisma.authRefreshOperation.findUnique({
+        where: {
+          tokenHash_idempotencyKey: { tokenHash: oldHash, idempotencyKey: key },
+        },
+      });
+      expect(operation?.state).toBe("COMPLETED");
+      const sessions = await prisma.adminRefreshSession.findMany({
+        where: { userId: user.id },
+      });
+      expect(
+        sessions.filter((s) => s.revokedReason === "REUSE_DETECTED"),
+      ).toHaveLength(0);
+      const audits = await prisma.auditLog.findMany({
+        where: { action: "auth.refresh_reuse_detected" },
+      });
+      expect(audits).toHaveLength(0);
+      console.log(
+        "[FIX-39-C] new-session DB-read failure in resolveAmbiguousCommit " +
+          "-> 503 fail-closed; commit happened, held pair NOT returned",
+      );
+    } finally {
+      await stopProxyApp({ proxy, proxyPrisma, proxyApp });
+    }
+  }, 60_000);
 });
