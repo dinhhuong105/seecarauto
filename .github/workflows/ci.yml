@@ -61,37 +61,3 @@ jobs:
             exit 1
           fi
           echo "No obvious secrets found."
-
-  # CI-EXP-01 (TEMPORARY experiment, approved by ChatGPT 28/11/2026):
-  # Run the two Auth suites with Jest --runInBand on the runner, to test
-  # whether the SIGSEGV deaths in the parallel main job are worker-related.
-  # Independent of the main job (no `needs`); same Node 20 / pnpm 10.14.0 /
-  # install + Prisma generate as the main job. REVERT after the verdict.
-  auth-suites-inband:
-    name: Auth suites --runInBand (CI-EXP-01, temporary)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.14.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate Prisma Client
-        working-directory: backend
-        run: pnpm exec prisma generate
-
-      - name: Auth suites --runInBand (CI-EXP-01, temporary)
-        working-directory: backend
-        run: pnpm exec jest src/auth/auth.service.spec.ts src/auth/password.service.spec.ts --runInBand
