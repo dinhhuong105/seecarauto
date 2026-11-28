@@ -641,6 +641,45 @@ describe("RBAC (e2e)", () => {
       ).toBe(1);
     });
 
+    it("removeUserRole checks the role exists first (FIX-M02-06-S2-01, RB-03)", async () => {
+      const user = await createUser(freshUsername());
+      const role = await createRole("seller");
+      await grantRolePermission(role.id, "products.view");
+      const token = await loginOk(user.username);
+
+      // (1) User exists but the role does not: 404 ROLE_NOT_FOUND,
+      // not an idempotent no-op.
+      await expect(
+        rbac.removeUserRole(user.id, randomUUID(), user.id),
+      ).rejects.toMatchObject({
+        status: 404,
+        response: { error: "ROLE_NOT_FOUND" },
+      });
+
+      // (2) Role exists but was never assigned: idempotent no-op,
+      // no AuditLog row.
+      const notAssigned = await rbac.removeUserRole(user.id, role.id, user.id);
+      expect(notAssigned.changed).toBe(false);
+      expect(
+        await prisma.auditLog.count({
+          where: { action: "user.roles_removed" },
+        }),
+      ).toBe(0);
+
+      // (3) Role assigned: removal succeeds, audited, cache invalidated.
+      await rbac.assignUserRole(user.id, role.id, user.id);
+      expect((await getRbac("products-view", token)).status).toBe(200);
+      const removed = await rbac.removeUserRole(user.id, role.id, user.id);
+      expect(removed.changed).toBe(true);
+      expect(removed.cacheInvalidated).toBe(true);
+      expect((await getRbac("products-view", token)).status).toBe(403);
+      expect(
+        await prisma.auditLog.count({
+          where: { action: "user.roles_removed" },
+        }),
+      ).toBe(1);
+    });
+
     it("audit failure rolls back the whole mutation (RB-06)", async () => {
       const user = await createUser(freshUsername());
       const role = await createRole("seller");

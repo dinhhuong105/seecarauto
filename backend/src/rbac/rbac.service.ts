@@ -309,7 +309,9 @@ export class RbacService {
 
   /**
    * Removes a role from an account (FR-082). Idempotent: removing a role
-   * the account does not have is a no-op (no audit row).
+   * the account does not have is a no-op (no audit row). The role itself
+   * must exist (RB-03): removing a non-existent role is 404
+   * ROLE_NOT_FOUND, not a no-op — same as assignUserRole.
    */
   async removeUserRole(
     userId: string,
@@ -326,6 +328,13 @@ export class RbacService {
           SELECT id FROM users WHERE id = ${userId}::uuid FOR UPDATE`;
         if (locked.length === 0) {
           throw RbacException.notFound();
+        }
+        const role = await tx.role.findUnique({
+          where: { id: roleId },
+          select: { id: true },
+        });
+        if (role === null) {
+          throw RbacException.roleNotFound();
         }
         const existing = await tx.userRole.findUnique({
           where: { userId_roleId: { userId, roleId } },
