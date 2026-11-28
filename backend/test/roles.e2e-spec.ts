@@ -6,10 +6,7 @@ import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { configureApp } from "../src/app-setup";
 import { PasswordService } from "../src/auth/password.service";
-import {
-  PermissionService,
-  permissionsCacheKey,
-} from "../src/permissions/permission.service";
+import { permissionsCacheKey } from "../src/permissions/permission.service";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { CacheService } from "../src/redis/cache.service";
 import { RedisService } from "../src/redis/redis.service";
@@ -53,7 +50,6 @@ describe("Roles CRUD (e2e)", () => {
   let redis: RedisService;
   let cache: CacheService;
   let passwords: PasswordService;
-  let permissions: PermissionService;
   let rbac: RbacService;
   let roles: RolesService;
 
@@ -69,7 +65,6 @@ describe("Roles CRUD (e2e)", () => {
     redis = app.get(RedisService);
     cache = app.get(CacheService);
     passwords = app.get(PasswordService);
-    permissions = app.get(PermissionService);
     rbac = app.get(RbacService);
     roles = app.get(RolesService);
   });
