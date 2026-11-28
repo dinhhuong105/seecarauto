@@ -16,6 +16,7 @@ import {
 import { PermissionsModule } from "../src/permissions/permissions.module";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { CacheService } from "../src/redis/cache.service";
+import { RateLimitService } from "../src/redis/rate-limit.service";
 import { RedisService } from "../src/redis/redis.service";
 import { PermissionsGuard } from "../src/rbac/permissions.guard";
 import { RbacModule } from "../src/rbac/rbac.module";
@@ -63,6 +64,31 @@ class RbacTestController {
   @Get("dashboard")
   @RequirePermission("dashboard.view")
   dashboard() {
+    return { ok: true };
+  }
+
+  // Extra sample codes (AC-02 evidence: one sample per code family).
+  @Get("categories-create")
+  @RequirePermission("categories.create")
+  categoriesCreate() {
+    return { ok: true };
+  }
+
+  @Get("orders-cancel")
+  @RequirePermission("orders.cancel")
+  ordersCancel() {
+    return { ok: true };
+  }
+
+  @Get("roles-view")
+  @RequirePermission("roles.view")
+  rolesView() {
+    return { ok: true };
+  }
+
+  @Get("audit-view")
+  @RequirePermission("audit.view")
+  auditView() {
     return { ok: true };
   }
 
@@ -324,6 +350,34 @@ describe("RBAC (e2e)", () => {
       const res = await getRbac("products-view", token);
       expect(res.status).toBe(200);
     });
+
+    it("samples one code per family: grant allows, no grant denies (AC-02)", async () => {
+      const withGrants = await createUser(freshUsername());
+      const role = await createRole("manager");
+      for (const code of [
+        "categories.create",
+        "orders.cancel",
+        "roles.view",
+        "audit.view",
+      ]) {
+        await grantRolePermission(role.id, code);
+      }
+      await prisma.userRole.create({
+        data: { userId: withGrants.id, roleId: role.id },
+      });
+      const withoutGrants = await createUser(freshUsername());
+      const tokenWith = await loginOk(withGrants.username);
+      const tokenWithout = await loginOk(withoutGrants.username);
+      for (const path of [
+        "categories-create",
+        "orders-cancel",
+        "roles-view",
+        "audit-view",
+      ]) {
+        expect((await getRbac(path, tokenWith)).status).toBe(200);
+        expect((await getRbac(path, tokenWithout)).status).toBe(403);
+      }
+    });
   });
 
   // ------------------------------------------------- cache (AC-06)
@@ -459,6 +513,13 @@ describe("RBAC (e2e)", () => {
       // permission (403).
       expect(res.status).toBe(503);
       expect(res.body.error).toBe("SERVICE_UNAVAILABLE");
+    });
+
+    it("adminAuthed is fail-open at RateLimitService level when Redis is dead (AC-15)", async () => {
+      const deadRate = deadApp.get(RateLimitService);
+      const user = await createUser(freshUsername());
+      const result = await deadRate.check("adminAuthed", user.id);
+      expect(result.allowed).toBe(true);
     });
   });
 
@@ -712,7 +773,7 @@ describe("RBAC (e2e)", () => {
       });
     });
 
-    it("self-edit is audited (AC-08 mechanism for M06-04)", async () => {
+    it("self-edit is audited (AC-09 mechanism for M06-04)", async () => {
       const user = await createUser(freshUsername());
       await rbac.replaceUserPermissions(
         user.id,
@@ -725,6 +786,30 @@ describe("RBAC (e2e)", () => {
       expect(audits).toHaveLength(1);
       expect(audits[0].actorId).toBe(user.id);
       expect(audits[0].entityId).toBe(user.id);
+    });
+
+    it("user deny affects only that account; same-role accounts keep access (AC-18)", async () => {
+      const userA = await createUser(freshUsername());
+      const userB = await createUser(freshUsername());
+      const role = await createRole("seller");
+      await grantRolePermission(role.id, "products.view");
+      await prisma.userRole.createMany({
+        data: [
+          { userId: userA.id, roleId: role.id },
+          { userId: userB.id, roleId: role.id },
+        ],
+      });
+      const tokenA = await loginOk(userA.username);
+      const tokenB = await loginOk(userB.username);
+      expect((await getRbac("products-view", tokenA)).status).toBe(200);
+      expect((await getRbac("products-view", tokenB)).status).toBe(200);
+      await rbac.replaceUserPermissions(
+        userA.id,
+        [{ module: "products", action: "view", granted: false }],
+        userA.id,
+      );
+      expect((await getRbac("products-view", tokenA)).status).toBe(403);
+      expect((await getRbac("products-view", tokenB)).status).toBe(200);
     });
   });
 
@@ -764,6 +849,22 @@ describe("RBAC (e2e)", () => {
         where: { module: "products", action: "view" },
       });
       expect(row?.description).toBe("edited by test");
+    });
+
+    it("seed reports DB codes outside the catalog without deleting them (AC-10)", async () => {
+      const rogue = await prisma.permission.create({
+        data: { module: "rogue", action: "view", description: null },
+      });
+      const result = await seedPermissions(prisma);
+      expect(result).toEqual({
+        created: 0,
+        unchanged: 39,
+        unknownInDb: ["rogue.view"],
+      });
+      expect(await prisma.permission.count()).toBe(40);
+      expect(
+        await prisma.permission.findUnique({ where: { id: rogue.id } }),
+      ).not.toBeNull();
     });
   });
 
