@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
+import { PermissionsModule } from "../permissions/permissions.module";
 import { PrismaModule } from "../prisma/prisma.module";
 import { RedisModule } from "../redis/redis.module";
 import { AuthController } from "./auth.controller";
@@ -18,6 +19,9 @@ import { TokenService } from "./token.service";
   imports: [
     PrismaModule,
     RedisModule,
+    // M02-06 (RB-13): AuthService.getMe() delegates permission resolution
+    // to PermissionService — the single shared resolve function.
+    PermissionsModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({

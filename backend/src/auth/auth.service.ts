@@ -8,6 +8,7 @@ import { RedisService, RedisUnavailableError } from "../redis/redis.service";
 import { AuthException, type ValidationDetail } from "./auth.errors";
 import { authConfigFromService, type AuthConfig } from "./auth.config";
 import { PasswordService } from "./password.service";
+import { PermissionService } from "../permissions/permission.service";
 import { TokenService, type TokenPair } from "./token.service";
 
 // AuthService (M02-05) — login / refresh / logout / me for admin accounts.
@@ -109,6 +110,7 @@ export class AuthService {
     private readonly tokens: TokenService,
     private readonly rateLimit: RateLimitService,
     private readonly redis: RedisService,
+    private readonly permissions: PermissionService,
     configService: ConfigService,
   ) {
     this.config = authConfigFromService(configService);
@@ -909,17 +911,15 @@ export class AuthService {
   // ------------------------------------------------------------------- /me
 
   async getMe(userId: string): Promise<MeResponseData> {
+    // M02-06 (RB-13/D-10): permission resolution is delegated to the
+    // single shared function — the guard uses the exact same resolve, so
+    // /me and the guard can never disagree. Roles are read here (light
+    // query, same shape/order as G4); permissions come from
+    // PermissionService (cached, deny-wins, sorted).
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
-        userRoles: {
-          include: {
-            role: {
-              include: { rolePermissions: { include: { permission: true } } },
-            },
-          },
-        },
-        userPermissions: { include: { permission: true } },
+        userRoles: { include: { role: true } },
       },
     });
     if (user === null) {
@@ -928,28 +928,7 @@ export class AuthService {
     const roles = user.userRoles
       .map((ur) => ({ id: ur.role.id, name: ur.role.name }))
       .sort((a, b) => a.name.localeCompare(b.name));
-    const allows = new Set<string>();
-    const denies = new Set<string>();
-    for (const ur of user.userRoles) {
-      for (const rp of ur.role.rolePermissions) {
-        const code = `${rp.permission.module}.${rp.permission.action}`;
-        if (rp.granted) {
-          allows.add(code);
-        } else {
-          denies.add(code);
-        }
-      }
-    }
-    for (const up of user.userPermissions) {
-      const code = `${up.permission.module}.${up.permission.action}`;
-      if (up.granted) {
-        allows.add(code);
-      } else {
-        denies.add(code);
-      }
-    }
-    // Deny wins over allow (D-10).
-    const permissions = [...allows].filter((code) => !denies.has(code)).sort();
+    const permissions = await this.permissions.resolvePermissions(userId);
     return { id: user.id, username: user.username, roles, permissions };
   }
 

@@ -9,6 +9,7 @@ import {
   isTransactionTimeoutError,
 } from "./auth.service";
 import { PasswordService } from "./password.service";
+import type { PermissionService } from "../permissions/permission.service";
 import { TokenService } from "./token.service";
 import type { PrismaService } from "../prisma/prisma.service";
 import type { RateLimitService } from "../redis/rate-limit.service";
@@ -187,12 +188,18 @@ function makeService(prisma: unknown) {
     }),
   } as unknown as RateLimitService;
   const redis = new FakeRedis() as unknown as RedisService;
+  // getMe is not under test here; the PermissionService mock only needs
+  // to exist for construction (M02-06 RB-13 split).
+  const permissions = {
+    resolvePermissions: async () => [],
+  } as unknown as PermissionService;
   const service = new AuthService(
     prisma as unknown as PrismaService,
     password,
     tokens,
     rateLimit,
     redis,
+    permissions,
     config,
   );
   return { service, password, tokens };
