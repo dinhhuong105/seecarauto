@@ -6,6 +6,7 @@ import { AuthModule } from "./auth/auth.module";
 import { validateAuthEnv } from "./auth/auth.config";
 import { PrismaModule } from "./prisma/prisma.module";
 import { QueueModule } from "./queue/queue.module";
+import { RbacModule } from "./rbac/rbac.module";
 import { RedisModule } from "./redis/redis.module";
 import { validateRedisEnv } from "./redis/redis.config";
 import { SearchModule } from "./search/search.module";
@@ -26,6 +27,10 @@ import { validateMeilisearchEnv } from "./search/meilisearch.config";
     QueueModule,
     SearchModule,
     AuthModule,
+    // M02-06: RBAC foundation (guard + shared resolve). RbacModule is
+    // imported but no controller is registered here — admin endpoints
+    // attach PermissionsGuard explicitly in their own modules (M03+).
+    RbacModule,
   ],
   controllers: [AppController],
   providers: [AppService],
