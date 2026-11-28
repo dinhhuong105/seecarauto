@@ -75,6 +75,7 @@
 | `CART_CHANGED` | Sản phẩm trong giỏ bị ẩn/xóa hoặc đổi giá sau khi thêm — đơn không được tạo, khách xác nhận lại với giá/tình trạng mới (FR-057) | `{ "statusCode": 409, "message": "Một số sản phẩm trong giỏ đã thay đổi giá hoặc tình trạng, vui lòng xác nhận lại.", "error": "CART_CHANGED", "details": [{ "field": "items[0].price", "code": "PRICE_CHANGED", "message": "Giá đã đổi từ 500.000đ thành 550.000đ." }] }` |
 | `DUPLICATE_ORDER` | Tạo đơn lần thứ hai từ cùng một giỏ (Idempotency-Key khác nhau) — trả kèm `orderCode` của đơn đã tạo | `{ "statusCode": 409, "message": "Đơn hàng đã được tạo trước đó.", "error": "DUPLICATE_ORDER", "details": [{ "field": "orderCode", "code": "DUPLICATE", "message": "Mã đơn đã tạo: SCA-XXXXXX." }] }` |
 | `ROLE_NAME_DUPLICATE` | Tên vai trò đã tồn tại (`roles.name` UNIQUE) — khi `POST /roles` hoặc `PATCH /roles/{roleId}` dùng tên đã có (M02-06, RB-03) | `{ "statusCode": 409, "message": "Tên vai trò này đã tồn tại.", "error": "ROLE_NAME_DUPLICATE" }` |
+| `ROLE_HAS_USERS` | Xóa vai trò đang được gán cho tài khoản (FR-082, FR-085, M06-02 Rev 02) — kèm số lượng tài khoản trong `details` để admin chuyển trước; đếm mọi tài khoản có bản ghi `UserRole`, kể cả tài khoản không hoạt động | `{ "statusCode": 409, "message": "Vai trò đang được gán cho 3 tài khoản. Vui lòng chuyển các tài khoản sang vai trò khác trước khi xóa.", "error": "ROLE_HAS_USERS", "details": [{ "field": "count", "code": "ROLE_HAS_USERS", "message": "Vai trò đang được gán cho 3 tài khoản." }] }` |
 
 ## 6. Precondition failed — 412
 
