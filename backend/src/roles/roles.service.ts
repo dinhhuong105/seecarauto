@@ -466,9 +466,7 @@ export class RolesService {
     assertUuidField(roleId, "roleId");
     assertUuidField(actorId, "actorId");
     if (ifMatch === undefined || ifMatch.trim() === "") {
-      throw RbacException.preconditionFailed(
-        "Thiếu header If-Match. Vui lòng tải lại ma trận rồi thử lại.",
-      );
+      throw RbacException.preconditionFailed();
     }
     const current = await this.readRoleMatrix(roleId);
     if (ifMatch !== current.etag) {
