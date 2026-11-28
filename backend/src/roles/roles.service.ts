@@ -434,10 +434,12 @@ export class RolesService {
         r.granted,
       ]),
     );
-    const permissions: PermissionGrantInput[] = catalog.map((code) => {
-      const [module, action] = code.split(".");
-      return { module, action, granted: granted.get(code) ?? false };
-    });
+    const permissions: PermissionGrantInput[] = catalog
+      .map((code) => {
+        const [module, action] = code.split(".");
+        return { module, action, granted: granted.get(code) ?? false };
+      })
+      .sort((a, b) => codeOf(a).localeCompare(codeOf(b)));
     return {
       roleId: role.id,
       updatedAt: role.updatedAt,
