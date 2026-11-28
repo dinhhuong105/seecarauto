@@ -75,7 +75,7 @@ Kế hoạch Sprint cho roadmap 16–20 tuần. Nguồn: `MASTER_ROADMAP.md` +
 | --- | --- |
 | Mục tiêu | Hoàn thành toàn bộ tài liệu kiến trúc và UI/UX; bắt đầu schema + auth (M02 mở đầu tuần 3 theo roadmap) |
 | Task | M01-02, M01-03, M01-04, M01-05, M01-06, M01-07, M02-01, M02-02, M02-03, M02-05 (10 task) |
-| Trạng thái task | Đủ điều kiện: M01-02 → M01-07 (DONE); M02-01 (DONE 27/11/2026 — ChatGPT ACCEPT Revision 02, 12/12 PASS); M02-02 (DONE 27/11/2026 — ChatGPT ACCEPT, 17/17 AC PASS); M02-03 (DONE 27/11/2026 — ChatGPT ACCEPT Revision 04, 19/19 AC PASS); M02-05 (DONE 28/11/2026 — ChatGPT ACCEPT G4, 18/18 AC PASS, Revision 04, bf84951; chờ Henry xác nhận cuối cùng để đóng task). Không còn gate PD-01 → PD-06 cho M02-01 |
+| Trạng thái task | Đủ điều kiện: M01-02 → M01-07 (DONE); M02-01 (DONE 27/11/2026 — ChatGPT ACCEPT Revision 02, 12/12 PASS); M02-02 (DONE 27/11/2026 — ChatGPT ACCEPT, 17/17 AC PASS); M02-03 (DONE 27/11/2026 — ChatGPT ACCEPT Revision 04, 19/19 AC PASS); M02-05 (DONE 28/11/2026 — ChatGPT ACCEPT G4, 18/18 AC PASS, Revision 04, bf84951; Henry xác nhận cuối cùng 28/11/2026; đã rebase lên main 23e3268, chưa merge vào main, chờ ChatGPT review nhánh đã rebase). Không còn gate PD-01 → PD-06 cho M02-01 |
 | Deliverables | ERD (17 bảng); API Spec (96 operations); Sitemap/Wireframe; Admin Dashboard; UI Research + Design System + UI Proposal; Backlog + Sprint Plan (M01-07); Prisma schema nháp; Redis + BullMQ; Meilisearch index; JWT login admin |
 | Điều kiện hoàn thành | ChatGPT ACCEPT M01-02 → M01-07; migration chạy (phần không phụ thuộc PD); login admin được; Meilisearch trả kết quả đúng ADR-010 |
 | Dependency | M00 DONE; PD-01 → PD-06 (gate M02-01) |

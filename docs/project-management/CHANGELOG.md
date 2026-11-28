@@ -1,3 +1,9 @@
+## 28/11/2026 — M02-05 rebase lên main 23e3268 (INT-M02-05-01)
+
+- Rebase nhánh `feature/M02-05-auth-jwt-refresh-token` từ base `a77bbd9` lên main `23e3268` (35 commit được replay; commit này, SHA trong git log): M02-03 + FIX-CI-01 nay nằm trong nhánh; §10.18/§10.19/§10.20 giữ nguyên từng byte; xung đột chỉ ở Handbook + hợp nhất `package.json`/`app.module.ts` (giữ cả meilisearch 0.44.1, @nestjs/jwt 10.2.0, argon2 0.45.2).
+- Kiểm tra chạy lại sau rebase: lint 9/9, typecheck 9/9, unit 13 suites / 83 tests, build 5/5, full e2e tuần tự 9 suites / 144 tests PASS trong 210.341s; `git diff --check` sạch; quét secret sạch.
+- Handbook đồng bộ: M02-03 DONE, M02-05 DONE (đã rebase, chưa merge vào main, chờ ChatGPT review nhánh đã rebase), FIX-CI-01 DONE (đã tích hợp vào main 23e3268); tổng DONE 18 / IN_PROGRESS 0 / BACKLOG 70 / BLOCKED 1 (M07-05) = 89; Sprint 2 DONE (10/10).
+
 ## 28/11/2026 — M02-05 DONE (ChatGPT ACCEPT G4, 18/18 AC PASS)
 
 - ChatGPT **ACCEPT G4 ngày 28/11/2026 — 18/18 AC PASS, 0 FAIL** (G4 Revision 04, commit bf84951, parent 09afcaa, 2 files docs only +11/−10; FIX-G4-06/07/08 đều PASS; §10.18 byte-identical). Gate đầy đủ: G0 PASS; G1 ACCEPTED; G2 ACCEPTED (Revision 03, 011a461); G3 ACCEPTED (Revision 04, e1b7b91); FIX-38 ACCEPTED (d356c92); FIX-39 ACCEPTED (bc1f803); G4 ACCEPTED (Revision 04, bf84951). Caveat: kết quả runtime ghi nhận theo báo cáo Muse, ChatGPT không tự chạy lại các suite trên môi trường của Muse; Docker runtime UNVERIFIED, parallel e2e không chạy lại.

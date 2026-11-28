@@ -123,7 +123,7 @@ chưa chốt nhưng không chặn thiết kế).
 | M02-02 | Redis cache + BullMQ | Redis cache (theo API_SPEC §41) + BullMQ cho job nền | High | M02-01 | DONE |
 | M02-03 | Meilisearch | Cài Meilisearch; index products (SKU/OEM/tên/thương hiệu); cấu hình tìm kiếm theo ADR-010 | Critical | M02-01 | DONE |
 | M02-04 | S3 / R2 object storage | Lưu ảnh sản phẩm/bài viết; URL tuyệt đối (theo quy tắc đã chốt ở M01-06) | High | D-06 | BACKLOG |
-| M02-05 | Auth JWT + Refresh Token | Đăng nhập admin (FR-090/FR-091 lockout); JWT + refresh (Bearer, JSON body) | Critical | M02-01 | DONE — ChatGPT ACCEPT G4 28/11/2026 (18/18 AC PASS, Revision 04, bf84951); chờ Henry xác nhận cuối cùng để đóng task |
+| M02-05 | Auth JWT + Refresh Token | Đăng nhập admin (FR-090/FR-091 lockout); JWT + refresh (Bearer, JSON body) | Critical | M02-01 | DONE — ChatGPT ACCEPT G4 28/11/2026 (18/18 AC PASS, Revision 04, bf84951); Henry xác nhận cuối cùng 28/11/2026; đã rebase lên main 23e3268 (INT-M02-05-01), chưa merge vào main, chờ ChatGPT review nhánh đã rebase |
 | M02-06 | RBAC nền tảng | Bảng roles/permissions/role_permissions/user_roles/user_permissions; middleware kiểm tra permission; audit log nền | Critical | M02-01, M02-05; M01-05 | BACKLOG |
 | M02-07 | CI/CD | GitHub Actions: typecheck/lint/test/build trên mỗi push; nối tiếp CI đã có từ M00 | High | M00-06; D-05 | BACKLOG |
 | M02-08 | Môi trường Dev → Staging → Production + backup | Môi trường 3 tầng; backup tự động + quy trình restore (NFR-015) | High | M02-07; D-05 | BACKLOG |
