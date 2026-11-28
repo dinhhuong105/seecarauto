@@ -22,17 +22,22 @@ File/diffstat xem `git show --stat HEAD`; commit SHA xem trong git log.
 ## G4-02 — Unit (chạy mới)
 
 - Lệnh: `pnpm test` (từ `backend/`).
-- Kết quả: **10 suites / 63 tests PASS**, exit 0 — log
-  `~/workspace/g4-unit.log`.
+- Kết quả (chạy mới trong Revision 02, đồng bộ trong Revision 03):
+  **10 suites / 63 tests PASS**, exit 0 — log
+  `~/workspace/g4r2-unit.log`.
 
 ## G4-03 — E2E tuần tự trên PostgreSQL + Redis thật (chạy mới)
 
 - Lệnh: `pnpm exec jest --config test/jest-e2e.json --runInBand --verbose`
   (từ `backend/`).
-- Kết quả: **8 suites / 132 tests PASS trong 211.325s** — log
-  `~/workspace/g4-full-e2e.log` (125 test cũ + 7 test mới của spec G4).
-  Per-suite: app 1/1, auth 40/40, auth-config 7/7, auth-idempotency 15/15,
-  g4-evidence 7/7, prisma-constraints 32/32, queue 6/6, redis 24/24.
+- Kết quả (chạy mới trong Revision 02, đồng bộ trong Revision 03):
+  **8 suites / 133 tests PASS trong 205.602s** — log
+  `~/workspace/g4r2-full-e2e.log` (132 test của G4 + 1 test FK-reject mới
+  FIX-G4-01). Per-suite: app 1/1, auth 40/40, auth-config 7/7,
+  auth-idempotency 15/15, g4-evidence 8/8, prisma-constraints 32/32,
+  queue 6/6, redis 24/24. Jest không tự thoát sau tóm tắt (teardown
+  BullMQ đã biết) — kill đúng PID 37887 (SIGTERM); exit trong log là do
+  kill, không phải exit code test thành công.
 - Jest không tự thoát sau khi in xong tóm tắt (lỗi teardown BullMQ đã
   biết) — tiến trình jest bị kill theo đúng PID (28891, SIGTERM); dòng
   `JEST_EXIT:1` trong log là do kill, không phải lỗi test. Các dòng tóm
@@ -141,47 +146,52 @@ nhiều AC trừ khi test đó assert từng yêu cầu riêng (ghi rõ ở từ
   của Prisma (giá trị thành parameter `$1`, không nội suy vào SQL text),
   nên message lỗi không thể chứa token/mật khẩu. Trong lần chạy full G4,
   dòng này không kích hoạt lần nào (0 lần xuất hiện trong log).
-- Quét lại log full-run `~/workspace/g4-full-e2e.log` (311 dòng) trong
-  Revision 02 (FIX-G4-02, chạy mới — không tái dùng kết quả G4) bằng
-  script `~/workspace/g4r2-scan-log.py` (log `~/workspace/g4r2-logscan.log`,
-  exit 0; mọi giá trị nhạy cảm khớp mẫu đều thay bằng `[MASKED:<tên>]`
-  khi hiển thị, không in giá trị thật): 0 JWT (`eyJ`), 0 chuỗi mật khẩu
-  test, 0 `passwordHash`, 0 chuỗi 64 ký tự hex (SHA-256). Các mẫu còn
-  lại chỉ khớp tiêu đề test: tên bảng 4 dòng/6 lượt — đều là từ thường
+- Quét log full-run ĐÚNG của Revision 02 — `~/workspace/g4r2-full-e2e.log`
+  (312 dòng, 8 suites / 133 tests) — trong Revision 03 (FIX-G4-04).
+  Lần quét trước (Revision 02, FIX-G4-02) đã nhầm log G4 bản đầu
+  `~/workspace/g4-full-e2e.log` (311 dòng); lần này quét lại đúng log
+  bằng cùng script `~/workspace/g4r2-scan-log.py` (lệnh
+  `python3 ~/workspace/g4r2-scan-log.py ~/workspace/g4r2-full-e2e.log`,
+  output `~/workspace/g4r3-logscan.log`, exit 0; mọi giá trị nhạy cảm
+  khớp mẫu đều thay bằng `[MASKED:<tên>]` khi hiển thị, không in giá
+  trị thật): 0 JWT (`eyJ`), 0 chuỗi mật khẩu test, 0 `passwordHash`,
+  0 chuỗi 64 ký tự hex (SHA-256). Các mẫu còn lại chỉ khớp tiêu đề
+  test: tên bảng 4 dòng/6 lượt — đều là từ thường
   `roles`/`permissions`/`users` trong tiêu đề test, không có tên bảng
   literal (`admin_refresh_sessions`, `auth_refresh_operations`...);
   `token_hash` 2 dòng, `access token` 2 dòng, `refresh token` 1 dòng,
   `password` 3 dòng, `secret` 4 dòng — đều là tiêu đề test (kể cả tên
   biến cấu hình `JWT_SECRET`/`JWT_REFRESH_SECRET`, không có giá trị).
-  70 dòng/71 lượt khớp "error" (G4 ghi 78 dòng theo cách đếm cũ — số
-  mới 70 đã kiểm chứng lại bằng `grep -ci`, cùng file log) là tiêu đề
-  test diagnostic + các cảnh báo `Redis client error: connect
-  ECONNREFUSED 127.0.0.1:6398` có chủ đích từ test Redis-down (dead
-  port), không chứa dữ liệu nhạy cảm. Kiểm chứng chéo bằng grep: 64-hex
-  0, `eyJ` 0, `passwordHash`/mật khẩu test 0.
-- **Kết quả: không phát hiện rò rỉ. Không cần sửa trong Revision 02.**
+  70 dòng/71 lượt khớp "error" là tiêu đề test diagnostic + các cảnh
+  báo `Redis client error: connect ECONNREFUSED 127.0.0.1:6398` có chủ
+  đích từ test Redis-down (dead port), không chứa dữ liệu nhạy cảm.
+- **Kết quả: không phát hiện rò rỉ trong log của Revision 02.**
 
-## G4-07 — Workspace checks (trên commit G4, mỗi mục có lệnh + exit code)
+## G4-07 — Workspace checks (trên commit Revision 02, đồng bộ trong Revision 03 — mỗi mục có lệnh + exit code)
 
 | Check | Lệnh | Kết quả |
 | --- | --- | --- |
-| typecheck | `pnpm typecheck` (backend) | exit 0 — log `~/workspace/g4-typecheck.log` |
-| lint | `pnpm lint` (backend) | exit 0 — log `~/workspace/g4-lint.log` |
-| unit | `pnpm test` (backend) | exit 0, 10 suites / 63 tests — log `~/workspace/g4-unit.log` |
-| e2e | `pnpm exec jest --config test/jest-e2e.json --runInBand --verbose` | 8 suites / 132 tests PASS, 211.325s; jest không tự thoát (teardown BullMQ đã biết), kill đúng PID 28891 — log `~/workspace/g4-full-e2e.log` |
-| build | `pnpm build` (backend) | exit 0 — log `~/workspace/g4-build.log` |
-| test:db | Không có script `test:db` trong bất kỳ `package.json` nào — chạy tương đương trực tiếp: `pnpm exec jest --config test/jest-e2e.json prisma-constraints --runInBand` (32/32 PASS, exit 0 — log `~/workspace/g4-testdb.log`) + `pnpm exec prisma validate` (exit 0 — log `~/workspace/g4-prisma-validate.log`) | PASS (tương đương trực tiếp, ghi rõ lệnh) |
-| docker compose config | `docker compose config --quiet` (repo root) | exit 0 — log `~/workspace/g4-docker-config.log`. Chỉ validate config. **Docker runtime vẫn UNVERIFIED** (containers không chạy được trên máy này — cgroup controllers trống, đã xác minh). |
+| typecheck | `pnpm typecheck` (backend) | exit 0 — log `~/workspace/g4r2-typecheck.log` (chạy mới trong Revision 02) |
+| lint | `pnpm lint` (backend) | exit 0 — log `~/workspace/g4r2-lint.log` (chạy mới trong Revision 02) |
+| unit | `pnpm test` (backend) | exit 0, 10 suites / 63 tests — log `~/workspace/g4r2-unit.log` (chạy mới trong Revision 02) |
+| e2e | `pnpm exec jest --config test/jest-e2e.json --runInBand --verbose` | 8 suites / 133 tests PASS, 205.602s; jest không tự thoát (teardown BullMQ đã biết), kill đúng PID 37887 (SIGTERM) — exit trong log là do kill, không phải exit code test thành công — log `~/workspace/g4r2-full-e2e.log` (chạy mới trong Revision 02) |
+| build | `pnpm build` (backend) | exit 0 — log `~/workspace/g4r2-build.log` (chạy mới trong Revision 02) |
+| test:db | Không có script `test:db` trong bất kỳ `package.json` nào — chạy tương đương trực tiếp (chạy mới trong Revision 03): `pnpm exec jest --config test/jest-e2e.json prisma-constraints --runInBand` (32/32 PASS, exit 0 — log `~/workspace/g4r3-testdb.log`) + `pnpm exec prisma validate` (exit 0 — log `~/workspace/g4r3-prisma-validate.log`) | PASS (tương đương trực tiếp, ghi rõ lệnh) |
+| docker compose config | `docker compose config --quiet` (repo root) | exit 0 — log `~/workspace/g4r3-docker-config.log` (chạy mới trong Revision 03). Chỉ validate config. **Docker runtime vẫn UNVERIFIED** (containers không chạy được trên máy này — cgroup controllers trống, đã xác minh). |
 
 ## Thất bại / rerun trong phiên G4
 
-- Không có test nào FAIL trong bất kỳ lần chạy nào của phiên G4.
-- Không có rerun nào để lấy kết quả đẹp: lần chạy full e2e duy nhất đã
-  xanh 132/132 ngay từ đầu.
-- Lần chạy full e2e (211.325s) chậm hơn các lần trước (~195–229s) do thêm
-  1 suite (g4-evidence, 7 test) — không phải flakiness.
+- Không có test nào FAIL trong bất kỳ lần chạy nào của phiên G4 (kể cả
+  Revision 02/03).
+- Không có rerun nào để lấy kết quả đẹp: lần chạy full e2e của Revision 02
+  đã xanh 133/133 ngay từ đầu (205.602s); Revision 03 không chạy lại
+  toàn bộ E2E (theo lệnh — log Revision 02 còn nguyên và đã xác minh),
+  chỉ quét lại đúng log và đồng bộ tài liệu.
+- Lần chạy full e2e Revision 02 (205.602s) có 8 suite (g4-evidence 8
+  test sau khi thêm test FK-reject) — không phải flakiness.
 - Lỗi duy nhất gặp: jest không tự thoát sau tóm tắt (đã biết, teardown
-  BullMQ) — xử lý bằng kill đúng PID, ghi rõ trong log.
+  BullMQ) — xử lý bằng kill đúng PID (G4: 28891; Revision 02: 37887),
+  ghi rõ trong log.
 
 ## Giới hạn còn mở (không phải lỗi G4)
 
@@ -192,3 +202,16 @@ nhiều AC trừ khi test đó assert từng yêu cầu riêng (ghi rõ ở từ
   tiếp và ghi rõ lệnh (xem bảng G4-07).
 - ADMIN_REVOKED chỉ được tạo bằng cách đặt trực tiếp trong DB ở test
   (M02-05 không có endpoint thu hồi tay; thuộc M06-01).
+
+## Revision 03 — FIX-G4-04 + FIX-G4-05 (đồng bộ bằng chứng, hoàn thành 28/11/2026)
+
+- FIX-G4-04: quét lại đúng log full E2E của Revision 02
+  (`~/workspace/g4r2-full-e2e.log`, 312 dòng) — lần quét trước nhầm log
+  G4 bản đầu; kết quả mới: 0 JWT, 0 mật khẩu test, 0 `passwordHash`,
+  0 chuỗi 64 ký tự hex; các match còn lại đều là tiêu đề test (xem G4-06).
+- FIX-G4-05: đồng bộ G4-07 và §10.19 theo kết quả chạy mới của Revision 02
+  (8 suites / 133 tests, 205.602s; unit/typecheck/lint/build theo log
+  `g4r2-*.log`; test:db + docker compose config chạy mới trong Revision 03,
+  log `g4r3-*.log`); §10.19 sửa 4 → 5 test constraint + mô tả test FK-reject.
+- Chỉ sửa tài liệu — không sửa test, product code, schema/migration hay
+  D-01 → D-16. Commit SHA xem trong git log.
