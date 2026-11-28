@@ -423,6 +423,47 @@ describe("G4 DB evidence (e2e)", () => {
     expect(oldRow!.revokedReason).toBe("ROTATED");
   });
 
+  it("G4-04(5): self-FK REJECTS replaced_by_session_id pointing at a non-existent session (FIX-G4-01)", async () => {
+    const user = await createUser(freshUsername());
+    const oldSession = await prisma.adminRefreshSession.create({
+      data: {
+        userId: user.id,
+        tokenHash: "g".repeat(64),
+        expiresAt: new Date(Date.now() + 3600_000),
+      },
+    });
+    // A UUID no session has: CHECK-2 is satisfied (reason is ROTATED),
+    // so only the self-FK can reject this update.
+    const ghostId = randomUUID();
+    let rejected = false;
+    try {
+      await prisma.adminRefreshSession.update({
+        where: { id: oldSession.id },
+        data: {
+          revokedAt: new Date(),
+          revokedReason: "ROTATED",
+          replacedBySessionId: ghostId,
+        },
+      });
+    } catch (e) {
+      rejected = true;
+      expect(e).toBeInstanceOf(Prisma.PrismaClientKnownRequestError);
+      expect((e as Prisma.PrismaClientKnownRequestError).code).toBe("P2003");
+      expect(String((e as Error).message)).toContain(
+        "admin_refresh_sessions_replaced_by_session_id_fkey",
+      );
+    }
+    expect(rejected).toBe(true);
+    // The old session row is unchanged: still ACTIVE, no reason, no link.
+    const row = await prisma.adminRefreshSession.findUnique({
+      where: { id: oldSession.id },
+    });
+    expect(row).not.toBeNull();
+    expect(row!.revokedAt).toBeNull();
+    expect(row!.revokedReason).toBeNull();
+    expect(row!.replacedBySessionId).toBeNull();
+  });
+
   it("G4-04(5): operation unique (token_hash, idempotency_key) + native enum reject duplicates and bad states", async () => {
     await createUser(freshUsername());
     const tokenHash = "f".repeat(64);

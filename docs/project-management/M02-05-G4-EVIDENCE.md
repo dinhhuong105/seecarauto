@@ -57,11 +57,11 @@ nhiều AC trừ khi test đó assert từng yêu cầu riêng (ghi rõ ở từ
 | AC-09 | Login vượt 5/min/IP hoặc 10/min/tài khoản → 429 RATE_LIMITED + header Retry-After; Redis lỗi → fallback bộ nhớ vẫn giới hạn trong một instance (fail-closed) | `test/auth.e2e-spec.ts` — "AC-09: login over 5/min/IP -> 429 RATE_LIMITED + Retry-After header", "AC-09: login over 10/min/account -> 429 (isolated from the IP limit by distinct IPs)", "AC-09 (Redis down): login rate limit still enforced by the in-memory fallback (6th from one IP -> 429)", "AC-09 (Redis down): login account limit still enforced by the in-memory fallback (11th -> 429)" | PASS |
 | AC-10 | Refresh vượt 30/min/IP hoặc 10/min/tài khoản → 429 RATE_LIMITED; Redis lỗi → fallback bộ nhớ trong một instance (fail-closed); kiểm tra cả hai counter | `test/auth.e2e-spec.ts` — "AC-10: refresh over 30/min/IP -> 429", "AC-10: refresh over 10/min/account -> 429 (same token + same key, distinct IPs)", "AC-10 (Redis down): refresh IP limit still enforced by the in-memory fallback (31st -> 429)", "AC-10 (Redis down): refresh account limit still enforced by the in-memory fallback (11th -> 429)" | PASS |
 | AC-11 | Tài khoản isActive = false → 401 INVALID_CREDENTIALS chung | `test/auth.e2e-spec.ts` — "AC-11: inactive account cannot log in (same generic 401)" | PASS |
-| AC-12 | Không token/mật khẩu/hash nào trong log; refresh plaintext không có trong DB (chỉ hash); mọi response auth không chứa passwordHash | `test/auth.e2e-spec.ts` — "AC-12: no token/password/hash/plaintext appears in responses or the DB" + G4-06 quét log full-run (0 JWT, 0 mật khẩu test, 0 passwordHash, 0 tên bảng) | PASS |
+| AC-12 | Không token/mật khẩu/hash nào trong log; refresh plaintext không có trong DB (chỉ hash); mọi response auth không chứa passwordHash | `test/auth.e2e-spec.ts` — "AC-12: no token/password/hash/plaintext appears in responses or the DB" + G4-06 quét log full-run (0 JWT, 0 mật khẩu test, 0 passwordHash, 0 tên bảng literal — xem G4-06) | PASS |
 | AC-13 | Thiếu JWT_SECRET / JWT_REFRESH_SECRET / encryption key, secret < 32 ký tự, hoặc hai JWT secret trùng nhau → boot lỗi fail-fast, message rõ ràng; không secret mặc định trong code | `test/auth-config.e2e-spec.ts` — 7 test (control + 6 trường hợp fail-fast) + `src/auth/auth.config.spec.ts` — 13 test (kể cả FIX-35 strict base64) | PASS |
 | AC-14 | Access chỉ chứa sub/role ids/type/sid/exp (+iat); refresh chỉ chứa sub/sid/type/exp (+iat); không hash, permission list, PII khác | `test/auth.e2e-spec.ts` — "AC-14: token claims are minimal (access: sub/sid/type/roles/iat/exp; refresh: sub/sid/type/iat/exp)" + `src/auth/token.service.spec.ts` (sign/verify, từ chối sai loại/sai secret) + `test/g4-evidence.e2e-spec.ts` (exp−iat = 900 / 604800) | PASS |
 | AC-15 | Mọi lỗi auth đúng Error Catalog (status + code + message tiếng Việt + retryAfter/Retry-After khi có); không lộ stack trace/SQL/tên bảng/secret | Ensemble — mỗi mã lỗi assert trong test AC của nó: UNAUTHENTICATED (AC-07/AC-08), INVALID_CREDENTIALS (AC-02/AC-11), TOKEN_EXPIRED (AC-08), INVALID_REFRESH_TOKEN (AC-06), TOKEN_REUSE_DETECTED (AC-05), ACCOUNT_LOCKED 423 body-only, không header Retry-After (AC-03), RATE_LIMITED 429 + header (AC-09/AC-10), VALIDATION_ERROR 400 (AC-02, AC-17 E3), SERVICE_UNAVAILABLE 503 + Retry-After: 5 (AC-17, FIX-38/39); `assertNoLeak` trong `auth.e2e-spec.ts` kiểm tra body không chứa stack/SQL/tên bảng | PASS |
-| AC-16 | Không sửa schema/migration M02-01; không middleware RBAC; không tài khoản admin mẫu/secret giả trong code; không merge | Git + grep (chạy mới trong G4): diff branch so với base chỉ chứa 2 migration M02-05 (D-15/D-16); 2 file migration M02-01 không đổi kể từ base; không Passport/RolesGuard/PermissionsGuard trong `src/auth`; không seed admin/mật khẩu hardcode/secret trong `src`; commit G4 là 1 commit riêng, parent đúng bc1f803, không merge | PASS |
+| AC-16 | Không sửa schema/migration M02-01; không middleware RBAC; không tài khoản admin mẫu/secret giả trong code; không merge | Git + grep (chạy mới trong G4, sửa lại trong Revision 02 — FIX-G4-03): (a) diff TOÀN BRANCH so với base a77bbd9 KHÔNG chỉ chứa migration — tại commit G4 3b7a367, `git rev-list --count a77bbd9..3b7a367` = 29 commit, 42 file thay đổi: Auth (16 file `src/auth` kể cả unit spec) + app wiring (`app-setup`, `app.module`, `main`, `redis/rate-limit.service`) + 6 spec e2e (`backend/test`) + Prisma schema + 2 migration M02-05 + API docs (`API_SPEC`, `openapi.yaml`, `AUTH_JWT.md`) + 6 file project-management + `.env.example`/`package.json`/`pnpm-lock.yaml`; (b) diff RIÊNG thư mục migration mới chỉ chứa 2 migration M02-05: `git diff --name-only a77bbd9..HEAD -- backend/prisma/migrations/` = đúng 2 file `migration.sql` mới (D-15 `20261127095124_m0205_refresh_revocation_reason`, D-16 `20261127095209_m0205_refresh_operations`), 1 commit chạm thư mục này (`ce82268` Phase 1), `git diff a77bbd9..HEAD` trên 2 thư mục migration M02-01 = rỗng (không đổi). Không Passport/RolesGuard/PermissionsGuard trong `src/auth` (grep = 0 dòng, chạy mới). Không tài khoản admin mẫu: 0 `user.create` trong code production (`prisma.user` chỉ `findUnique` lúc login/`/me`); không secret hardcode trong code production (grep credential literal ở non-spec `src` = 0; `auth.config.ts` fail-fast bằng `requireSecret`, 0 fallback `|| "..."`). Lưu ý chính xác: grep rộng có 8 dòng khớp trong file `*.spec.ts` — đều là secret giả dùng làm input test (case fail-fast `"too-short"`/`"x".repeat(31)` và fixture sign/verify `"access-secret-".padEnd(32, "a")`/`"attacker-secret-".padEnd(32, "x")`), không phải default/fallback và không phải tài khoản admin mẫu. Commit G4 (3b7a367) là 1 commit riêng, parent đúng bc1f803, không merge; Revision 02 (commit này — SHA xem trong git log) thêm đúng 1 commit sau 3b7a367, chỉ gồm test + tài liệu bằng chứng | PASS |
 | AC-17 | Refresh đồng thời cùng token + cùng key → đúng 1 transaction claim + 1 rotation + cùng response; follower chờ rồi nhận response đã lưu; treo quá lock_timeout → follower 503; tổng transaction quá 10s → rollback toàn bộ; key khác → replay (AC-05); thiếu key → 400; cùng key sau TTL envelope → 503, không phải replay; session không ACTIVE / conditional update 0 row → rollback toàn bộ, operation row biến mất; leader đã commit được trả response kể cả khi Redis lỗi; follower không xác minh được → 503, không giao token; COMMIT mất ACK → xác minh rồi trả response / re-claim / 503, không rotation thứ hai; không bao giờ xóa Redis COMPLETED; envelope sai AAD/tag → 503; envelope.ownerId phải khớp operation.owner_id | `test/auth.e2e-spec.ts` — E1, E3, E4, E5 (FIX-30), E5b (FIX-31), E5c, E6 (FIX-32), rollback, ownerId, cleanup, FIX-28 + `test/auth-idempotency.e2e-spec.ts` — E1–E7, FIX-38, FIX-39-A/B/C | PASS |
 | AC-18 | Sau logout, Redis lỗi khi guard kiểm tra blacklist → access đã logout vẫn bị từ chối bằng 503 SERVICE_UNAVAILABLE (không 200, không 401 giả) | `test/auth.e2e-spec.ts` — "AC-18: after logout, /me with the logged-out access token is 503 when Redis dies (fail-closed, never 200 or a fake 401)" | PASS |
 
@@ -91,7 +91,7 @@ nhiều AC trừ khi test đó assert từng yêu cầu riêng (ghi rõ ở từ
   tiếp trong DB vì M02-05 không có endpoint thu hồi tay; refresh từ chối
   đúng 401 INVALID_REFRESH_TOKEN).
 - **Constraints (G4-04.5):** spec G4 mới (`test/g4-evidence.e2e-spec.ts`,
-  4 test) chứng minh bằng hành vi trên DB thật:
+  5 test) chứng minh bằng hành vi trên DB thật:
   - CHECK `(revoked_at IS NULL) = (revoked_reason IS NULL)`: chỉ đặt
     `revoked_at` → DB từ chối; chỉ đặt `revoked_reason` → DB từ chối; đặt
     cả hai → chấp nhận.
@@ -100,6 +100,12 @@ nhiều AC trừ khi test đó assert từng yêu cầu riêng (ghi rõ ở từ
     nhận.
   - Self-FK ON DELETE SET NULL: xóa session mới → `replaced_by_session_id`
     của row cũ thành NULL, row cũ còn nguyên, reason ROTATED giữ nguyên.
+  - Self-FK REJECTS `replaced_by_session_id` trỏ tới UUID không tồn tại
+    (FIX-G4-01): update row cũ với `replaced_by_session_id` = UUID ngẫu
+    nhiên không có session nào sở hữu (reason ROTATED nên thỏa CHECK-2,
+    chỉ self-FK mới từ chối được) → DB từ chối bằng P2003, message chứa
+    tên FK `admin_refresh_sessions_replaced_by_session_id_fkey`; đọc lại
+    row cũ vẫn nguyên (ACTIVE, không reason, không `replaced_by`).
   - Unique (token_hash, idempotency_key): insert trùng → P2002.
   - Native enum `RefreshOperationState`: insert state `BOGUS` → DB từ chối
     (message chứa `RefreshOperationState`).
@@ -135,12 +141,25 @@ nhiều AC trừ khi test đó assert từng yêu cầu riêng (ghi rõ ở từ
   của Prisma (giá trị thành parameter `$1`, không nội suy vào SQL text),
   nên message lỗi không thể chứa token/mật khẩu. Trong lần chạy full G4,
   dòng này không kích hoạt lần nào (0 lần xuất hiện trong log).
-- Quét log full-run `~/workspace/g4-full-e2e.log`: 0 JWT (`eyJ`), 0 chuỗi
-  mật khẩu test, 0 `passwordHash`, 0 tên bảng DB. 78 dòng khớp mẫu
-  "error" là tên test diagnostic + các cảnh báo `Redis client error:
-  connect ECONNREFUSED 127.0.0.1:6398` có chủ đích từ test Redis-down
-  (dead port), không chứa dữ liệu nhạy cảm.
-- **Kết quả: không phát hiện rò rỉ. Không cần sửa trong G4.**
+- Quét lại log full-run `~/workspace/g4-full-e2e.log` (311 dòng) trong
+  Revision 02 (FIX-G4-02, chạy mới — không tái dùng kết quả G4) bằng
+  script `~/workspace/g4r2-scan-log.py` (log `~/workspace/g4r2-logscan.log`,
+  exit 0; mọi giá trị nhạy cảm khớp mẫu đều thay bằng `[MASKED:<tên>]`
+  khi hiển thị, không in giá trị thật): 0 JWT (`eyJ`), 0 chuỗi mật khẩu
+  test, 0 `passwordHash`, 0 chuỗi 64 ký tự hex (SHA-256). Các mẫu còn
+  lại chỉ khớp tiêu đề test: tên bảng 4 dòng/6 lượt — đều là từ thường
+  `roles`/`permissions`/`users` trong tiêu đề test, không có tên bảng
+  literal (`admin_refresh_sessions`, `auth_refresh_operations`...);
+  `token_hash` 2 dòng, `access token` 2 dòng, `refresh token` 1 dòng,
+  `password` 3 dòng, `secret` 4 dòng — đều là tiêu đề test (kể cả tên
+  biến cấu hình `JWT_SECRET`/`JWT_REFRESH_SECRET`, không có giá trị).
+  70 dòng/71 lượt khớp "error" (G4 ghi 78 dòng theo cách đếm cũ — số
+  mới 70 đã kiểm chứng lại bằng `grep -ci`, cùng file log) là tiêu đề
+  test diagnostic + các cảnh báo `Redis client error: connect
+  ECONNREFUSED 127.0.0.1:6398` có chủ đích từ test Redis-down (dead
+  port), không chứa dữ liệu nhạy cảm. Kiểm chứng chéo bằng grep: 64-hex
+  0, `eyJ` 0, `passwordHash`/mật khẩu test 0.
+- **Kết quả: không phát hiện rò rỉ. Không cần sửa trong Revision 02.**
 
 ## G4-07 — Workspace checks (trên commit G4, mỗi mục có lệnh + exit code)
 
