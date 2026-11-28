@@ -1,3 +1,27 @@
+## 28/11/2026 — M02-05 rebase lên main 23e3268 (INT-M02-05-01)
+
+- Rebase nhánh `feature/M02-05-auth-jwt-refresh-token` từ base `a77bbd9` lên main `23e3268` (35 commit được replay; commit này, SHA trong git log): M02-03 + FIX-CI-01 nay nằm trong nhánh; §10.18/§10.19/§10.20 giữ nguyên từng byte; xung đột chỉ ở Handbook + hợp nhất `package.json`/`app.module.ts` (giữ cả meilisearch 0.44.1, @nestjs/jwt 10.2.0, argon2 0.45.2).
+- Kiểm tra chạy lại sau rebase: lint 9/9, typecheck 9/9, unit 13 suites / 83 tests, build 5/5, full e2e tuần tự 9 suites / 144 tests PASS trong 210.341s; `git diff --check` sạch; quét secret sạch.
+- Handbook đồng bộ: M02-03 DONE, M02-05 DONE (đã rebase, chưa merge vào main, chờ ChatGPT review nhánh đã rebase), FIX-CI-01 DONE (đã tích hợp vào main 23e3268); tổng DONE 18 / IN_PROGRESS 0 / BACKLOG 70 / BLOCKED 1 (M07-05) = 89; Sprint 2 DONE (10/10).
+
+## 28/11/2026 — M02-05 DONE (ChatGPT ACCEPT G4, 18/18 AC PASS)
+
+- ChatGPT **ACCEPT G4 ngày 28/11/2026 — 18/18 AC PASS, 0 FAIL** (G4 Revision 04, commit bf84951, parent 09afcaa, 2 files docs only +11/−10; FIX-G4-06/07/08 đều PASS; §10.18 byte-identical). Gate đầy đủ: G0 PASS; G1 ACCEPTED; G2 ACCEPTED (Revision 03, 011a461); G3 ACCEPTED (Revision 04, e1b7b91); FIX-38 ACCEPTED (d356c92); FIX-39 ACCEPTED (bc1f803); G4 ACCEPTED (Revision 04, bf84951). Caveat: kết quả runtime ghi nhận theo báo cáo Muse, ChatGPT không tự chạy lại các suite trên môi trường của Muse; Docker runtime UNVERIFIED, parallel e2e không chạy lại.
+- Chuỗi commit Stage 2 đã nghiệm thu (branch `feature/M02-05-auth-jwt-refresh-token`, base `a77bbd9`): `ce82268` (Phase 1) → `2c36c06` → `e4c1c6d` → `011a461` (G2 ACCEPT) → `e3ac77f` → `e1b7b91` (G3 ACCEPT) → `d356c92` (FIX-38) → `bc1f803` (FIX-39) → `3b7a367` (G4) → `aec557b` (Revision 02) → `09afcaa` (Revision 03) → `bf84951` (Revision 04, G4 ACCEPT).
+- Housekeeping (commit này, SHA trong git log): Task Brief M02-05 → DONE + §10.20 bàn giao (đã xác minh / chưa xác minh / còn lại); CURRENT_STATE + TASK_BOARD + CHANGELOG đồng bộ; PRODUCT_BACKLOG — M02-05 DONE, tổng DONE 17 (M00 7 + M01 7 + M02-01 + M02-02 + M02-05), IN_PROGRESS 0, BACKLOG 71, BLOCKED 1; SPRINT_PLAN — Sprint 2 9/10 DONE, vẫn CHƯA HOÀN THÀNH (M02-03 còn BACKLOG).
+- Tiếp theo: M02-05 chưa đóng cuối cùng — chờ Henry xác nhận cuối cùng để ghi nhận DONE. Tích hợp KHÔNG mặc định — trình Henry quyết định với commit cụ thể (hiện tại: `bf84951`); sau khi M02-03 được tích hợp chính thức, rebase M02-05 lên commit tích hợp mới nhất và kiểm tra lại Handbook.
+
+## 27/11/2026 — M02-05 Stage 1 ACCEPTED (ChatGPT ACCEPT Revision 14, Task Brief)
+
+- ChatGPT ACCEPT Stage 1 ngày 27/11/2026 ~15:46 (Revision 14, commit bbe2cd4, parent ba452be, 1 file, +11/−7, DOCS ONLY): FIX-32 PASS (cả kịch bản leader idle độc lập và có follower cạnh tranh); FIX-31, FIX-30, FIX-29, FIX-25, FIX-26/FIX-28, FIX-27 PASS; D-16 PASS; D-14 ACCEPT. Không yêu cầu Revision 15.
+- ACCEPT này là nghiệm thu Task Brief và thiết kế, không phải xác nhận implementation — điều kiện giữ lại cho Stage 2: khi triển khai phải chứng minh bằng kiểm thử thật (INSERT ... ON CONFLICT DO NOTHING; Prisma `timeout` rollback; leader COMMIT sau follower 503; leader idle timeout + follower cạnh tranh; ambiguous COMMIT, Redis lỗi, ownership — không phát hành token khi chưa xác minh quyền sở hữu).
+- Housekeeping (commit này, SHA trong git log): Task Brief M02-05 Status → ACCEPTED Stage 1 + §10.14 + §12 kết quả nghiệm thu; CURRENT_STATE + TASK_BOARD + CHANGELOG đồng bộ; PRODUCT_BACKLOG — M02-05 IN_PROGRESS (Stage 1 ACCEPTED), tổng DONE 16, IN_PROGRESS 1, BACKLOG 71, BLOCKED 1 (trên branch này — chưa chứa M02-03 DONE trên branch riêng, thứ tự merge/rebase do ChatGPT quyết định); SPRINT_PLAN — Sprint 2 vẫn 8/10 DONE, CHƯA HOÀN THÀNH (M02-03 BACKLOG, M02-05 Stage 2 chưa triển khai). M02-05 chưa DONE; Stage 2 chờ lệnh triển khai riêng.
+- Tiếp theo: sau khi ChatGPT xác minh housekeeping, chờ lệnh triển khai Stage 2.
+
+## 27/11/2026 — M02-05 Giai đoạn 1 (chuẩn bị Task Brief, chưa triển khai code)
+
+- ChatGPT giao M02-05 (Auth JWT + Refresh Token, Critical) ngày 27/11/2026 ~13:52 sau khi ACCEPT housekeeping M02-03 Revision 03; branch `feature/M02-05-auth-jwt-refresh-token`, base `a77bbd9`, dependency M02-01 DONE. Giai đoạn 1 chỉ chuẩn bị: đọc Task Board/Backlog, API_SPEC, API_SECURITY, API_ERROR_CATALOG, M02_IMPLEMENTATION_DECISIONS; kiểm tra Prisma schema/migration (`users.failed_login_attempts`/`locked_until` + `admin_refresh_sessions` đã có sẵn — không thiếu cột, không cần sửa migration); tạo Task Brief `tasks/M02-05.md` (16 AC, bảng đối chiếu §11, 13 điểm chưa quyết định §12). Backlog trên branch này: DONE 16 / IN_PROGRESS 1 (M02-05) / BACKLOG 71 / BLOCKED 1; Sprint 2 8/10 DONE (M02-05 là task đang làm). Lưu ý base: branch base `a77bbd9` theo brief ChatGPT giao nên chưa chứa M02-03 — M02-03 DONE chính thức ngày 27/11/2026 ~13:52 nằm trên branch `feature/M02-03-meilisearch` (chưa merge); thứ tự merge/rebase do ChatGPT quyết định. Báo cáo ChatGPT review brief trong chat mới, chờ lệnh triển khai mới code.
+
 ## 27/11/2026 — M02-03 DONE (ChatGPT ACCEPT 19/19 AC PASS)
 
 - ChatGPT verdict cuối cùng Revision 04 ngày 27/11/2026 ~13:32 (chat "Review M02-03"): ACCEPT — 19/19 AC PASS, M02-03 đủ điều kiện nghiệm thu. Commit được nghiệm thu: Revision 04 633cde1 (parent d3480e4, 1 file, +1/−1, đúng 1 dòng Status trong Task Brief). ChatGPT kiểm tra trực tiếp trên GitHub và xác nhận cách ghi "Revision 04" là đúng (Status phải phản ánh bản mới nhất đang chờ review).

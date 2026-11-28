@@ -1,12 +1,14 @@
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
+import { configureApp } from "./app-setup";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Global API prefix: all REST endpoints live under /api/v1 (English only).
-  app.setGlobalPrefix("api/v1");
+  // Global prefix + validation + auth exception filter (see app-setup.ts —
+  // the same setup e2e specs use so the test app matches production).
+  configureApp(app);
 
   // CORS: frontend + admin origins only. Tighten per environment in M02.
   const allowedOrigins = [

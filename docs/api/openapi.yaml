@@ -841,6 +841,7 @@ components:
           description: true khi chưa có dữ liệu thật (không hiển thị số mẫu — BR-013)
     AuthTokens:
       type: object
+      description: "Access JWT claims: sub (admin id), roles (role ids), type 'access', sid (id của session đã cấp token), iat, exp (15 phút). Refresh JWT claims: sub, sid, type 'refresh', iat, exp (7 ngày). Không claim nào khác."
       required: [accessToken, refreshToken, tokenType, expiresIn]
       properties:
         accessToken:
@@ -4233,6 +4234,14 @@ paths:
       summary: Đổi refresh token lấy access token mới (xoay vòng refresh token)
       x-required-permission: null
       security: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          description: UUID — một key cho mỗi thao tác refresh; retry cùng thao tác dùng cùng key. Cùng token + cùng key → trả lại response đã lưu (envelope hết TTL → 503, không phải replay). Cùng token + key khác → replay (revoke-all + 401 TOKEN_REUSE_DETECTED).
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -4253,12 +4262,22 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/AuthTokens' }
         '400':
-          description: Thiếu refresh token
+          description: Thiếu refresh token hoặc thiếu header Idempotency-Key (VALIDATION_ERROR, details field Idempotency-Key)
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }
         '401':
-          description: Refresh token không hợp lệ, đã thu hồi hoặc bị dùng lại
+          description: Refresh token hết hạn hoặc đã thu hồi vì LOGOUT/LOGOUT_ALL/ADMIN_REVOKED (INVALID_REFRESH_TOKEN); refresh token đã dùng rồi trình lại với key khác, hoặc đã thu hồi vì REUSE_DETECTED (TOKEN_REUSE_DETECTED)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '429':
+          description: Vượt rate limit refresh (30 lần/phút/IP + 10 lần/phút/tài khoản)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '503':
+          description: Không xác minh được trạng thái thao tác (envelope response đã hết TTL, hoặc Redis/DB lỗi) — thử lại sau, không phải replay
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }
@@ -4266,7 +4285,8 @@ paths:
     post:
       operationId: adminLogout
       tags: [Auth]
-      summary: Đăng xuất — thu hồi access token + refresh token
+      summary: "Đăng xuất — thu hồi access token + refresh token (có refreshToken: một phiên; không có refreshToken: toàn bộ phiên của tài khoản)"
+      description: "Có `refreshToken` trong body → chỉ thu hồi đúng session đó (`revoked_reason = LOGOUT`). Không có `refreshToken` → thu hồi toàn bộ session của tài khoản (`revoked_reason = LOGOUT_ALL`). Access token hiện tại luôn bị blacklist tới khi hết hạn; mọi access token thuộc session đã logout đều hết hiệu lực (kiểm tra `sid`)."
       x-required-permission: "*"
       security: [{ AdminAuth: [] }]
       requestBody:
@@ -4281,7 +4301,12 @@ paths:
         '204':
           description: Đã đăng xuất
         '401':
-          description: Chưa đăng nhập
+          description: Chưa đăng nhập, hoặc refreshToken không thuộc tài khoản này / đã thu hồi
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '503':
+          description: Redis lỗi khi ghi blacklist (fail-closed) — thử lại sau
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }
@@ -4303,7 +4328,12 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/AdminMe' }
         '401':
-          description: Chưa đăng nhập
+          description: Chưa đăng nhập, hoặc access token đã logout (blacklist) / session đã thu hồi
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '503':
+          description: "Redis lỗi khi kiểm tra blacklist (fail-closed) — token đã thu hồi không 'sống lại' khi Redis lỗi"
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }

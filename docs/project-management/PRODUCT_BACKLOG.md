@@ -12,7 +12,7 @@ Wireframe, Admin Dashboard, UI/UX Research).
 | Tổng số mã task trong backlog này | **89** |
 | M00 | 7 — DONE 7/7 |
 | M01 | 7 — DONE 7/7 |
-| M02 | 8 — DONE 2/8, BACKLOG 6/8 |
+| M02 | 8 — DONE 4/8, BACKLOG 4/8 |
 | M03 | 10 — BACKLOG 10/10 |
 | M04 | 9 — BACKLOG 9/9 |
 | M05 | 10 — BACKLOG 10/10 |
@@ -20,9 +20,9 @@ Wireframe, Admin Dashboard, UI/UX Research).
 | M07 | 10 — BACKLOG 9/10, BLOCKED 1/10 (M07-05) |
 | M08 | 9 — BACKLOG 9/9 |
 | M09 | 10 — BACKLOG 10/10 |
-| DONE | 17 (M00 7 + M01 7 + M02-01 + M02-02 + M02-03) |
+| DONE | 18 (M00 7 + M01 7 + M02-01 + M02-02 + M02-03 + M02-05) |
 | IN_PROGRESS | 0 |
-| BACKLOG | 71 |
+| BACKLOG | 70 |
 | BLOCKED | 1 (M07-05) |
 
 ### ISSUE-01 — Mâu thuẫn tổng số task: 87 hay 89? — ĐÃ QUYẾT ĐỊNH (89)
@@ -115,7 +115,7 @@ chưa chốt nhưng không chặn thiết kế).
 | M01-06 | Nghiên cứu mẫu UI/UX và đề xuất phương án | Nghiên cứu 5 website thật; Design System (màu/chữ/spacing/component); đề xuất Tailwind + shadcn/ui; D-07 chỉ là đề xuất | High | M01-01, M01-04, M01-05 | DONE |
 | M01-07 | Backlog và chia Sprint | Backlog 89 mã task + Sprint plan 10 Sprint × 2 tuần (tuần 1–20) | High | M01-01 → M01-06 | DONE |
 
-## 4. M02 — Infrastructure & Authentication (tuần 3–5) — DONE 3/8, BACKLOG 5/8
+## 4. M02 — Infrastructure & Authentication (tuần 3–5) — DONE 4/8, IN_PROGRESS 0/8, BACKLOG 4/8
 
 | Task | Tên | Mục tiêu / Phạm vi | Priority | Phụ thuộc | Trạng thái |
 | --- | --- | --- | --- | --- | --- |
@@ -123,7 +123,7 @@ chưa chốt nhưng không chặn thiết kế).
 | M02-02 | Redis cache + BullMQ | Redis cache (theo API_SPEC §41) + BullMQ cho job nền | High | M02-01 | DONE |
 | M02-03 | Meilisearch | Cài Meilisearch; index products (SKU/OEM/tên/thương hiệu); cấu hình tìm kiếm theo ADR-010 | Critical | M02-01 | DONE |
 | M02-04 | S3 / R2 object storage | Lưu ảnh sản phẩm/bài viết; URL tuyệt đối (theo quy tắc đã chốt ở M01-06) | High | D-06 | BACKLOG |
-| M02-05 | Auth JWT + Refresh Token | Đăng nhập admin (FR-090/FR-091 lockout); JWT + refresh; HttpOnly cookie | Critical | M02-01 | BACKLOG |
+| M02-05 | Auth JWT + Refresh Token | Đăng nhập admin (FR-090/FR-091 lockout); JWT + refresh (Bearer, JSON body) | Critical | M02-01 | DONE — ChatGPT ACCEPT G4 28/11/2026 (18/18 AC PASS, Revision 04, bf84951); Henry xác nhận cuối cùng 28/11/2026; đã rebase lên main 23e3268 (INT-M02-05-01), chưa merge vào main, chờ ChatGPT review nhánh đã rebase |
 | M02-06 | RBAC nền tảng | Bảng roles/permissions/role_permissions/user_roles/user_permissions; middleware kiểm tra permission; audit log nền | Critical | M02-01, M02-05; M01-05 | BACKLOG |
 | M02-07 | CI/CD | GitHub Actions: typecheck/lint/test/build trên mỗi push; nối tiếp CI đã có từ M00 | High | M00-06; D-05 | BACKLOG |
 | M02-08 | Môi trường Dev → Staging → Production + backup | Môi trường 3 tầng; backup tự động + quy trình restore (NFR-015) | High | M02-07; D-05 | BACKLOG |

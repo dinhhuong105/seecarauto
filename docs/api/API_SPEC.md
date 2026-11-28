@@ -97,7 +97,7 @@ Tài liệu này đặc tả toàn bộ API REST của website SeeCar Auto (back
 
 - **Khách (guest):** không có tài khoản ở P0, không đăng nhập để mua hàng (FR-092). Khách không có token; các endpoint public không yêu cầu auth. Tài khoản khách hàng đầy đủ là P1 (FR-093/FR-094) — endpoint auth khách ở mục 20, không phải contract P0.
 - **Token hết hạn:** access token hết hạn → `401 UNAUTHENTICATED` (xem Error Catalog); client dùng refresh token để đổi mới; refresh token hết hạn → client phải đăng nhập lại.
-- **Bảo mật token:** access token không chứa thông tin nhạy cảm (chỉ `sub` = admin id, `role` ids, `exp`); refresh token lưu hash ở database (không lưu plaintext), có thể thu hồi từng session; mọi endpoint auth đều rate limit riêng (xem mục 16).
+- **Bảo mật token:** access token chỉ chứa `sub` (admin id), `roles` (danh sách role id), `type: "access"`, `sid` (id của row `admin_refresh_sessions` đã cấp token), `iat`, `exp` (15 phút); refresh token chỉ chứa `sub`, `sid`, `type: "refresh"`, `iat`, `exp` (7 ngày) — không chứa hash, permission list hay PII khác. Access token gắn với đúng session đã cấp nó (`sid`): sau khi refresh thành công, access token cũ hết hiệu lực ngay (session cũ đã `ROTATED`), không chờ tới hết hạn 15 phút. Refresh token lưu hash SHA-256 ở database (không lưu plaintext), có thể thu hồi từng session; mọi endpoint auth đều rate limit riêng (xem mục 16).
 
 ## 6. Phân quyền (Authorization — Dynamic RBAC, ADR-005)
 
@@ -272,8 +272,8 @@ Mỗi endpoint trong catalogue này đều có đặc tả chi tiết ở mục 
 | Method + Path | Mục đích | Access | Permission | FR | Trạng thái |
 | --- | --- | --- | --- | --- | --- |
 | `POST /api/v1/auth/admin/login` | Admin đăng nhập | Public (auth) | — | FR-090, FR-091 | P0 |
-| `POST /api/v1/auth/admin/refresh` | Đổi refresh token | Public (auth) | — | FR-090 | P0 |
-| `POST /api/v1/auth/admin/logout` | Đăng xuất, thu hồi token | Admin | `*` | FR-090 | P0 |
+| `POST /api/v1/auth/admin/refresh` | Đổi refresh token (xoay vòng; header `Idempotency-Key` bắt buộc) | Public (auth) | — | FR-090 | P0 |
+| `POST /api/v1/auth/admin/logout` | Đăng xuất, thu hồi token (có `refreshToken`: một phiên; không có: toàn bộ phiên) | Admin | `*` | FR-090 | P0 |
 | `GET /api/v1/auth/admin/me` | Thông tin tài khoản + quyền của mình | Admin | `*` | FR-081 | P0 |
 | `GET /api/v1/admin/dashboard/summary` | Tổng quan admin: đơn cần xử lý, sản phẩm, bài viết — chỉ số liệu thật, theo quyền | Admin | `dashboard.view` | FR-075 → FR-077 | P0 |
 | `GET /api/v1/redirects` | Danh sách redirect 301 đã cấu hình | Admin | `redirects.view` | FR-018 | P0 |
@@ -511,9 +511,9 @@ Quy ước trong mục này: mỗi endpoint có Method + Path, Purpose, Access, 
 
 ### 11.7 Xác thực admin — đặc tả chi tiết (FR-090, FR-091)
 
-**POST /api/v1/auth/admin/login** — Request: `{ username (bắt buộc — tài khoản admin, định dạng do M02 chốt: username hoặc email), password (bắt buộc) }`. Response `200`: `{ accessToken, refreshToken, tokenType: "Bearer", expiresIn: 900 (giây — access token 15 phút, M02 chốt số cuối), admin: { id, username, roles: [...] } }`. Sai tài khoản/mật khẩu → `401 INVALID_CREDENTIALS` (message chung, không lộ tài khoản có tồn tại — FR-090). Sai liên tiếp tới ngưỡng (M02 chốt, FR-091) → `423 ACCOUNT_LOCKED` + `retryAfter` (giây). Rate limit riêng: 5 lần/phút/IP + 10 lần/phút/tài khoản (xem mục 16).
-**POST /api/v1/auth/admin/refresh** — Request: `{ refreshToken (bắt buộc) }`. Response `200`: access token mới + refresh token mới (xoay vòng); refresh token cũ bị thu hồi. Refresh token đã thu hồi/hết hạn → `401 INVALID_REFRESH_TOKEN`. Refresh token đã dùng rồi (replay) → thu hồi toàn bộ session của tài khoản + `401 TOKEN_REUSE_DETECTED`.
-**POST /api/v1/auth/admin/logout** — Header `Authorization: Bearer <access_token>` + body `{ refreshToken? }`; thu hồi access token hiện tại (blacklist tới khi hết hạn) và refresh token (nếu gửi); response `204`.
+**POST /api/v1/auth/admin/login** — Request: `{ username (bắt buộc — chỉ username, không có cột email), password (bắt buộc, 8–128 ký tự) }`. Response `200` (envelope `{ data: ... }` theo INT-007): `{ accessToken, refreshToken, tokenType: "Bearer", expiresIn: 900 (giây — access token 15 phút), admin: { id, username, roles: [...] } }`. Sai tài khoản/mật khẩu → `401 INVALID_CREDENTIALS` (message chung, không lộ tài khoản có tồn tại — FR-090; username không tồn tại vẫn chạy verify Argon2id với dummy hash để thời gian phản hồi không lộ tài khoản có tồn tại). Sai liên tiếp 5 lần → `423 ACCOUNT_LOCKED` + `retryAfter` (900 giây — khóa 15 phút; đăng nhập đúng khi đang khóa vẫn `423`; hết thời gian khóa → đăng nhập lại được; đăng nhập đúng reset `failedLoginAttempts` về 0). Rate limit riêng: 5 lần/phút/IP + 10 lần/phút/tài khoản (xem mục 16).
+**POST /api/v1/auth/admin/refresh** — Header bắt buộc `Idempotency-Key: <uuid>` (một key cho mỗi thao tác refresh; retry cùng thao tác dùng cùng key; thiếu header hoặc key không phải UUID → `400 VALIDATION_ERROR`, details field `Idempotency-Key`). Request: `{ refreshToken (bắt buộc) }`. Response `200` (envelope `{ data: ... }`): access token mới + refresh token mới (xoay vòng); refresh token cũ bị thu hồi (`revoked_reason = ROTATED`, `replaced_by_session_id` = id session mới). Cùng token + cùng key → trả lại response đã lưu của thao tác đó (không rotation thêm, không revoke-all); nếu envelope response đã hết TTL (10 giây) → `503 SERVICE_UNAVAILABLE` (response đã phát hành nhưng không khôi phục được — không phải replay). Cùng token + key khác → replay: thu hồi toàn bộ session của tài khoản + `401 TOKEN_REUSE_DETECTED`. Refresh token hết hạn, hoặc đã thu hồi vì `LOGOUT`/`LOGOUT_ALL`/`ADMIN_REVOKED` → `401 INVALID_REFRESH_TOKEN`; đã thu hồi vì `REUSE_DETECTED` → `401 TOKEN_REUSE_DETECTED`. Rate limit riêng: 30 lần/phút/IP + 10 lần/phút/tài khoản (xem mục 16).
+**POST /api/v1/auth/admin/logout** — Header `Authorization: Bearer <access_token>` + body `{ refreshToken? }`; response `204`. Có `refreshToken` → chỉ thu hồi đúng session đó (`revoked_reason = LOGOUT`) + blacklist access token hiện tại; không có `refreshToken` → thu hồi toàn bộ session của tài khoản (`revoked_reason = LOGOUT_ALL`) + blacklist access token hiện tại. Access token bị blacklist tới khi hết hạn; mọi access token thuộc session đã logout đều hết hiệu lực (guard kiểm tra `sid` trỏ tới session đã thu hồi → `401 UNAUTHENTICATED`). Sau logout, refresh token cũ → `401 INVALID_REFRESH_TOKEN`. Redis lỗi khi kiểm tra blacklist → fail-closed `503 SERVICE_UNAVAILABLE` (token đã thu hồi không "sống lại" khi Redis lỗi).
 **GET /api/v1/auth/admin/me** — Header `Authorization`; response `200`: `{ id, username, roles: [{ id, name }], permissions: ["products.view", ...] }` (danh sách permission đã gộp vai trò + ngoại lệ — dùng để frontend ẩn/hiện nút, FR-081).
 
 ## 12. Xử lý lỗi (Error handling)
@@ -571,12 +571,14 @@ Quy ước trong mục này: mỗi endpoint có Method + Path, Purpose, Access, 
 - **Giới hạn chung:** 100 request/phút/IP cho endpoint public (GET); 30 request/phút/IP cho endpoint public ghi (POST/PATCH/DELETE không auth). Vượt quá → `429 RATE_LIMITED` + header `Retry-After` (giây) + `X-RateLimit-Limit`/`X-RateLimit-Remaining`/`X-RateLimit-Reset`.
 - **Giới hạn riêng (nghiêm ngặt hơn):**
   - `POST /auth/admin/login`: 5 lần/phút/IP + 10 lần/phút/tài khoản (FR-091).
+  - `POST /auth/admin/refresh`: 30 lần/phút/IP + 10 lần/phút/tài khoản (M02-05, D-05 — refresh token là credential nên fail-closed như login).
   - `GET /orders/lookup`: 10 lần/phút/IP + 5 lần/phút/mã đơn (FR-058 — chống dò mã đơn).
   - `GET /search` và `GET /search/suggest`: 60 lần/phút/IP.
   - `POST /contact`: 5 lần/giờ/IP (chống spam form).
   - `POST /orders`: 10 lần/phút/cartToken (chống tạo đơn ồ ạt).
 - **Admin đã đăng nhập:** 300 request/phút/tài khoản (cao hơn vì admin thao tác nhiều); vượt quá → `429` như trên.
-- **Lưu trữ counter:** Redis (theo ADR-006); Redis lỗi → fail-open cho public GET (rate limit tạm thời tắt); fail-closed cho login/lookup — login và lookup vẫn giới hạn bằng bộ nhớ tạm của backend khi Redis lỗi, để không mở cửa dò mã/tài khoản — **và fail-closed cho contact (`POST /contact`, 5 lần/giờ/IP) + createOrder (`POST /orders`, 10 lần/phút/cartToken): quyết định đã chốt (Henry phê duyệt 27/11/2026, theo đề xuất của ChatGPT ở review M02-02 — FIX-04); hai nhóm này vẫn giới hạn bằng bộ nhớ tạm trong tiến trình khi Redis lỗi để chống spam form và tạo đơn ồ ạt; fallback bộ nhớ chỉ đúng trên một instance, không phải bảo đảm toàn hệ thống**.
+- **Lưu trữ counter:** Redis (theo ADR-006); Redis lỗi → fail-open cho public GET (rate limit tạm thời tắt); fail-closed cho login/lookup — login và lookup vẫn giới hạn bằng bộ nhớ tạm của backend khi Redis lỗi, để không mở cửa dò mã/tài khoản — **và fail-closed cho contact (`POST /contact`, 5 lần/giờ/IP) + createOrder (`POST /orders`, 10 lần/phút/cartToken): quyết định đã chốt (Henry phê duyệt 27/11/2026, theo đề xuất của ChatGPT ở review M02-02 — FIX-04); hai nhóm này vẫn giới hạn bằng bộ nhớ tạm trong tiến trình khi Redis lỗi để chống spam form và tạo đơn ồ ạt; fallback bộ nhớ chỉ đúng trên một instance, không phải bảo đảm toàn hệ thống**. Fail-closed cho refresh (`POST /auth/admin/refresh`, 30 lần/phút/IP + 10 lần/phút/tài khoản — M02-05, D-05): cùng cơ chế fallback bộ nhớ trong tiến trình.
+- **Kiểm tra blacklist access token (M02-05, D-06):** guard xác minh chữ ký + thời hạn JWT trước, sau đó kiểm tra blacklist Redis (SHA-256 của access token) trước khi chấp nhận request; token trong blacklist → `401 UNAUTHENTICATED`; Redis lỗi khi kiểm tra blacklist → fail-closed `503 SERVICE_UNAVAILABLE` + `Retry-After` (không bỏ qua blacklist rồi chấp nhận token đã logout).
 
 ## 17. Bảo mật (Security — tóm tắt; chi tiết xem API_SECURITY.md)
 
